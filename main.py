@@ -108,8 +108,8 @@ rag_chain = (
 
 
 
-st.set_page_config(page_title='Chat website')
-st.header('chat with website')
+st.set_page_config(page_title='Buka chatbot')
+st.header('BUKA assistente')
 
 
 if "chat_history"  not in st.session_state:
