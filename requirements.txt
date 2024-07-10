@@ -1,0 +1,16 @@
+langchain 
+langchain-community 
+langchain-anthropic
+langchainhub 
+langchain-openai 
+langchain-chroma 
+langchain_groq 
+bs4
+python-dotenv
+streamlit
+langchain_groq
+langchain_chroma
+langchain_google_genai
+faiss-cpu
+python-telegram-bot
+chromadb
