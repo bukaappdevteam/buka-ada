@@ -1,0 +1,53 @@
+
+
+CURSO DE RECURSOS HUMANOS COM APLICAÇÃO AS NOVAS TECNOLOGIAS
+Descrição: Prepare-se para liderar a transformação no RH! Embarque nesta jornada de aprendizado e inovação, onde exploramos as novas fronteiras da gestão de pessoas. Seja parte dessa evolução e impulsione sua carreira.
+MiniDescrição: Aprenda e inove no mundo do RH!
+Localização: Presencial
+Preço: 30000 Kz
+Duração: 16 horas
+
+WINDOWS SERVER 2022
+Descrição: Aprenda de forma prática e eficiente como configurar, gerenciar e manter servidores Windows 2022, e eleve o seu perfil profissional.
+MiniDescrição: Domine a administração de servidores Windows 2022
+Localização: Presencial
+Preço: 30000 Kz
+Duração: 16 horas
+
+EMPREENDEDORISMO E INOVAÇÃO TECNOLÓGICA
+Descrição: Este curso oferece uma imersão no mundo do empreendedorismo digital e da inovação tecnológica. Aprenda com especialistas do setor, adquira novas habilidades e descubra como impulsionar o seu negócio na era digital.
+MiniDescrição: Impulsione o seu negócio
+Localização: Presencial
+Preço: 30000 Kz
+Duração: 5 Semanas
+
+HIGIENE E SEGURANÇA NO TRABALHO
+Descrição: Invista no seu futuro profissional com conhecimentos sólidos em segurança no trabalho. Descubra como proteger a si mesmo e aos outros no ambiente de trabalho com este curso dinâmico e prático. Desde a análise de riscos até a gestão de trabalho seguro, você estará pronto para enfrentar qualquer desafio com confiança.
+MiniDescrição: Domine a hig. e seg. no trabalho
+Localização: Presencial
+Preço: 60000 Kz
+Requisitos:
+Habilitações literárias mínima 8ª classe
+Ter no mínimo a 8ª Classe concluída
+Duração: 40 horas
+
+CURSO DE POWER BI (BUSINESS INTELLIGENCE)
+Descrição: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.
+MiniDescrição: Transforme dados em estratégias
+Localização: Presencial
+Preço: 60000 Kz
+Duração: 08 horas
+
+ANÁLISE DE INVESTIMENTO DE PROJECTOS COM O RECURSO AS IT
+Descrição: Seja o arquiteto do seu sucesso financeiro. Domine a arte da análise financeira e economia de investimentos. Aprenda a estruturar projetos sólidos e a preparar planos de negócios vencedores.
+MiniDescrição: Arquitete seu futuro financeiro
+Localização: Presencial
+Preço: 60000 Kz
+Duração: 32 horas
+
+CURSO BASE DE DADOS RELACIONAL COM MYSQL
+Descrição: Desvende os segredos das bases de dados relacionais e alcance a excelência em MySQL. Torne-se um expert na criação de consultas complexas e eficientes.
+MiniDescrição: Desvende os segredos do MySQL!
+Localização: Presencial
+Preço: 60000 Kz
+Duração: 08 horas

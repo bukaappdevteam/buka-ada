@@ -107,6 +107,24 @@ rag_chain = (
 #chat_history = []
 
 
+""" while True:
+
+
+    question = input('escreva aqui: ')
+    ai_msg = rag_chain.invoke(
+        {
+            "question": question,
+            "chat_history": chat_history
+        }
+    )
+    
+    chat_history.extend(
+        [
+            HumanMessage(content=question), ai_msg
+        ]
+    )
+    print("==================================")
+    print(ai_msg.content) """
 
 st.set_page_config(page_title='Chat website')
 st.header('chat with website')
@@ -114,6 +132,7 @@ st.header('chat with website')
 
 if "chat_history"  not in st.session_state:
     st.session_state.chat_history=[
+        AIMessage(content="Ola, eu sou Alexandria, como posso te ajudar?")
     ]
 
 user_query=st.chat_input('o que desejas saber?')
@@ -124,16 +143,6 @@ if user_query is not None and user_query!="":
         "chat_history":st.session_state.chat_history
     })
 
-    st.session_state.chat_history.extend(
-        [
-            HumanMessage(content=user_query), response
-        ]
-    )
-    #st.write(response)
-    for message in st.session_state.chat_history:
-        if isinstance(message,AIMessage):
-            with st.chat_message('Ai'):
-                st.write(message.content)
-        if isinstance(message,HumanMessage):
-            with st.chat_message('Human'):
-                st.write(message.content)
+        #st.write(response['answer'])
+    st.session_state.chat_history.append(HumanMessage(content=user_query))
+    st.session_state.chat_history.append(AIMessage(content=response['answer']))
