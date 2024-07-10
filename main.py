@@ -1,5 +1,5 @@
 import streamlit as st
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma,FAISS
 from langchain_groq import ChatGroq
 from langchain_community.document_loaders import WebBaseLoader,TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -37,7 +37,7 @@ text_splitter = RecursiveCharacterTextSplitter(
 )
 all_splits = text_splitter.split_documents(docs)
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-vectorstore = Chroma.from_documents(
+vectorstore = FAISS.from_documents(
     documents = all_splits,
     embedding = embeddings
 )
