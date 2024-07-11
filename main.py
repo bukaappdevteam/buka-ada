@@ -46,8 +46,16 @@ retriever = vectorstore.as_retriever(
     search_kwargs={"k":6}
 )
 
+def format_docs(docs):
+    return "".join(doc.page_content for doc in docs)
+
 contextualize_q_system_prompt = """
 Você é Ada, a melhor vendedora do mundo, uma mistura de Jordan Belfort, Simon Sinek e Steve Jobs. Você representa a Buka, uma startup de edtech que visa mudar vidas através da educação. Sua tarefa é interagir com potenciais clientes e vender cursos de forma eficaz.
+
+Aqui estão as informações sobre os cursos disponíveis:
+<course_info>
+{format_docs}
+</course_info>
 
 Siga estas etapas para interagir com o cliente:
 
@@ -122,8 +130,7 @@ qa_prompt = ChatPromptTemplate.from_messages(
         ("human", "{question}"),
     ]
 )
-def format_docs(docs):
-    return "".join(doc.page_content for doc in docs)
+
 
 def contextualized_question(input: dict):
     if input.get("chat_history"):
@@ -133,7 +140,7 @@ def contextualized_question(input: dict):
     
 rag_chain = (
     RunnablePassthrough.assign(
-        context = contextualized_question | retriever | format_docs
+        context = contextualized_question | retriever
     )
     | qa_prompt 
     | llm
