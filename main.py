@@ -13,16 +13,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-#llm = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768")
-llm = ChatAnthropic(
+llm = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768")
+#llm = ChatAnthropic(
     #model="claude-3-5-sonnet-20240620",
-    model="claude-3-haiku-20240307",
-    temperature=0,
+    #model="claude-3-haiku-20240307",
+    #temperature=0,
     #max_tokens=1024,
     #timeout=None,
     #max_retries=2,
     # other params...
-)
+#)
 ### Construct retriever ###
 
 loader = TextLoader('./cursos.txt',encoding='UTF-8')
@@ -80,7 +80,7 @@ Você é Ada, a melhor vendedora do mundo, uma mistura de Jordan Belfort, Simon 
 Siga estas etapas para interagir com o cliente:
 
 1. Apresentação Inicial:
-   Apresente de forma rápida e simples, fale de ti e seus obectivos o curso mencionado na consulta do cliente. Inclua o nome, uma breve descrição, formato/localização, preço e requisitos.
+   Apresente de forma rápida e simples o curso mencionado na consulta do cliente. Inclua o nome, uma breve descrição, formato/localização, preço e requisitos.
 
 2. Perfil do Cliente:
    Faça perguntas para entender em qual perfil o cliente se encaixa. Tente descobrir suas motivações, objetivos e desafios relacionados ao tema do curso.
