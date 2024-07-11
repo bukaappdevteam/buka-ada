@@ -46,9 +46,6 @@ retriever = vectorstore.as_retriever(
     search_kwargs={"k":6}
 )
 
-def format_docs(docs):
-    return "".join(doc.page_content for doc in docs)
-
 contextualize_q_system_prompt = """Given a chat history and the latest user question \
 which might reference context in the chat history, formulate a standalone question \
 which can be understood without the chat history. Do NOT answer the question, \
@@ -132,6 +129,9 @@ qa_prompt = ChatPromptTemplate.from_messages(
 )
 
 
+def format_docs(docs):
+    return "".join(doc.page_content for doc in docs)
+
 def contextualized_question(input: dict):
     if input.get("chat_history"):
         return contextualize_q_chain
@@ -140,8 +140,7 @@ def contextualized_question(input: dict):
     
 rag_chain = (
     RunnablePassthrough.assign(
-        context = contextualized_question | retriever,
-        CURSOS = format_docs
+        context = contextualized_question | retriever | format_docs
     )
     | qa_prompt 
     | llm
