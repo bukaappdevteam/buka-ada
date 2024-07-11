@@ -51,3 +51,53 @@ MiniDescrição: Desvende os segredos do MySQL!
 Localização: Presencial
 Preço: 60000 Kz
 Duração: 08 horas
+
+
+
+perguntas frequentes
+[
+  {
+    "question": "Como funciona a Buka?",
+    "answer": "A Buka é uma plataforma de educação que conecta aqueles que amam ensinar com aqueles que precisam aprender. Onde formadores e instituições criam, gerem e postam os teus cursos e os estudantes podem inscrever-se nos mesmos, (uma plataforma em constante desenvolvimento com o objetivo de apresentar as melhores oportunidades de formação)."
+  },
+  {
+    "question": "Quais as vantagens de ser um estudante Buka?",
+    "answer": "Muito mais do que formações, na plataforma da Buka terás acesso a uma comunidade de estudantes fortes, eventos e cursos gratuitos, bolsas, estágios, além de aprender as habilidades alinhadas com a necessidade do mercado."
+  },
+  {
+    "question": "Todos os cursos pertencem a Buka?",
+    "answer": "Os cursos em nossa plataforma são criados por diferentes formadores aqueles que amam ensinar, podendo ser de formadores independentes, centros de formação ou outras instituições e empresas, incluindo a Buka."
+  },
+  {
+    "question": "Como posso inscrever-me em um curso?",
+    "answer": "Vá até a secção Cursos clique no cartão do curso que deseja e irá levar-lhe até a página com todas as informações desse curso, clique no botão Inscrever-se, confirme que cumpre os requisitos se o curso tiver algum, faça login ou crie a sua conta, após terminar esses passos a sua inscrição estará incompleta até completar o pagamento."
+  },
+  {
+    "question": "Quais os tipos de cursos que existem?",
+    "answer": "Quanto a área, a maioria dos cursos em nossa plataforma são relacionados a tecnologia ou a área digital em si. Quanto ao formato, pensando no fácil acesso e preferência dos estudantes, projetamos 3 formatos de cursos em nossa plataforma, cursos presenciais, cursos online gravados e os cursos online ao vivo."
+  },
+  {
+    "question": "Qual é a diferença de um curso online gravado, online ao vivo e um presencial?",
+    "answer": "Os cursos presenciais são os cursos no formato normal, realizados em um espaço físico, com início e término definidos. Os cursos Online ao Vivo são cursos realizados em tempo real com aulas transmitidas ao vivo, com uma periodicidade semelhante a dos cursos presenciais. Os cursos Online gravado são cursos com video aulas gravadas pelo formador, cujo acesso (depois de pago) é por tempo determinado."
+  },
+  {
+    "question": "Ao terminar um curso, recebo algum certificado?",
+    "answer": "Sim, no final de todos os cursos são enviados por email certificados de participação em formato digital ou impresso (dependendo do responsável pelo curso), após a avaliação ou teste final do curso."
+  },
+  {
+    "question": "Quais as formas de pagamento?",
+    "answer": "Atualmente os pagamentos são realizados por carregamento dos comprovativos de pagamento por depósito (talões de depósito, borderaux) e comprovativos de pagamentos por transferência físicos ou digitais (talão de transferência multicaixa, comprovativo de transferência multicaixa express, bai directo, etc) na plataforma, mas em breve teremos outras formas de pagamentos online integradas na plataforma."
+  },
+  {
+    "question": "Que modalidades de pagamento existem?",
+    "answer": "Existem duas modalidades de pagamento: pagamento por prestações e pagamento completo."
+  },
+  {
+    "question": "Como funcionam os pagamentos parcelados caso o curso tenha esta opção?",
+    "answer": "Antes do ínicio do curso é feito o pagamento da primeira prestação, que tal como as seguintes prestações são definidas pela entidade responsável pelo curso (instituição, formador ou Buka), não apenas o preço mas também o momento em que o pagamento deve ser feito."
+  },
+  {
+    "question": "Criando um perfil de estudante, posso mudá-lo para formador caso deseje um dia?",
+    "answer": "Sim, a conta Buka é o teu passaporte para a nossa plataforma, caso desejar no futuro desejar obter privilégios de formador fará um pedido e preencherá as informações solicitadas, caso deseje saber mais sobre este assunto visite por favor a nossa área reservada para formadores."
+  }
+]
