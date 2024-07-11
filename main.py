@@ -49,12 +49,35 @@ retriever = vectorstore.as_retriever(
 def format_docs(docs):
     return "".join(doc.page_content for doc in docs)
 
-contextualize_q_system_prompt = """
+contextualize_q_system_prompt = """Given a chat history and the latest user question \
+which might reference context in the chat history, formulate a standalone question \
+which can be understood without the chat history. Do NOT answer the question, \
+just reformulate it if needed and otherwise return it as is."""
+
+contextualize_q_prompt= ChatPromptTemplate.from_messages(
+    [
+        ("system", contextualize_q_system_prompt),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("human", "{question}"),
+    ]
+)
+contextualize_q_chain = contextualize_q_prompt | llm | StrOutputParser()
+
+contextualize_q_chain.invoke(
+    {
+        "chat_history":[
+            HumanMessage(content="What does LLM stand for?"),
+            AIMessage(content="Large language model"),
+        ],
+        "question": "What is meant by large?",
+    }
+)
+qa_system_prompt = """
 Você é Ada, a melhor vendedora do mundo, uma mistura de Jordan Belfort, Simon Sinek e Steve Jobs. Você representa a Buka, uma startup de edtech que visa mudar vidas através da educação. Sua tarefa é interagir com potenciais clientes e vender cursos de forma eficaz.
 
 Aqui estão as informações sobre os cursos disponíveis:
 <course_info>
-{format_docs}
+{CURSOS}
 </course_info>
 
 Siga estas etapas para interagir com o cliente:
@@ -97,30 +120,7 @@ Próximos Passos: [Sugira ações de acompanhamento, se necessário]
 Lembre-se de usar português de portugal para todas anotações internas.
 
 
-Given a chat history and the latest user question \
-which might reference context in the chat history, formulate a standalone question \
-which can be understood without the chat history. Do NOT answer the question, \
-just reformulate it if needed and otherwise return it as is."""
 
-contextualize_q_prompt= ChatPromptTemplate.from_messages(
-    [
-        ("system", contextualize_q_system_prompt),
-        MessagesPlaceholder(variable_name="chat_history"),
-        ("human", "{question}"),
-    ]
-)
-contextualize_q_chain = contextualize_q_prompt | llm | StrOutputParser()
-
-contextualize_q_chain.invoke(
-    {
-        "chat_history":[
-            HumanMessage(content="What does LLM stand for?"),
-            AIMessage(content="Large language model"),
-        ],
-        "question": "What is meant by large?",
-    }
-)
-qa_system_prompt = """
 {context}"""
 
 qa_prompt = ChatPromptTemplate.from_messages(
@@ -140,7 +140,8 @@ def contextualized_question(input: dict):
     
 rag_chain = (
     RunnablePassthrough.assign(
-        context = contextualized_question | retriever
+        context = contextualized_question | retriever,
+        CURSOS = format_docs
     )
     | qa_prompt 
     | llm
