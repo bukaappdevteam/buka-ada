@@ -55,49 +55,70 @@ Duração: 08 horas
 
 
 perguntas frequentes
-[
-  {
-    "question": "Como funciona a Buka?",
-    "answer": "A Buka é uma plataforma de educação que conecta aqueles que amam ensinar com aqueles que precisam aprender. Onde formadores e instituições criam, gerem e postam os teus cursos e os estudantes podem inscrever-se nos mesmos, (uma plataforma em constante desenvolvimento com o objetivo de apresentar as melhores oportunidades de formação)."
-  },
-  {
-    "question": "Quais as vantagens de ser um estudante Buka?",
-    "answer": "Muito mais do que formações, na plataforma da Buka terás acesso a uma comunidade de estudantes fortes, eventos e cursos gratuitos, bolsas, estágios, além de aprender as habilidades alinhadas com a necessidade do mercado."
-  },
-  {
-    "question": "Todos os cursos pertencem a Buka?",
-    "answer": "Os cursos em nossa plataforma são criados por diferentes formadores aqueles que amam ensinar, podendo ser de formadores independentes, centros de formação ou outras instituições e empresas, incluindo a Buka."
-  },
-  {
-    "question": "Como posso inscrever-me em um curso?",
-    "answer": "Vá até a secção Cursos clique no cartão do curso que deseja e irá levar-lhe até a página com todas as informações desse curso, clique no botão Inscrever-se, confirme que cumpre os requisitos se o curso tiver algum, faça login ou crie a sua conta, após terminar esses passos a sua inscrição estará incompleta até completar o pagamento."
-  },
-  {
-    "question": "Quais os tipos de cursos que existem?",
-    "answer": "Quanto a área, a maioria dos cursos em nossa plataforma são relacionados a tecnologia ou a área digital em si. Quanto ao formato, pensando no fácil acesso e preferência dos estudantes, projetamos 3 formatos de cursos em nossa plataforma, cursos presenciais, cursos online gravados e os cursos online ao vivo."
-  },
-  {
-    "question": "Qual é a diferença de um curso online gravado, online ao vivo e um presencial?",
-    "answer": "Os cursos presenciais são os cursos no formato normal, realizados em um espaço físico, com início e término definidos. Os cursos Online ao Vivo são cursos realizados em tempo real com aulas transmitidas ao vivo, com uma periodicidade semelhante a dos cursos presenciais. Os cursos Online gravado são cursos com video aulas gravadas pelo formador, cujo acesso (depois de pago) é por tempo determinado."
-  },
-  {
-    "question": "Ao terminar um curso, recebo algum certificado?",
-    "answer": "Sim, no final de todos os cursos são enviados por email certificados de participação em formato digital ou impresso (dependendo do responsável pelo curso), após a avaliação ou teste final do curso."
-  },
-  {
-    "question": "Quais as formas de pagamento?",
-    "answer": "Atualmente os pagamentos são realizados por carregamento dos comprovativos de pagamento por depósito (talões de depósito, borderaux) e comprovativos de pagamentos por transferência físicos ou digitais (talão de transferência multicaixa, comprovativo de transferência multicaixa express, bai directo, etc) na plataforma, mas em breve teremos outras formas de pagamentos online integradas na plataforma."
-  },
-  {
-    "question": "Que modalidades de pagamento existem?",
-    "answer": "Existem duas modalidades de pagamento: pagamento por prestações e pagamento completo."
-  },
-  {
-    "question": "Como funcionam os pagamentos parcelados caso o curso tenha esta opção?",
-    "answer": "Antes do ínicio do curso é feito o pagamento da primeira prestação, que tal como as seguintes prestações são definidas pela entidade responsável pelo curso (instituição, formador ou Buka), não apenas o preço mas também o momento em que o pagamento deve ser feito."
-  },
-  {
-    "question": "Criando um perfil de estudante, posso mudá-lo para formador caso deseje um dia?",
-    "answer": "Sim, a conta Buka é o teu passaporte para a nossa plataforma, caso desejar no futuro desejar obter privilégios de formador fará um pedido e preencherá as informações solicitadas, caso deseje saber mais sobre este assunto visite por favor a nossa área reservada para formadores."
-  }
-]
+
+Buka: Plataforma de Educação - Perguntas e Respostas
+O que é a Buka?
+
+Pergunta: O que é a Buka?
+Resposta: A Buka é uma plataforma de educação que conecta quem ama ensinar com quem precisa aprender.
+Quais são as vantagens de ser um estudante Buka?
+
+Pergunta: Quais são as vantagens de ser um estudante Buka?
+Resposta: Na Buka, você tem acesso a:
+Cursos de alta qualidade em diversas áreas.
+Aprendizado flexível com diferentes formatos (presencial, online gravado e online ao vivo).
+Certificados digitais ou impressos após a conclusão do curso.
+Comunidade vibrante de estudantes, eventos, cursos gratuitos, bolsas e estágios.
+Integração com o mercado de trabalho através de bolsas e estágios.
+Como me inscrevo em um curso?
+
+Pergunta: Como me inscrevo em um curso?
+Resposta: Siga estes passos:
+Acesse a seção "Cursos" na plataforma.
+Selecione o curso desejado e clique no cartão.
+Leia as informações detalhadas do curso e clique em "Inscrever-se".
+Confirme os requisitos e faça login ou crie uma conta.
+Complete o pagamento e finalize a inscrição.
+Quais tipos de cursos existem na Buka?
+
+Pergunta: Quais tipos de cursos existem na Buka?
+Resposta: A Buka oferece uma variedade de cursos, incluindo:
+Presenciais: realizados em um local físico com horários definidos.
+Online ao Vivo: aulas em tempo real transmitidas pela plataforma.
+Online Gravados: videoaulas pré-gravadas com acesso por tempo determinado.
+Como funciona o pagamento dos cursos?
+
+Pergunta: Como funciona o pagamento dos cursos?
+Resposta: A Buka oferece as seguintes opções de pagamento:
+Carregamento de comprovantes de pagamento físicos ou digitais.
+Opções de pagamento por prestações ou completo.
+Novas formas de pagamento online em breve.
+Recebo algum certificado ao concluir um curso?
+
+Pergunta: Recebo algum certificado ao concluir um curso?
+Resposta: Sim, após a conclusão do curso e avaliação final, você receberá um certificado por email. O formato pode ser digital ou impresso (dependendo do curso).
+Posso mudar meu perfil de estudante para formador?
+
+Pergunta: Posso mudar meu perfil de estudante para formador?
+Resposta: Sim, sua conta Buka permite essa alteração. Acesse a área reservada para formadores para mais informações e iniciar o processo.
+Como posso entrar em contato com a Buka?
+
+Pergunta: Como posso entrar em contato com a Buka?
+Resposta: Você pode entrar em contato com a Buka através dos seguintes canais:
+YouTube
+Endereço de e-mail
+Telefone
+Redes Sociais da Buka:
+
+Pergunta: Quais são as redes sociais da Buka?
+Resposta: Siga a Buka nas redes sociais para se manter atualizado sobre novidades e eventos:
+Facebook
+Instagram
+LinkedIn
+Observações:
+
+Este é apenas um exemplo de perguntas e respostas frequentes sobre a Buka.
+Você pode adaptar e expandir as perguntas e respostas de acordo com suas necessidades.
+É importante incluir links relevantes para as páginas da plataforma Buka.
+A linguagem utilizada deve ser clara, concisa e adequada ao público-alvo.
+Espero que esta estrutura de perguntas e respostas seja útil para você!
