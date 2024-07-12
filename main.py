@@ -1,5 +1,5 @@
 import streamlit as st
-from langchain_community.vectorstores import Chroma,FAISS
+from langchain_community.vectorstores import Chroma,FAISS,Cassandra
 from langchain_groq import ChatGroq
 from langchain_community.document_loaders import WebBaseLoader,TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -44,7 +44,7 @@ vectorstore = FAISS.from_documents(
 )
 retriever = vectorstore.as_retriever(
     search_type='similarity',
-    search_kwargs={"k":6}
+    search_kwargs={"k":10}
 )
 
 contextualize_q_system_prompt = """Given a chat history and the latest user question \
