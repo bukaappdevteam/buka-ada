@@ -1,311 +1,60 @@
-{
-      "classes": [
-        {
-          "imageURL": "",
-          "public": true,
-          "level": "Intermédio",
-          "requirements": [],
-          "targetAudience": [],
-          "course": {
-            "name": "CURSO DE RECURSOS HUMANOS COM APLICAÇÃO AS NOVAS TECNOLOGIAS",
-            "slug": "digitalao-rh",
-            "level": "Básico",
-            "description": "Prepare-se para liderar a transformação no RH! Embarque nesta jornada de aprendizado e inovação, onde exploramos as novas fronteiras da gestão de pessoas. Seja parte dessa evolução e impulsione sua carreira",
-            "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Frecursos-humanas-tecnologias.jpeg?alt=media&token=d12998b8-de54-490a-b28f-ea29c060e185",
-            "requirements": [
-              "Ter um computador pessoal",
-              "Vontade de aprender"
-            ],
-            "targetAudience": [
-              "Pessoas com interesse em Recursos Humanos e gestão de pessoas",
-              "Empreendedores",
-              "Estudantes",
-              "PMEs",
-              "Empresários"
-            ]
-          },
-          "schedule": {
-            "beginDate": "1721433600000",
-            "endDate": "1723248000000",
-            "duration": "16 horas",
-            "daysOfTheWeek": "Sàbado",
-            "startTime": "08:00",
-            "endTime": "12:00"
-          },
-          "price": {
-            "value": "30000",
-            "currencyShortForm": "Kz"
-          },
-          "topics": [
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            }
-          ],
-          "location": "Presencial",
-          "geographicLocation": {
-            "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
-            "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
-        }
-        },
-        {
-          "imageURL": "",
-          "public": true,
-          "level": "Intermédio",
-          "requirements": [],
-          "targetAudience": [],
-          "course": {
-            "name": "ADMINISTRAÇÃO WINDOWS SERVER 2022",
-            "slug": "digitalao-rh-2",
-            "level": "Básico",
-            "description": "Aprenda de forma prática e eficiente como configurar, gerenciar e manter servidores Windows 2022, e eleve o seu perfil profissional.",
-            "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Fadministrac%CC%A7a%CC%83o-windows-server.jpeg?alt=media&token=0a595bac-1343-4b07-8fe4-9ec371c96a2f",
-            "requirements": [
-              "Conhecimento básico de Sistemas Operacionais de Windows",
-              "Familiaridade com conceitos básicos de rede"
-            ],
-            "targetAudience": [
-              "Profissionais de TI buscando especialização em servidores Windows.",
-              "Estudantes de TI procurando conhecimento em Windows Server 2022.",
-              "Administradores de sistemas que desejam aprimorar suas habilidades.",
-              "Técnicos de suporte interessados em se tornarem especialistas.",
-              "Iniciantes em administração de servidores Windows.",
-              "Especialistas em TI buscando atualização para Windows Server 2022.",
-              "Profissionais de infraestrutura de rede interessados no tema.",
-              "Analistas de sistemas que buscam compreender o Windows Server 2022.",
-              "Engenheiros de sistemas procurando aprofundar conhecimentos.",
-              "Gestores de TI que desejam entender melhor a tecnologia."
-            ]
-          },
-          "schedule": {
-            "beginDate": "1722211200000",
-            "endDate": "1722556800000",
-            "duration": "16 horas",
-            "daysOfTheWeek": "Sàbado",
-            "startTime": "09:00",
-            "endTime": "13:00"
-          },
-          "price": {
-            "value": "30000",
-            "currencyShortForm": "Kz"
-          },
-          "topics": [
-            {
-              "name": null,
-              "description": null
-            }
-          ],
-          "location": "Presencial",
-          "geographicLocation": {
-            "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
-            "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
-        }
-        },
-        {
-          "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FSeguran%C3%A7a%20no%20local%20de%20trabalho.png?alt=media&token=aefca646-b58d-4477-9de9-7d357aa4ca89",
-          "public": true,
-          "level": "Avançado",
-          "requirements": [
-            "",
-            "",
-            "Habilitações literárias mínima 8a classe",
-            "Ter no mínimo a 8ª Classe concluída",
-            "Habilitações literárias mínima 8ª classe"
-          ],
-          "targetAudience": [],
-          "course": {
-            "name": "HIGIENE E SEGURANÇA NO TRABALHO",
-            "slug": "digitalao-hst",
-            "level": "Avançado",
-            "description": "Invista no seu futuro profissional com conhecimentos sólidos em segurança no trabalho. Descubra como proteger a si mesmo e aos outros no ambiente de trabalho com este curso dinâmico e prático. Desde a análise de riscos até a gestão de trabalho seguro, você estará pronto para enfrentar qualquer desafio com confiança.",
-            "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Fdigital_ao_logo.jpeg?alt=media&token=b90cb5dc-c986-4dae-9e4c-a9bf309046fe",
-            "requirements": [
-              "",
-              "",
-              "Habilitações literárias mínima 8a classe",
-              "Ter no mínimo a 8ª Classe concluída",
-              "Habilitações literárias mínima 8ª classe"
-            ],
-            "targetAudience": [
-              "Trabalhadores de diversos setores industriais, comerciais e de serviços.",
-              "Gestores de segurança e saúde ocupacional.",
-              "Estudantes interessados em segurança no trabalho.",
-              "Profissionais que desejam aprimorar seus conhecimentos.",
-              "Indivíduos buscando oportunidades de emprego.",
-              "Pessoas preocupadas com a segurança no ambiente laboral.",
-              "Empresas que valorizam a segurança de seus colaboradores.",
-              "Equipes de recursos humanos e treinamento.",
-              "Profissionais de saúde e segurança do trabalho.",
-              "Organizações comprometidas com o bem-estar de seus funcionários."
-            ]
-          },
-          "schedule": {
-            "beginDate": "1724630400000",
-            "endDate": "1725580800000",
-            "duration": "40 horas",
-            "daysOfTheWeek": "Segunda à Sexta-feira",
-            "startTime": "08:00",
-            "endTime": "12:00"
-          },
-          "price": {
-            "value": "295000",
-            "currencyShortForm": "Kz"
-          },
-          "topics": [
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            }
-          ],
-          "location": "Presencial",
-          "geographicLocation": {
-            "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
-            "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
-        }
-        },
-        {
-          "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FCurso%20BI.png?alt=media&token=6ebbd418-bc03-483e-8d85-b937cbee1b6a",
-          "public": true,
-          "level": "Avançado",
-          "requirements": [
-            "",
-            "Habilitações literárias mínima 8a classe",
-            "Habilitações literárias mínima 8ª classe"
-          ],
-          "targetAudience": [],
-          "course": {
-            "name": "CURSO DE POWER BI (BUSINESS INTELLIGENCE)",
-            "slug": "digitalao-bi",
-            "level": "Avançado",
-            "description": "Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.",
-            "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Fdigital_ao_logo.jpeg?alt=media&token=b90cb5dc-c986-4dae-9e4c-a9bf309046fe",
-            "requirements": [
-              "",
-              "Habilitações literárias mínima 8a classe",
-              "Habilitações literárias mínima 8ª classe"
-            ],
-            "targetAudience": [
-              "Empreendedores",
-              "Estudantes",
-              "PMEs",
-              "Empresários"
-            ]
-          },
-          "schedule": {
-            "beginDate": "1722643200000",
-            "endDate": "1723248000000",
-            "duration": "08 horas",
-            "daysOfTheWeek": "Sàbado",
-            "startTime": "09:00",
-            "endTime": "13:00"
-          },
-          "price": {
-            "value": "60000",
-            "currencyShortForm": "Kz"
-          },
-          "topics": [
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            },
-            {
-              "name": null,
-              "description": null
-            }
-          ],
-          "location": "Presencial",
-          "geographicLocation": {
-            "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
-            "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
-        }
-        },
-        {
-          "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8",
-          "public": true,
-          "level": "Avançado",
-          "requirements": [
-            "",
-            "Habilitações literárias mínima 8a classe",
-            "Habilitações literárias mínima 8ª classe"
-          ],
-          "targetAudience": [],
-          "course": {
-            "name": "CURSO BASE DE DADOS RELACIONAL COM MYSQL",
-            "slug": "digitalao-bi ",
-            "level": "Avançado",
-            "description": "Desvende os segredos das bases de dados relacionais e alcance a excelência em MySQL. Torne-se um expert na criação de consultas complexas e eficientes.",
-            "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Fdigital_ao_logo.jpeg?alt=media&token=b90cb5dc-c986-4dae-9e4c-a9bf309046fe",
-            "requirements": [
-              "",
-              "Habilitações literárias mínima 8a classe",
-              "Habilitações literárias mínima 8ª classe"
-            ],
-            "targetAudience": [
-              "Empreendedores",
-              "Estudantes",
-              "Programadores",
-              "Profissionais de TI no Geral"
-            ]
-          },
-          "schedule": {
-            "beginDate": "1723852800000",
-            "endDate": "1724457600000",
-            "duration": "08 horas",
-            "daysOfTheWeek": "Sàbado",
-            "startTime": "08:00",
-            "endTime": "12:00"
-          },
-          "price": {
-            "value": "60000",
-            "currencyShortForm": "Kz"
-          },
-          "topics": [],
-          "location": "Presencial",
-          "geographicLocation": {
-            "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
-            "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
-        }
-        }
-      ]
-    }
+Aqui estão as informações sobre os cursos disponíveis:
 
-    perguntas frequentes
+CURSO DE RECURSOS HUMANOS COM APLICAÇÃO AS NOVAS TECNOLOGIAS
+Descrição: Prepare-se para liderar a transformação no RH! Embarque nesta jornada de aprendizado e inovação, onde exploramos as novas fronteiras da gestão de pessoas. Seja parte dessa evolução e impulsione sua carreira.
+MiniDescrição: Aprenda e inove no mundo do RH!
+Localização: Presencial
+Preço: 30000 Kz
+Duração: 16 horas
+
+WINDOWS SERVER 2022
+Descrição: Aprenda de forma prática e eficiente como configurar, gerenciar e manter servidores Windows 2022, e eleve o seu perfil profissional.
+MiniDescrição: Domine a administração de servidores Windows 2022
+Localização: Presencial
+Preço: 30000 Kz
+Duração: 16 horas
+
+EMPREENDEDORISMO E INOVAÇÃO TECNOLÓGICA
+Descrição: Este curso oferece uma imersão no mundo do empreendedorismo digital e da inovação tecnológica. Aprenda com especialistas do setor, adquira novas habilidades e descubra como impulsionar o seu negócio na era digital.
+MiniDescrição: Impulsione o seu negócio
+Localização: Presencial
+Preço: 30000 Kz
+Duração: 5 Semanas
+
+HIGIENE E SEGURANÇA NO TRABALHO
+Descrição: Invista no seu futuro profissional com conhecimentos sólidos em segurança no trabalho. Descubra como proteger a si mesmo e aos outros no ambiente de trabalho com este curso dinâmico e prático. Desde a análise de riscos até a gestão de trabalho seguro, você estará pronto para enfrentar qualquer desafio com confiança.
+MiniDescrição: Domine a hig. e seg. no trabalho
+Localização: Presencial
+Preço: 60000 Kz
+Requisitos:
+Habilitações literárias mínima 8ª classe
+Ter no mínimo a 8ª Classe concluída
+Duração: 40 horas
+
+CURSO DE POWER BI (BUSINESS INTELLIGENCE)
+Descrição: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.
+MiniDescrição: Transforme dados em estratégias
+Localização: Presencial
+Preço: 60000 Kz
+Duração: 08 horas
+
+ANÁLISE DE INVESTIMENTO DE PROJECTOS COM O RECURSO AS IT
+Descrição: Seja o arquiteto do seu sucesso financeiro. Domine a arte da análise financeira e economia de investimentos. Aprenda a estruturar projetos sólidos e a preparar planos de negócios vencedores.
+MiniDescrição: Arquitete seu futuro financeiro
+Localização: Presencial
+Preço: 60000 Kz
+Duração: 32 horas
+
+CURSO BASE DE DADOS RELACIONAL COM MYSQL
+Descrição: Desvende os segredos das bases de dados relacionais e alcance a excelência em MySQL. Torne-se um expert na criação de consultas complexas e eficientes.
+MiniDescrição: Desvende os segredos do MySQL!
+Localização: Presencial
+Preço: 60000 Kz
+Duração: 08 horas
+
+
+
+perguntas frequentes
 
 Buka: Plataforma de Educação - Perguntas e Respostas
 O que é a Buka?

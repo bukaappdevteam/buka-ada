@@ -116,7 +116,9 @@ Provide your response as Ada, starting with your initial presentation of the cou
 Remember to think through your approach before responding, considering the customer's query, the available course information, and the best way to present the information persuasively. You may use <scratchpad> tags to organize your thoughts before crafting your response.
 
 
-{context}"""
+{context}
+
+"""
 
 qa_prompt = ChatPromptTemplate.from_messages(
     [
