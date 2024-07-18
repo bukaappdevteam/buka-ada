@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-llm = ChatGroq(temperature=0, model_name="gemma2-9b-it")
+llm = ChatGroq(temperature=0, model="gemma2-9b-it")
 #claude-3-haiku-20240307
 #claude-3-5-sonnet-20240620
 #llm = ChatAnthropic(
