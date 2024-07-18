@@ -14,8 +14,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 #llm = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768")
+#claude-3-haiku-20240307
+#claude-3-5-sonnet-20240620
 llm = ChatAnthropic(
-    model="claude-3-5-sonnet-20240620",
+    model="claude-3-haiku-20240307",
     #model="claude-3-haiku-20240307",
     temperature=0,
     #max_tokens=1024,
