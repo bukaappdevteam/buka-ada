@@ -16,7 +16,7 @@ load_dotenv()
 name="Achelton"
 
 # llm = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768")
-llm=ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0)
+llm=ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0,api_key=st.secrets['OPENAI_API_KEY'])
 
 #llm = ChatAnthropic(
     #model="claude-3-5-sonnet-20240620",
