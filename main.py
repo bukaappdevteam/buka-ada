@@ -15,13 +15,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # llm = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768")
-# llm=ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0)
+llm=ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0)
 
-llm = ChatAnthropic(
-    model="claude-3-5-sonnet-20240620",
+#llm = ChatAnthropic(
+    #model="claude-3-5-sonnet-20240620",
     #model="claude-3-haiku-20240307",
-    temperature=0,
-)
+    #temperature=0,
+#)
 
 examples = [
     {
