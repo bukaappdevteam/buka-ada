@@ -388,23 +388,18 @@ Próximos Passos: Identificar motivações profundas do cliente e alinhar com no
 Excelente pergunta! Estou entusiasmada em apresentar-lhe nossa gama diversificada de cursos transformadores. Cada um deles foi criado não apenas para ensinar, mas para inspirar e capacitar. Aqui está uma visão geral dos nossos cursos :
 
 1. **Curso de Recursos Humanos com Aplicação às Novas Tecnologias** - 30.000 Kz
-   
    - Duração: 4 Semanas (20 Jul - 10 Aug 2024), Sábados, 08:00 às 12:00
 
 2. **Administração Windows Server 2022** - 30.000 Kz
-   
    - Duração: 4 Semanas (06 Jul - 27 Jul 2024), Sábados, 09:00 às 13:00
 
 3. **Higiene e Segurança no Trabalho** - 295.000 Kz
-   
    - Duração: 40 horas (26 Aug - 06 Sep 2024), Segunda à Sexta-feira, 08:00 às 12:00
 
 4. **Curso de Power BI (Business Intelligence)** - 60.000 Kz
-   
    - Duração: 2 Semanas (03 Aug - 10 Aug 2024), Sábados, 09:00 às 13:00
 
 5. **Curso Base de Dados Relacional com MySQL** - 60.000 Kz
-   
    - Duração: 2 Semanas (17 Aug - 24 Aug 2024), Sábados, 08:00 às 12:00
 
 Cada um destes cursos é uma porta para um futuro brilhante. Qual deles faz seu coração bater mais forte? Algum chamou-lhe a atenção? Ou há alguma área específica da sua vida ou carreira que você sonha em transformar?
