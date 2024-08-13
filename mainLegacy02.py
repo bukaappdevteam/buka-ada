@@ -1,6 +1,6 @@
 import streamlit as st
 from langchain_openai import ChatOpenAI
-from langchain_core.tools import tool
+from langchain.tools import tool, Tool
 from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
@@ -10,7 +10,6 @@ from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain_groq import ChatGroq
 from langchain.callbacks import StreamlitCallbackHandler
 from dotenv import load_dotenv
 import requests
@@ -20,8 +19,10 @@ import os
 load_dotenv()
 
 # Initialize the language model
-llm=ChatGroq(model='llama3-8b-8192',temperature=0)
-#llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0,api_key=st.secrets["OPENAI_API_KEY"])
+llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",
+                 temperature=0,
+                 api_key=st.secrets["OPENAI_API_KEY"])
+
 
 @tool
 def get_courses() -> str:
@@ -32,14 +33,9 @@ def get_courses() -> str:
   else:
     return f"Error fetching courses: {response.status_code} - {response.text}"
 
-@tool
-def inscricao():
-  """ Inscrever estudantes"""
-  
-  return "inscrito com sucesso"
 
 # List of tools (now containing the tool object, not the function)
-tools = [get_courses,inscricao]
+tools = [get_courses]
 
 # Construct retriever
 loader = TextLoader("./rag.txt", encoding="UTF-8")
@@ -58,7 +54,312 @@ qa_system_prompt = """You are Ada, an exceptional AI sales representative for Bu
 
 When responding to user queries, you may need to fetch available courses using the `get_courses` tool. Here is an example of the expected response from the tool:
 
-
+{{
+  "classes": [
+    {{
+      "imageURL": "",
+      "public": true,
+      "level": "Intermédio",
+      "requirements": [],
+      "targetAudience": [],
+      "course": {{
+        "name": "CURSO DE RECURSOS HUMANOS COM APLICAÇÃO AS NOVAS TECNOLOGIAS",
+        "slug": "digitalao-rh",
+        "level": "Básico",
+        "description": "Prepare-se para liderar a transformação no RH! Embarque nesta jornada de aprendizado e inovação, onde exploramos as novas fronteiras da gestão de pessoas. Seja parte dessa evolução e impulsione sua carreira",
+        "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Frecursos-humanas-tecnologias.jpeg?alt=media&token=d12998b8-de54-490a-b28f-ea29c060e185",
+        "requirements": [
+          "Ter um computador pessoal",
+          "Vontade de aprender"
+        ],
+        "targetAudience": [
+          "Pessoas com interesse em Recursos Humanos e gestão de pessoas",
+          "Empreendedores",
+          "Estudantes",
+          "PMEs",
+          "Empresários"
+        ]
+      }},
+      "schedule": {{
+        "beginDate": "20 Jul 2024",
+        "endDate": "10 Aug 2024",
+        "duration": "4 Semanas",
+        "daysOfTheWeek": "Sàbado",
+        "startTime": "08:00",
+        "endTime": "12:00"
+      }},
+      "price": {{
+        "value": "30000",
+        "currencyShortForm": "Kz"
+      }},
+      "topics": [
+        {{
+          "name": "Módulo 1 - Processo de Recrutamento e Selecção ",
+          "description": ""
+        }},
+        {{
+          "name": "Módulo 2 - Técnicas de Avaliação de Desempenho e Gestão de Carreira",
+          "description": ""
+        }},
+        {{
+          "name": "Módulo 3 - Processamento de Salários e Qualificações de Funções",
+          "description": ""
+        }}
+      ],
+      "location": "Presencial",
+      "geographicLocation": {{
+        "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
+        "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
+    }}
+    }},
+    {{
+      "imageURL": "",
+      "public": true,
+      "level": "Intermédio",
+      "requirements": [],
+      "targetAudience": [],
+      "course": {{
+        "name": "ADMINISTRAÇÃO WINDOWS SERVER 2022",
+        "slug": "digitalao-rh-2",
+        "level": "Básico",
+        "description": "Aprenda de forma prática e eficiente como configurar, gerenciar e manter servidores Windows 2022, e eleve o seu perfil profissional.",
+        "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Fadministrac%CC%A7a%CC%83o-windows-server.jpeg?alt=media&token=0a595bac-1343-4b07-8fe4-9ec371c96a2f",
+        "requirements": [
+          "Conhecimento básico de Sistemas Operacionais de Windows",
+          "Familiaridade com conceitos básicos de rede"
+        ],
+        "targetAudience": [
+          "Profissionais de TI buscando especialização em servidores Windows.",
+          "Estudantes de TI procurando conhecimento em Windows Server 2022.",
+          "Administradores de sistemas que desejam aprimorar suas habilidades.",
+          "Técnicos de suporte interessados em se tornarem especialistas.",
+          "Iniciantes em administração de servidores Windows.",
+          "Especialistas em TI buscando atualização para Windows Server 2022.",
+          "Profissionais de infraestrutura de rede interessados no tema.",
+          "Analistas de sistemas que buscam compreender o Windows Server 2022.",
+          "Engenheiros de sistemas procurando aprofundar conhecimentos.",
+          "Gestores de TI que desejam entender melhor a tecnologia."
+        ]
+      }},
+      "schedule": {{
+        "beginDate": "06 Jul 2024",
+        "endDate": "27 Julho 2024",
+        "duration": "4 Semanas",
+        "daysOfTheWeek": "Sàbado",
+        "startTime": "09:00",
+        "endTime": "13:00"
+      }},
+      "price": {{
+        "value": "30000",
+        "currencyShortForm": "Kz"
+      }},
+      "topics": [
+        {{
+          "name": "Módulo – Administração Windows Server 2022 ",
+          "description": "Etapa I – Introdução ao Windows Server 2022 |Etapa II – Serviços de Rede e Armazenamento |Etapa III – Segurança e Backup "
+        }}
+      ],
+      "location": "Presencial",
+      "geographicLocation": {{
+        "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
+        "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
+    }}
+    }},
+    {{
+      "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FSeguran%C3%A7a%20no%20local%20de%20trabalho.png?alt=media&token=aefca646-b58d-4477-9de9-7d357aa4ca89",
+      "public": true,
+      "level": "Avançado",
+      "requirements": [
+        "",
+        "",
+        "Habilitações literárias mínima 8a classe",
+        "Ter no mínimo a 8ª Classe concluída",
+        "Habilitações literárias mínima 8ª classe"
+      ],
+      "targetAudience": [],
+      "course": {{
+        "name": "HIGIENE E SEGURANÇA NO TRABALHO",
+        "slug": "digitalao-hst",
+        "level": "Avançado",
+        "description": "Invista no seu futuro profissional com conhecimentos sólidos em segurança no trabalho. Descubra como proteger a si mesmo e aos outros no ambiente de trabalho com este curso dinâmico e prático. Desde a análise de riscos até a gestão de trabalho seguro, você estará pronto para enfrentar qualquer desafio com confiança.",
+        "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Fdigital_ao_logo.jpeg?alt=media&token=b90cb5dc-c986-4dae-9e4c-a9bf309046fe",
+        "requirements": [
+          "",
+          "",
+          "Habilitações literárias mínima 8a classe",
+          "Ter no mínimo a 8ª Classe concluída",
+          "Habilitações literárias mínima 8ª classe"
+        ],
+        "targetAudience": [
+          "Trabalhadores de diversos setores industriais, comerciais e de serviços.",
+          "Gestores de segurança e saúde ocupacional.",
+          "Estudantes interessados em segurança no trabalho.",
+          "Profissionais que desejam aprimorar seus conhecimentos.",
+          "Indivíduos buscando oportunidades de emprego.",
+          "Pessoas preocupadas com a segurança no ambiente laboral.",
+          "Empresas que valorizam a segurança de seus colaboradores.",
+          "Equipes de recursos humanos e treinamento.",
+          "Profissionais de saúde e segurança do trabalho.",
+          "Organizações comprometidas com o bem-estar de seus funcionários."
+        ]
+      }},
+      "schedule": {{
+        "beginDate": "26 Aug 2024",
+        "endDate": "06 Sep 2024",
+        "duration": "40 horas",
+        "daysOfTheWeek": "Segunda à Sexta-feira",
+        "startTime": "08:00",
+        "endTime": "12:00"
+      }},
+      "price": {{
+        "value": "295000",
+        "currencyShortForm": "Kz"
+      }},
+      "topics": [
+        {{
+          "name": "Analise de Risco de Trabalho ",
+          "description": ""
+        }},
+        {{
+          "name": "Espaços Confinados",
+          "description": ""
+        }},
+        {{
+          "name": "Combate a Incêndio",
+          "description": ""
+        }},
+        {{
+          "name": "Isolamento de Energias Perigosas ",
+          "description": ""
+        }},
+        {{
+          "name": "Gestão de Trabalho Seguro MSW ",
+          "description": ""
+        }}
+      ],
+      "location": "Presencial",
+      "geographicLocation": {{
+        "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
+        "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
+    }}
+    }},
+    {{
+      "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FCurso%20BI.png?alt=media&token=6ebbd418-bc03-483e-8d85-b937cbee1b6a",
+      "public": true,
+      "level": "Avançado",
+      "requirements": [
+        "",
+        "Habilitações literárias mínima 8a classe",
+        "Habilitações literárias mínima 8ª classe"
+      ],
+      "targetAudience": [],
+      "course": {{
+        "name": "CURSO DE POWER BI (BUSINESS INTELLIGENCE)",
+        "slug": "digitalao-bi",
+        "level": "Avançado",
+        "description": "Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.",
+        "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Fdigital_ao_logo.jpeg?alt=media&token=b90cb5dc-c986-4dae-9e4c-a9bf309046fe",
+        "requirements": [
+          "",
+          "Habilitações literárias mínima 8a classe",
+          "Habilitações literárias mínima 8ª classe"
+        ],
+        "targetAudience": [
+          "Empreendedores",
+          "Estudantes",
+          "PMEs",
+          "Empresários"
+        ]
+      }},
+      "schedule": {{
+        "beginDate": "03 Aug 2024",
+        "endDate": "10 Aug 2024",
+        "duration": "2 Semanas",
+        "daysOfTheWeek": "Sàbado",
+        "startTime": "09:00",
+        "endTime": "13:00"
+      }},
+      "price": {{
+        "value": "60000",
+        "currencyShortForm": "Kz"
+      }},
+      "topics": [
+        {{
+          "name": "Fundamentos de Power BI e Configuração Inicial: Nível Básico",
+          "description": ""
+        }},
+        {{
+          "name": "Módulo 2 - Visualizações e Publicação: Nível Intermediário",
+          "description": ""
+        }},
+        {{
+          "name": "Módulo 3 - Aprofundando a Modelagem de Dados: Nível Intermédio/Avançado",
+          "description": ""
+        }},
+        {{
+          "name": "Módulo 4 - Design Avançado de Visualizações Nível: Avançado",
+          "description": ""
+        }},
+        {{
+          "name": "Módulo 5 - Publicação e Colaboração com Power BI Service: Nível Avançado",
+          "description": ""
+        }}
+      ],
+      "location": "Presencial",
+      "geographicLocation": {{
+        "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
+        "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
+    }}
+    }},
+    {{
+      "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8",
+      "public": true,
+      "level": "Avançado",
+      "requirements": [
+        "",
+        "Habilitações literárias mínima 8a classe",
+        "Habilitações literárias mínima 8ª classe"
+      ],
+      "targetAudience": [],
+      "course": {{
+        "name": "CURSO BASE DE DADOS RELACIONAL COM MYSQL",
+        "slug": "digitalao-bi ",
+        "level": "Avançado",
+        "description": "Desvende os segredos das bases de dados relacionais e alcance a excelência em MySQL. Torne-se um expert na criação de consultas complexas e eficientes.",
+        "imageURL": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Fdigital_ao_logo.jpeg?alt=media&token=b90cb5dc-c986-4dae-9e4c-a9bf309046fe",
+        "requirements": [
+          "",
+          "Habilitações literárias mínima 8a classe",
+          "Habilitações literárias mínima 8ª classe"
+        ],
+        "targetAudience": [
+          "Empreendedores",
+          "Estudantes",
+          "Programadores",
+          "Profissionais de TI no Geral"
+        ]
+      }},
+      "schedule": {{
+        "beginDate": "17 Aug 2024",
+        "endDate": "24 Aug 2024",
+        "duration": "2 Semanas",
+        "daysOfTheWeek": "Sàbado",
+        "startTime": "08:00",
+        "endTime": "12:00"
+      }},
+      "price": {{
+        "value": "60000",
+        "currencyShortForm": "Kz"
+      }},
+      "topics": [],
+      "location": "Presencial",
+      "geographicLocation": {{
+        "address": "Digital.AO, Bairro CTT, Rangel, Luanda, Angola",
+        "googleMapsLink": "https://g.co/kgs/2Mm7DhY"
+    }}
+    }}
+  ]
+}}
 
 
 Use this information to provide accurate and helpful responses to the user.
