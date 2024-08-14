@@ -34,7 +34,7 @@ def get_courses() -> str:
 
 
   
-  return "inscrito com sucesso"
+
 
 # List of tools (now containing the tool object, not the function)
 tools = [get_courses]
