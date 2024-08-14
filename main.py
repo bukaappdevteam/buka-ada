@@ -32,14 +32,12 @@ def get_courses() -> str:
   else:
     return f"Error fetching courses: {response.status_code} - {response.text}"
 
-@tool
-def inscricao():
-  """ Inscrever estudantes"""
+
   
   return "inscrito com sucesso"
 
 # List of tools (now containing the tool object, not the function)
-tools = [get_courses,inscricao]
+tools = [get_courses]
 
 # Construct retriever
 loader = TextLoader("./rag.txt", encoding="UTF-8")
