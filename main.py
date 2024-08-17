@@ -20,8 +20,8 @@ import os
 load_dotenv()
 
 # Initialize the language model
-llm=ChatGroq(model='llama3-8b-8192',temperature=0)
-#llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0,api_key=st.secrets["OPENAI_API_KEY"])
+#llm=ChatGroq(model='llama3-8b-8192',temperature=0)
+llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0,api_key=st.secrets["OPENAI_API_KEY"])
 
 @tool
 def get_courses() -> str:
