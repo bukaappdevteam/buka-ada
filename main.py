@@ -12,6 +12,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from langchain.callbacks import StreamlitCallbackHandler
+from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 import requests
 import os
@@ -20,9 +21,9 @@ import os
 load_dotenv()
 
 # Initialize the language model
-llm=ChatGroq(model='llama3-8b-8192',temperature=0)
+llm=ChatGroq(model='llama-3.1-8b-instant',temperature=0)
 #llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0,api_key=st.secrets["OPENAI_API_KEY"])
-
+#llm = ChatAnthropic(model="claude-3-haiku-20240307",temperature=0)
 @tool
 def get_courses() -> str:
   """Get available courses from the API."""
