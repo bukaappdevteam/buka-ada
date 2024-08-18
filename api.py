@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
@@ -304,13 +303,18 @@ def char(user: User):
     # Prepare the input for the agent
     agent_input = {
         "input": user.prompt,
-        "chat_history":chat_history,
+        "chat_history": chat_history,
         "context": context,
     }
     response = agent_executor.invoke(agent_input, callbacks=[])
+    
     # Append the user query and AI response to the chat history
     chat_history.append(HumanMessage(content=user.prompt))
     chat_history.append(AIMessage(content=response["output"]))
-    """ for message in chat_history:
-        return message.content """
-    return response["output"]
+
+    # Return a JSON response
+    return {
+        "input": user.prompt,
+        "response": response["output"],
+        "chat_history": [message.content for message in chat_history]
+    }
