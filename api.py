@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
