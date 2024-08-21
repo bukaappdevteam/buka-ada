@@ -239,7 +239,7 @@ Your responses should be structured as JSON containing:
 
 #### Example Response:
 
-{response_examples_json}
+{{response_examples_json}}
 
 Follow these steps to interact with the customer:
 
