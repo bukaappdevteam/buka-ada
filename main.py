@@ -55,7 +55,6 @@ response_examples = [
       "channel": "Messenger",
       "prompt": "Olá"
     },
-    {
     "output": {
       "channel": "Messenger",
       "messages": [
