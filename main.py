@@ -267,7 +267,7 @@ Your responses should be structured as JSON containing:
 
 #### Example Response:
 
-{response_examples_json}
+
 
 Follow these steps to interact with the customer:
 
@@ -340,7 +340,7 @@ if user_query is not None and user_query != "":
       "input": user_query,
       "chat_history": st.session_state.chat_history,
       "context": context,
-      "response_examples_json": response_examples_json
+      #"response_examples_json": response_examples_json
   }
 
   # Use StreamlitCallbackHandler to display intermediate steps
