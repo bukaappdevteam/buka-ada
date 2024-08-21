@@ -32,7 +32,7 @@ def get_courses() -> str:
     return response.json()
   else:
     return f"Error fetching courses: {response.status_code} - {response.text}"
-
+   
 
   
 
