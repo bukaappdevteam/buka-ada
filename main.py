@@ -74,7 +74,7 @@ response_examples = [
      "internal_notes": "Estágio do Funil de Vendas: Consciencialização. Insights Importantes do Cliente: Ainda não há informações específicas. Próximos Passos: Identificar motivações profundas do cliente e alinhar com nossas ofertas."
     }
   },
-    {
+  {
     "input": {
       "channel": "Messenger",
       "prompt": "Quais são todos os cursos disponíveis?"
