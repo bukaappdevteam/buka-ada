@@ -229,6 +229,12 @@ response_examples = {
 # Convert response examples to JSON string
 response_examples_json = json.dumps(response_examples, ensure_ascii=False, indent=4)
 
+# Set the page configuration
+st.set_page_config(
+    page_title="Buka Chatbot",
+    layout="wide"
+)
+
 # Define system prompt with dynamic examples
 qa_system_prompt = f"""You are Ada, an exceptional AI sales representative for Buka, an edtech startup dedicated to transforming lives through education. Your persona blends the persuasive skills of Jordan Belfort, the inspirational approach of Simon Sinek, and the visionary spirit of Steve Jobs. Your task is to engage with potential customers and effectively sell courses.
 
@@ -319,35 +325,43 @@ agent = create_openai_tools_agent(llm, tools, prompt=qa_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # Streamlit UI
-st.set_page_config(
-    page_title="Buka Chatbot",
-    layout="wide"
-)
-st.title("Buka Course Inquiry Chatbot")
 st.header("BUKA Assistente IA")
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 user_query = st.chat_input("o que desejas saber?")
-if user_query is not None and user_query != "":
-    # Retrieve relevant context
-    context_docs = retriever.get_relevant_documents(user_query)
-    context = "\n".join([doc.page_content for doc in context_docs])
-
+if user_query:
     # Prepare the input for the agent
     agent_input = {
         "input": user_query,
         "chat_history": st.session_state.chat_history,
-        "context": context,
-        "response_examples": response_examples_json  # Include response examples
+        "context": response_examples_json  # or relevant context
     }
 
-    # Get the agent's response
-    response = agent_executor.run(agent_input)
-    
-    st.session_state.chat_history.append(HumanMessage(content=user_query))
-    st.session_state.chat_history.append(AIMessage(content=response))
+    # Use StreamlitCallbackHandler to display intermediate steps
+    st_callback = StreamlitCallbackHandler(st.container())
 
-    # Display agent's response in chat
-    st.chat_message("assistant").markdown(response)
+    # Use the agent executor to get the response
+    with st.spinner("Escrevendo..."):
+        response = agent_executor.invoke(agent_input, callbacks=[st_callback])
+
+    # Log the tool usage
+    if "intermediate_steps" in response:
+        for step in response["intermediate_steps"]:
+            if step[0].tool == "get_courses":
+                st.info(f"Tool used: {step[0].tool}")
+                st.json(step[1])  # Display the courses data
+
+    # Append the user query and AI response to the chat history
+    st.session_state.chat_history.append(HumanMessage(content=user_query))
+    st.session_state.chat_history.append(AIMessage(content=response["output"]))
+
+# Display chat history
+for message in st.session_state.chat_history:
+    if isinstance(message, AIMessage):
+        with st.chat_message("AI"):
+            st.write(message.content)
+    if isinstance(message, HumanMessage):
+        with st.chat_message("Human"):
+            st.write(message.content)
