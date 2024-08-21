@@ -336,7 +336,7 @@ if user_query:
     agent_input = {
         "input": user_query,
         "chat_history": st.session_state.chat_history,
-        "context": response_examples_json  # or relevant context
+        "context": context
     }
 
     # Use StreamlitCallbackHandler to display intermediate steps
