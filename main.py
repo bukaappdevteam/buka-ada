@@ -50,7 +50,7 @@ retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k
 
 # Define response examples as a dictionary
 response_examples = [
-    {
+  {
     "input": {
       "channel": "Messenger",
       "prompt": "Olá"
@@ -72,7 +72,8 @@ response_examples = [
         }
      ],
      "internal_notes": "Estágio do Funil de Vendas: Consciencialização. Insights Importantes do Cliente: Ainda não há informações específicas. Próximos Passos: Identificar motivações profundas do cliente e alinhar com nossas ofertas."
-    },
+    }
+  },
     {
     "input": {
       "channel": "Messenger",
