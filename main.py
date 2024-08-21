@@ -319,7 +319,11 @@ agent = create_openai_tools_agent(llm, tools, prompt=qa_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # Streamlit UI
-st.set_page_config(page_title="Buka Chatbot")
+st.set_page_config(
+    page_title="Buka Chatbot",
+    layout="wide"
+)
+st.title("Buka Course Inquiry Chatbot")
 st.header("BUKA Assistente IA")
 
 if "chat_history" not in st.session_state:
