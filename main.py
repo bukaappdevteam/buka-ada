@@ -50,7 +50,31 @@ retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k
 
 # Define response examples as a dictionary
 response_examples = [
-  {
+    {
+    "input": {
+      "channel": "Messenger",
+      "prompt": "Olá"
+    },
+    {
+    "output": {
+      "channel": "Messenger",
+      "messages": [
+        {
+          "type": "text",
+          "content": "Olá! Bem-vindo à Buka, onde não apenas ensinamos, mas mudamos vidas por meio da educação da educação. Sou a Ada, assistente IA virtual da Buka, e sua guia pessoal nesta jornada emocionante de descoberta e crescimento. Estou aqui para ajudá-lo(a) a encontrar o curso perfeito que não só impulsionará sua carreira e/ou futuro, mas também realizará seus objetivos mais profundos."
+        },
+        {
+          "type": "text",
+          "content": "Temos uma variedade incrível de cursos disponíveis. E cada curso foi cuidadosamente projetado para oferecer não apenas conhecimentos, mas verdadeiras ferramentas de mudança de vida."
+        },
+        {
+          "type": "text",
+          "content": "Estou curiosa: o que o(a) traz à Buka hoje? Está em busca de uma transformação profissional específica ou está aberto a explorar novas possibilidades?"
+        }
+     ],
+     "internal_notes": "Estágio do Funil de Vendas: Consciencialização. Insights Importantes do Cliente: Ainda não há informações específicas. Próximos Passos: Identificar motivações profundas do cliente e alinhar com nossas ofertas."
+    },
+    {
     "input": {
       "channel": "Messenger",
       "prompt": "Quais são todos os cursos disponíveis?"
