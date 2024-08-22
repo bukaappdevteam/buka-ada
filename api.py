@@ -363,7 +363,7 @@ async def chat_endpoint(request: ChatRequest):
     internal_chat_history[subscriber_id].append(AIMessage(content=response["output"]))
    
     return ChatResponse(version="v2", content={
-        "messages": response_json["messages"],
+        "messages": response_json,
         "actions": [],
         "quick_replies": []
     })
