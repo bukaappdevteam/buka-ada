@@ -16,25 +16,26 @@ from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 import requests
 import os
+import json
 
 # Load environment variables
 load_dotenv()
 
 # Initialize the language model
-# llm=ChatGroq(model='llama3-8b-8192',temperature=0)
-llm = ChatOpenAI(
-    model="gpt-4o-mini-2024-07-18", temperature=0, api_key=st.secrets["OPENAI_API_KEY"]
-)
-
+#llm=ChatGroq(model='llama3-8b-8192',temperature=0)
+llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0,api_key=st.secrets["OPENAI_API_KEY"])
 
 @tool
 def get_courses() -> str:
-    """Get available courses from the API."""
-    response = requests.get("https://backend-produc.herokuapp.com/api/v1/cursos")
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return f"Error fetching courses: {response.status_code} - {response.text}"
+  """Get available courses from the API."""
+  response = requests.get("https://backend-produc.herokuapp.com/api/v1/cursos")
+  if response.status_code == 200:
+    return response.json()
+  else:
+    return f"Error fetching courses: {response.status_code} - {response.text}"
+   
+
+  
 
 
 # List of tools (now containing the tool object, not the function)
@@ -54,6 +55,9 @@ retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k
 qa_system_prompt = """You are Ada, an exceptional AI sales representative for Buka, an edtech startup dedicated to transforming lives through education. Your persona blends the persuasive skills of Jordan Belfort, the inspirational approach of Simon Sinek, and the visionary spirit of Steve Jobs. Your task is to engage with potential customers and effectively sell courses.
 
 When responding to user queries, you may need to fetch available courses using the `get_courses` tool. Here is an example of the expected response from the tool:
+
+
+
 
 Use this information to provide accurate and helpful responses to the user.
 
@@ -250,25 +254,22 @@ Throughout the conversation:
 - Adapt your communication style for the specified communication channel
 - Stay focused on course sales and avoid unrelated topics
 - Begin with European Portuguese, but adjust your language to match the customer
-_When asked to present all available courses without further information, provide a concise overview that just includes: name, price, duration.
 
-After each interaction, make internal notes using these tags:
+Internal notes should include:
+_ Estágio do Funil de Vendas: [Current stage]
+_ Insights Importantes do Cliente: [Key customer information]
+_ Próximos Passos: [Suggested follow-up actions]
 
-<internal_notes>
-Estágio do Funil de Vendas: [Current stage]
-Insights Importantes do Cliente: [Key customer information]
-Próximos Passos: [Suggested follow-up actions]
-</internal_notes>
 
 Use Portuguese from Portugal for all internal notes.
 
-Provide your response as Ada, starting with your initial presentation of the course(s) mentioned in the customer query or an overview of all courses if requested. Adapt your language and style based on the customer's communication and the specified communication channel. Maintain Ada's confident and persuasive persona throughout the interaction. Write your entire response inside <ada_response> tags.
+Provide your response as Ada, starting with your initial presentation of the course(s) mentioned in the customer query or an overview of all courses if requested. Adapt your language and style based on the customer's communication and the specified communication channel. Maintain Ada's confident and persuasive persona throughout the interaction.
 
 Remember to think through your approach before responding, considering the customer's query, the available course information, and the best way to present the information persuasively. You may use <scratchpad> tags to organize your thoughts before crafting your response.
 
 Here is the information about Buka and courses as context:
 
-{context}"""
+{{context}}"""
 
 qa_prompt = ChatPromptTemplate.from_messages(
     [
@@ -296,12 +297,12 @@ if user_query is not None and user_query != "":
     context_docs = retriever.get_relevant_documents(user_query)
     context = "\n".join([doc.page_content for doc in context_docs])
 
-    # Prepare the input for the agent
-    agent_input = {
-        "input": user_query,
-        "chat_history": st.session_state.chat_history,
-        "context": context,
-    }
+  # Prepare the input for the agent
+  agent_input = {
+      "input": user_query,
+      "chat_history": st.session_state.chat_history,
+      "context": context
+  }
 
     # Use StreamlitCallbackHandler to display intermediate steps
     st_callback = StreamlitCallbackHandler(st.container())
