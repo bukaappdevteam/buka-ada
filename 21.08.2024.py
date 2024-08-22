@@ -13,10 +13,12 @@ from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from langchain.callbacks import StreamlitCallbackHandler
 from langchain_anthropic import ChatAnthropic
+from langchain.output_parsers.json import SimpleJsonOutputParser
 from dotenv import load_dotenv
 import requests
 import os
 
+json_parser = SimpleJsonOutputParser()
 # Load environment variables
 load_dotenv()
 
