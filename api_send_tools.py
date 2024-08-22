@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from typing import List, Dict, Any
 from pydantic import BaseModel, Field
-import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
 from langchain.agents import AgentExecutor, create_openai_tools_agent
@@ -13,7 +12,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
-from langchain.callbacks import StreamlitCallbackHandler
 from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 import requests
@@ -21,6 +19,7 @@ import os
 import json
 
 app = FastAPI()
+llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0)
 
 # Define request and response models
 class ChatRequest(BaseModel):
@@ -35,6 +34,15 @@ class ChatResponse(BaseModel):
 # Initialize global context and chat history
 global_context = ""
 internal_chat_history = {}
+
+loader = TextLoader("./rag.txt", encoding="UTF-8")
+docs = loader.load()
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+all_splits = text_splitter.split_documents(docs)
+embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+vectorstore = FAISS.from_documents(documents=all_splits, embedding=embeddings)
+retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 6})
 
 # Define tools
 @tool
