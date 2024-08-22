@@ -18,7 +18,11 @@ import requests
 import os
 import json
 
+
+load_dotenv()
+
 app = FastAPI()
+
 llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0)
 
 # Define request and response models
@@ -355,9 +359,9 @@ async def chat_endpoint(request: ChatRequest):
         raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
     
     # Update internal chat history
-    internal_chat_history[subscriber_id].append({"role": "Human", "content": user_query})
-    internal_chat_history[subscriber_id].append({"role": "AI", "content": response["output"]})
-
+    internal_chat_history[subscriber_id].append(HumanMessage(content=user_query))
+    internal_chat_history[subscriber_id].append(AIMessage(content=response["output"]))
+   
     return ChatResponse(version="v2", content={
         "messages": response_json["messages"],
         "actions": [],
