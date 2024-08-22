@@ -344,17 +344,18 @@ if user_query is not None and user_query != "":
   with st.spinner("Escrevendo..."):
     response = agent_executor.invoke(agent_input, callbacks=[st_callback])
 
-  # Log the tool usage
-  if 'intermediate_steps' in response:
-    for step in response['intermediate_steps']:
-      if step[0].tool == "get_courses":
-        st.info(f"Tool used: {step[0].tool}")
-        st.json(step[1])  # Display the courses data
+  # Parse the response as JSON
+  try:
+    response_json = json.loads(response["output"])
+    st.json(response_json)  # Display the JSON output in the Streamlit app
+  except json.JSONDecodeError:
+    st.error("Failed to parse the response as JSON.")
+    st.write(response["output"])  # Display the raw output if JSON parsing fails
 
   # Append the user query and AI response to the chat history
   st.session_state.chat_history.append(HumanMessage(content=user_query))
   st.session_state.chat_history.append(AIMessage(content=response["output"]))
-  
+
 # Display chat history
 for message in st.session_state.chat_history:
   if isinstance(message, AIMessage):
