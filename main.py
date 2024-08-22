@@ -379,40 +379,34 @@ qa_prompt = ChatPromptTemplate.from_messages([
 agent = create_openai_tools_agent(llm, tools, prompt=qa_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# Streamlit UI
-st.title("Buka Edtech Chatbot")
+st.set_page_config(page_title="Buka Chatbot")
+st.header("BUKA Assistente IA")
 
-# User input for the chatbot
-user_query = st.text_input("Pergunte sobre nossos cursos:")
-
-# Hidden session state to store chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# Platform selection dropdown (you can replace this with actual platform detection logic)
-platform = st.selectbox("Escolha a plataforma de mensagem:", ["Messenger", "Instagram", "WhatsApp"])
+# Display chat history
+for message in st.session_state.chat_history:
+    if isinstance(message, AIMessage):
+        with st.chat_message("AI"):
+            st.write(message.content)
+    if isinstance(message, HumanMessage):
+        with st.chat_message("Human"):
+            st.write(message.content)
 
-# Streamlit handling block
+# User query input
+user_query = st.chat_input("O que desejas saber?")
 if user_query is not None and user_query != "":
-    # Retrieve relevant context using your retriever
+    # Retrieve relevant context
     context_docs = retriever.get_relevant_documents(user_query)
     context = "\n".join([doc.page_content for doc in context_docs])
-
-    # Determine the tool name based on the platform
-    if platform == "Messenger":
-        tool_name = "send_facebook_message"
-    elif platform == "Instagram":
-        tool_name = "send_instagram_message"
-    elif platform == "WhatsApp":
-        tool_name = "send_whatsapp_message"
 
     # Prepare the input for the agent
     agent_input = {
         "input": user_query,
         "chat_history": st.session_state.chat_history,
         "context": context,
-        "response_examples_json": response_examples_json,
-        "tool_name": tool_name
+        "response_examples_json": response_examples_json
     }
 
     # Use StreamlitCallbackHandler to display intermediate steps
@@ -422,14 +416,14 @@ if user_query is not None and user_query != "":
     with st.spinner("Escrevendo..."):
         response = agent_executor.invoke(agent_input, callbacks=[st_callback])
 
-    # Display the response
-    st.write(response)
+    # Parse the response as JSON
+    try:
+        response_json = json.loads(response["output"])
+        st.json(response_json)  # Display the JSON output in the Streamlit app
+    except json.JSONDecodeError:
+        st.error("Failed to parse the response as JSON.")
+        st.write(response["output"])  # Display the raw output if JSON parsing fails
 
-    # Update the chat history
-    st.session_state.chat_history.append({"user": user_query, "bot": response})
-
-    # Display chat history
-    st.write("Histórico de conversas:")
-    for chat in st.session_state.chat_history:
-        st.write(f"**Você:** {chat['user']}")
-        st.write(f"**Bot:** {chat['bot']}")
+    # Append the user query and AI response to the chat history
+    st.session_state.chat_history.append(HumanMessage(content=user_query))
+    st.session_state.chat_history.append(AIMessage(content=response["output"]))
