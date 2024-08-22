@@ -355,10 +355,10 @@ def char(user: User):
     # Append the user query and AI response to the chat history
     chat_history.append(HumanMessage(content=user.prompt))
     chat_history.append(AIMessage(content=response["output"]))
-
+   
     # Return a JSON response
     return {
         "input": user.prompt,
-        "response": response["output"],
+        "response": json.loads(response["output"]),
         "chat_history": [message.content for message in chat_history]
     }
