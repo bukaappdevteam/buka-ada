@@ -35,8 +35,63 @@ def get_courses() -> str:
     else:
         return f"Error fetching courses: {response.status_code} - {response.text}"
 
-# List of tools (now containing the tool object, not the function)
-tools = [get_courses]
+@tool
+def send_facebook_message(manychat_user_id: str, messages: list) -> str:
+    """Send messages via Facebook Messenger using ManyChat API."""
+    url = "https://api.manychat.com/fb/sendContent"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('MANYCHAT_FB_API_TOKEN')}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "subscriber_id": manychat_user_id,
+        "messages": messages
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    if response.status_code == 200:
+        return "Message sent successfully via Facebook Messenger."
+    else:
+        return f"Error sending message via Facebook Messenger: {response.status_code} - {response.text}"
+
+@tool
+def send_instagram_message(manychat_user_id: str, messages: list) -> str:
+    """Send messages via Instagram using ManyChat API."""
+    url = "https://api.manychat.com/ig/sendContent"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('MANYCHAT_IG_API_TOKEN')}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "subscriber_id": manychat_user_id,
+        "messages": messages
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    if response.status_code == 200:
+        return "Message sent successfully via Instagram."
+    else:
+        return f"Error sending message via Instagram: {response.status_code} - {response.text}"
+
+@tool
+def send_whatsapp_message(manychat_user_id: str, messages: list) -> str:
+    """Send messages via WhatsApp using ManyChat API."""
+    url = "https://api.manychat.com/wa/sendContent"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('MANYCHAT_WA_API_TOKEN')}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "subscriber_id": manychat_user_id,
+        "messages": messages
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    if response.status_code == 200:
+        return "Message sent successfully via WhatsApp."
+    else:
+        return f"Error sending message via WhatsApp: {response.status_code} - {response.text}"
+
+# List of tools
+tools = [get_courses, send_facebook_message, send_instagram_message, send_whatsapp_message]
+
 
 # Construct retriever
 loader = TextLoader("./rag.txt", encoding="UTF-8")
@@ -303,6 +358,14 @@ Remember to think through your approach before responding, considering the custo
 
 Here is the information about Buka and courses as context:
 
+### Example Tool Usage:
+
+If the communication channel is Facebook Messenger, use the `send_facebook_message` tool.
+If the communication channel is Instagram, use the `send_instagram_message` tool.
+If the communication channel is WhatsApp, use the `send_whatsapp_message` tool.
+
+Here is the information about Buka and courses as context:
+
 {{context}}"""
 
 qa_prompt = ChatPromptTemplate.from_messages([
@@ -317,50 +380,56 @@ agent = create_openai_tools_agent(llm, tools, prompt=qa_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # Streamlit UI
-st.set_page_config(page_title="Buka Chatbot")
-st.header("BUKA Assistente IA")
+st.title("Buka Edtech Chatbot")
 
+# User input for the chatbot
+user_query = st.text_input("Pergunte sobre nossos cursos:")
+
+# Hidden session state to store chat history
 if "chat_history" not in st.session_state:
-  st.session_state.chat_history = []
+    st.session_state.chat_history = []
 
-user_query = st.chat_input("o que desejas saber?")
+# Platform selection dropdown (you can replace this with actual platform detection logic)
+platform = st.selectbox("Escolha a plataforma de mensagem:", ["Messenger", "Instagram", "WhatsApp"])
+
+# Streamlit handling block
 if user_query is not None and user_query != "":
-  # Retrieve relevant context
-  context_docs = retriever.get_relevant_documents(user_query)
-  context = "\n".join([doc.page_content for doc in context_docs])
+    # Retrieve relevant context using your retriever
+    context_docs = retriever.get_relevant_documents(user_query)
+    context = "\n".join([doc.page_content for doc in context_docs])
 
-  # Prepare the input for the agent
-  agent_input = {
-      "input": user_query,
-      "chat_history": st.session_state.chat_history,
-      "context": context,
-      "response_examples_json": response_examples_json
-  }
+    # Determine the tool name based on the platform
+    if platform == "Messenger":
+        tool_name = "send_facebook_message"
+    elif platform == "Instagram":
+        tool_name = "send_instagram_message"
+    elif platform == "WhatsApp":
+        tool_name = "send_whatsapp_message"
 
-  # Use StreamlitCallbackHandler to display intermediate steps
-  st_callback = StreamlitCallbackHandler(st.container())
+    # Prepare the input for the agent
+    agent_input = {
+        "input": user_query,
+        "chat_history": st.session_state.chat_history,
+        "context": context,
+        "response_examples_json": response_examples_json,
+        "tool_name": tool_name
+    }
 
-  # Use the agent executor to get the response
-  with st.spinner("Escrevendo..."):
-    response = agent_executor.invoke(agent_input, callbacks=[st_callback])
+    # Use StreamlitCallbackHandler to display intermediate steps
+    st_callback = StreamlitCallbackHandler(st.container())
 
-  # Parse the response as JSON
-  try:
-    response_json = json.loads(response["output"])
-    st.json(response_json)  # Display the JSON output in the Streamlit app
-  except json.JSONDecodeError:
-    st.error("Failed to parse the response as JSON.")
-    st.write(response["output"])  # Display the raw output if JSON parsing fails
+    # Use the agent executor to get the response
+    with st.spinner("Escrevendo..."):
+        response = agent_executor.invoke(agent_input, callbacks=[st_callback])
 
-  # Append the user query and AI response to the chat history
-  st.session_state.chat_history.append(HumanMessage(content=user_query))
-  st.session_state.chat_history.append(AIMessage(content=response["output"]))
+    # Display the response
+    st.write(response)
 
-# Display chat history
-for message in st.session_state.chat_history:
-  if isinstance(message, AIMessage):
-    with st.chat_message("AI"):
-      st.write(message.content)
-  if isinstance(message, HumanMessage):
-    with st.chat_message("Human"):
-      st.write
+    # Update the chat history
+    st.session_state.chat_history.append({"user": user_query, "bot": response})
+
+    # Display chat history
+    st.write("Histórico de conversas:")
+    for chat in st.session_state.chat_history:
+        st.write(f"**Você:** {chat['user']}")
+        st.write(f"**Bot:** {chat['bot']}")
