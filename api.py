@@ -361,7 +361,7 @@ async def chat_endpoint(request: ChatRequest):
     # Update internal chat history
     internal_chat_history[subscriber_id].append(HumanMessage(content=user_query))
     internal_chat_history[subscriber_id].append(AIMessage(content=response["output"]))
-   
+    
     return ChatResponse(version="v2", content={
         "messages": response_json,
         "actions": [],
