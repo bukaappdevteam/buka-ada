@@ -10,7 +10,6 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain.output_parsers import JsonOutputParser
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from langchain_anthropic import ChatAnthropic
@@ -23,7 +22,6 @@ load_dotenv()
 
 app = FastAPI()
 
-json_parser=JsonOutputParser()
 
 llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0)
 
