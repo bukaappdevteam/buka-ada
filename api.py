@@ -18,7 +18,6 @@ import requests
 import os
 import json
 
-
 load_dotenv()
 
 app = FastAPI()
@@ -363,7 +362,7 @@ async def chat_endpoint(request: ChatRequest):
     internal_chat_history[subscriber_id].append(AIMessage(content=response_json))
     
     return ChatResponse(version="v2", content={
-        "messages": response_json[0]["output"]["messages"],
+        "messages": response_json[0]["output"],
         "actions": [],
         "quick_replies": [],
     })
