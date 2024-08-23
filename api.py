@@ -35,6 +35,9 @@ class StructuredOutput(BaseModel):
 # Create the LLM with structured output
 structured_llm = llm.with_structured_output(StructuredOutput)
 
+# Define a function that the LLM can call
+def structured_output_function(messages: List[Message]) -> StructuredOutput:
+    return StructuredOutput(messages=messages)
 
 # Define request and response models
 class ChatRequest(BaseModel):
@@ -360,6 +363,7 @@ async def chat_endpoint(request: ChatRequest):
     # Use the agent executor to get the response
     try:
         response = agent_executor.invoke(agent_input)
+        structured_response = structured_llm.invoke(agent_input, functions=[structured_output_function])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -376,7 +380,8 @@ async def chat_endpoint(request: ChatRequest):
     internal_chat_history[subscriber_id].append(AIMessage(content=response_json))
     
     return ChatResponse(version="v2", content={
-        "messages": response,  # Updated to use the corrected messages variable, old code: response_json[0]["output"]["messages"],
+        "messages": structured_response,  # Updated to use the corrected messages variable, old code: response_json[0]["output"]["messages"],
+        "messages_old": response,
         "actions": [],
         "quick_replies": [],
     })
