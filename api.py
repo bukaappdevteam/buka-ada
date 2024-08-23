@@ -10,6 +10,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain.output_parsers import JsonOutputParser
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from langchain_anthropic import ChatAnthropic
@@ -21,6 +22,8 @@ import json
 load_dotenv()
 
 app = FastAPI()
+
+json_parser=JsonOutputParser()
 
 llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0)
 
@@ -353,9 +356,9 @@ async def chat_endpoint(request: ChatRequest):
 
     # Parse the response as JSON
     try:
-        response_json = json.loads(response["output"])
+        response_json = json_parser.parse(response["output"])
         response_content = response_json[0]
-        messages = response_content.get("output", {}).get("messages", [])
+        #messages = response_content.get("output", {}).get("messages", [])
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
     
@@ -364,7 +367,7 @@ async def chat_endpoint(request: ChatRequest):
     internal_chat_history[subscriber_id].append(AIMessage(content=response_json))
     
     return ChatResponse(version="v2", content={
-        "messages": messages,  # Updated to use the corrected messages variable, old code: response_json[0]["output"]["messages"],
+        "messages": response_content,  # Updated to use the corrected messages variable, old code: response_json[0]["output"]["messages"],
         "actions": [],
         "quick_replies": [],
     })
