@@ -355,6 +355,7 @@ async def chat_endpoint(request: ChatRequest):
     # Parse the response as JSON
     try:
         response_json = json.loads(response["output"])
+        messages = response_json[0].get("output", {}).get("messages", [])
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
     
@@ -363,7 +364,7 @@ async def chat_endpoint(request: ChatRequest):
     internal_chat_history[subscriber_id].append(AIMessage(content=response_json))
     
     return ChatResponse(version="v2", content={
-        "messages": response_json[0]["output"]["messages"],
+        "messages": messages,  # Updated to use the corrected messages variable, old code: response_json[0]["output"]["messages"],
         "actions": [],
         "quick_replies": [],
     })
