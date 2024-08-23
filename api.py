@@ -355,7 +355,8 @@ async def chat_endpoint(request: ChatRequest):
     # Parse the response as JSON
     try:
         response_json = json.loads(response["output"])
-        messages = response_json[0].get("output", {}).get("messages", [])
+        response_content = response_json[0]
+        messages = response_content.get("output", {}).get("messages", [])
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
     
