@@ -24,6 +24,18 @@ app = FastAPI()
 
 llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0)
 
+# Define a Pydantic model for the structured output with descriptions
+class Message(BaseModel):
+    type: str = Field(..., description="The type of the message (e.g., 'text', 'image', 'carousel').")
+    content: Any = Field(..., description="The content of the message, which varies based on the message type.")
+
+class StructuredOutput(BaseModel):
+    messages: List[Message] = Field(..., description="An array of messages to be sent to the user.")
+
+# Create the LLM with structured output
+structured_llm = llm.with_structured_output(StructuredOutput)
+
+
 # Define request and response models
 class ChatRequest(BaseModel):
     channel: str
@@ -319,7 +331,7 @@ qa_prompt = ChatPromptTemplate.from_messages([
     MessagesPlaceholder(variable_name="agent_scratchpad"),
 ])
 
-agent = create_openai_tools_agent(llm, tools, prompt=qa_prompt)
+agent = create_openai_tools_agent(structured_llm, tools, prompt=qa_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 @app.post("/chat", response_model=ChatResponse)
@@ -364,7 +376,7 @@ async def chat_endpoint(request: ChatRequest):
     internal_chat_history[subscriber_id].append(AIMessage(content=response_json))
     
     return ChatResponse(version="v2", content={
-        "messages": messages,  # Updated to use the corrected messages variable, old code: response_json[0]["output"]["messages"],
+        "messages": response,  # Updated to use the corrected messages variable, old code: response_json[0]["output"]["messages"],
         "actions": [],
         "quick_replies": [],
     })
