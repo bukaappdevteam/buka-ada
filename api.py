@@ -58,8 +58,6 @@ def get_courses() -> str:
 # List of tools
 tools = [get_courses]
 
-#
-
 example_output = {
     "channel": "string",
     "messages": "List[Message]",
