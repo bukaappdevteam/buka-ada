@@ -28,13 +28,15 @@ llm = ChatOpenAI(
 
 # Define the request model
 class UserQuery(BaseModel):
+    user_id:str
     channel: str
     prompt: str
 
 
 # Initialize global context and chat history
 global_context = ""
-chat_history = []
+chat_history = {}
+chat_history['user_id']=[]
 
 loader = TextLoader("./rag.txt", encoding="UTF-8")
 docs = loader.load()
@@ -307,10 +309,11 @@ async def handle_query(user_query: UserQuery):
 
     agent_input = {
         "input": user_query.prompt,
-        "chat_history": chat_history,
+        "chat_history": chat_history['user_id'],
         "context": context,
         "response_examples_json": response_examples_json,  # Add your response examples if needed
         "channel": user_query.channel,
+        "user_id": user_query.user_id,
     }
 
     # Use the agent executor to get the response
@@ -321,15 +324,15 @@ async def handle_query(user_query: UserQuery):
     # Parse the response as JSON
     try:
         response_json = json.loads(response["output"])
-        chat_history.append(HumanMessage(content=user_query.prompt))
-        chat_history.append(AIMessage(content=response["output"]))
+        chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
+        chat_history["user_id"].append(AIMessage(content=response["output"]))
         return {
             "version": "v2",
             "content": {
                 "messages": response_json.get("messages", []),
                 "action": [],
                 "quick_replies": [],
-                "chat_history":chat_history
+                "chat_history":chat_history['user_id'],
             }
         }
     except json.JSONDecodeError:
