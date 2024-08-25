@@ -23,22 +23,17 @@ load_dotenv()
 app = FastAPI()
 
 
-llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0)
-
-# Define a Pydantic model for the structured output with descriptions
-class Message(BaseModel):
-    type: str = Field(..., description="The type of the message (e.g., 'text', 'image', 'carousel').")
-    content: Any = Field(..., description="The content of the message, which varies based on the message type.")
-
-class StructuredOutput(BaseModel):
-    messages: List[Message] = Field(..., description="An array of messages to be sent to the user.")
-
-# Create the LLM with structured output
-structured_llm = llm.with_structured_output(StructuredOutput)
+# Initialize the language model
+llm = ChatOpenAI(
+    model="gpt-4o-mini-2024-07-18", 
+    model_kwargs={'response_format': {"type": "json_object"}}
+)
 
 
 # Define request and response models
 class ChatRequest(BaseModel):
+# Define the request model
+class UserQuery(BaseModel):
     channel: str
     subscriber_id: str
     prompt: str
