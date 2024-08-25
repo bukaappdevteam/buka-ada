@@ -34,7 +34,7 @@ class UserQuery(BaseModel):
 
 # Initialize global context and chat history
 global_context = ""
-internal_chat_history = {}
+chat_history = []
 
 loader = TextLoader("./rag.txt", encoding="UTF-8")
 docs = loader.load()
@@ -309,7 +309,7 @@ async def handle_query(user_query: UserQuery):
 
     agent_input = {
         "input": user_query.prompt,
-        "chat_history": [],  # You can implement session management if needed
+        "chat_history": chat_history,
         "context": context,
         "response_examples_json": response_examples_json,  # Add your response examples if needed
         "channel": user_query.channel,
@@ -323,12 +323,15 @@ async def handle_query(user_query: UserQuery):
     # Parse the response as JSON
     try:
         response_json = json.loads(response["output"])
+        chat_history.append(HumanMessage(content=user_query.prompt))
+        chat_history.append(AIMessage(content=response["output"]))
         return {
             "version": "v2",
             "content": {
                 "messages": response_json.get("messages", []),
                 "action": [],
                 "quick_replies": [],
+                "chat_history":chat_history
             }
         }
     except json.JSONDecodeError:
