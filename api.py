@@ -28,7 +28,7 @@ llm = ChatOpenAI(
 
 # Define the request model
 class UserQuery(BaseModel):
-    user_id:str
+    subscriber_id:str
     channel: str
     prompt: str
 
