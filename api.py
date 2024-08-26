@@ -9,6 +9,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 import httpx
 import os
@@ -18,13 +19,19 @@ import logging
 
 # Load environment variables
 load_dotenv()
-
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize FastAPI
-app = FastAPI()
 
 # Initialize the language model
 llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",
@@ -47,17 +54,14 @@ headersBotConversa = {
     os.getenv('BOTCONVERSA_KEY') if os.getenv('BOTCONVERSA_KEY') else "",
 }
 
-
 class RequestBodyBotConversa(BaseModel):
     phone: str
     subscriber_id: str = Field(default=None,
                                description="Optional Subscriber ID")
     prompt: str
 
-
 def get_phone_url(phone: str) -> str:
     return f"{os.getenv('BOTCONVERSA_URL')}/subscriber/get_by_phone/{phone}/"
-
 
 def send_message_url(subscriber_id: str) -> str:
     return f"{os.getenv('BOTCONVERSA_URL')}/subscriber/{subscriber_id}/send_message/"
@@ -106,11 +110,10 @@ example_output = {
 example_output_json = json.dumps(example_output, ensure_ascii=False, indent=4)
 
 # Define response examples
-
-                #{
-                #"type": "text",
-                #"text": "Estou entusiasmada com o seu interesse no Curso de Power BI (Business Intelligence)! Você está prestes a embarcar numa jornada que pode revolucionar não apenas sua carreira, mas toda a forma como você vê e interage com o mundo dos dados. Permita-me compartilhar mais sobre esta experiência transformadora:"
-                #},
+    #{
+    #"type": "text",
+    #"text": "Estou entusiasmada com o seu interesse no Curso de Power BI (Business Intelligence)! Você está prestes a embarcar numa jornada que pode revolucionar não apenas sua carreira, mas toda a forma como você vê e interage com o mundo dos dados. Permita-me compartilhar mais sobre esta experiência transformadora:"
+    #},
 
 response_examples = [
     {
