@@ -94,11 +94,8 @@ def get_courses() -> str:
         return response.json()
     else:
         return f"Error fetching courses: {response.status_code} - {response.text}"
-
-
 # List of tools
 tools = [get_courses]
-
 #
 
 example_output = {
@@ -175,17 +172,7 @@ response_examples = [
                     "Higiene e Segurança no Trabalho",
                     "subtitle":
                     "Torne-se um guardião da segurança, protegendo vidas e transformando ambientes de trabalho.",
-                }, {
-                    "title":
-                    "Curso de Power BI (Business Intelligence)",
-                    "subtitle":
-                    "Desbloqueie o poder dos dados e torne-se um visionário nos negócios.",
-                }, {
-                    "title":
-                    "Curso Base de Dados Relacional com MySQL",
-                    "subtitle":
-                    "Torne-se um mestre em dados, construindo a espinha dorsal da era digital.",
-                }],
+                },],
                 "image_aspect_ratio":
                 "horizontal"
             }, {
@@ -620,7 +607,6 @@ qa_prompt = ChatPromptTemplate.from_messages([
 agent = create_openai_tools_agent(llm, tools, prompt=qa_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-
 @app.post("/chat")
 async def handle_query(user_query: UserQuery):
     # Prepare the input for the agent
@@ -746,7 +732,7 @@ async def send_message(user_query: RequestBodyBotConversa):
                     raise ValueError(
                         "Invalid message type. Only 'text' and 'file' are allowed."
                     )
-
+            
                 message_data = {
                     "type": message_type,
                     "value":
