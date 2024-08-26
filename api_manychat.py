@@ -49,7 +49,8 @@ CHANNEL_ABBREVIATIONS = {
 
 # Initialize global context and chat history
 global_context = ""
-internal_chat_history = {}
+chat_history = {}
+chat_history['user_id'] = []
 
 loader = TextLoader("./rag.txt", encoding="UTF-8")
 docs = loader.load()
@@ -178,27 +179,36 @@ response_examples = [
         "output": {
             "channel":
             "facebook",
-            "messages": [{
-                "type":
-                "text",
-                "text":
-                "Estou entusiasmada com o seu interesse no Curso de Power BI (Business Intelligence)! Você está prestes a embarcar numa jornada que pode revolucionar não apenas sua carreira, mas toda a forma como você vê e interage com o mundo dos dados. Permita-me compartilhar mais sobre esta experiência transformadora:"
-            }, {
-                "type":
-                "text",
-                "text":
-                "Curso de Power BI (Business Intelligence)\n\n- DESCRIÇÃO: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n- FORMATO/LOCALIZAÇÃO: Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n- PREÇO: 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n- DURAÇÃO: 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n- HORÁRIO: Sábados, das 09:00 às 13:00"
-            }, {
-                "type":
-                "text",
-                "text":
-                "Estamos falando de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?",
-            }, {
-                "type":
-                "text",
-                "text":
-                "Este curso é a chave para desbloquear um novo nível na sua carreira ou negócio. É ideal para visionários como você, que entendem o poder dos dados na era digital.\nEstou curiosa: o que exatamente despertou seu interesse no Power BI? Está buscando uma vantagem competitiva no seu trabalho atual, ou talvez sonhando em revolucionar um negócio próprio?"
-            }]
+            "messages": [
+                #{
+                #"type": "text",
+                #"text": "Estou entusiasmada com o seu interesse no Curso de Power BI (Business Intelligence)! Você está prestes a embarcar numa jornada que pode revolucionar não apenas sua carreira, mas toda a forma como você vê e interage com o mundo dos dados. Permita-me compartilhar mais sobre esta experiência transformadora:"
+                #},
+                {
+                    "type":
+                    "image",
+                    "url":
+                    "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8",
+                },
+                {
+                    "type":
+                    "text",
+                    "text":
+                    "Curso de Power BI (Business Intelligence)\n\n- DESCRIÇÃO: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n- FORMATO/LOCALIZAÇÃO: Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n- PREÇO: 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n- DURAÇÃO: 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n- HORÁRIO: Sábados, das 09:00 às 13:00"
+                },
+                {
+                    "type":
+                    "text",
+                    "text":
+                    "Estamos falando de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?",
+                },
+                {
+                    "type":
+                    "text",
+                    "text":
+                    "Este curso é a chave para desbloquear um novo nível na sua carreira ou negócio. É ideal para visionários como você, que entendem o poder dos dados na era digital.\nEstou curiosa: o que exatamente despertou seu interesse no Power BI? Está buscando uma vantagem competitiva no seu trabalho atual, ou talvez sonhando em revolucionar um negócio próprio?"
+                }
+            ]
         }
     },
     {
@@ -347,6 +357,8 @@ Your response should be structured as JSON containing:
 - `messages`: An array of messages to be sent, with each message in the appropriate format for the platform.
 - `internal_notes`: Estágio do Funil de Vendas: [Current stage], Insights Importantes do Cliente: [Key customer information], Próximos Passos: [Suggested follow-up actions]
 
+use the dynamic_block_docs and the examples we showed you ealier to garantee that your messages array and it's children are structured in a way that is compatible with the platform.
+
 
 Before crafting your response, use <scratchpad> tags to organize your thoughts and plan your approach. Consider the customer's query, the available course information, and the best way to present the information persuasively.
 
@@ -370,7 +382,6 @@ few_shot_prompt = FewShotChatMessagePromptTemplate(
 qa_prompt = ChatPromptTemplate.from_messages([
     ("system", qa_system_prompt),
     MessagesPlaceholder(variable_name="chat_history"),
-    few_shot_prompt,
     ("human", "{input}"),
     MessagesPlaceholder(variable_name="agent_scratchpad"),
 ])
@@ -388,7 +399,7 @@ async def handle_query(user_query: UserQuery):
 
     agent_input = {
         "input": user_query.prompt,
-        "chat_history": [],  # You can implement session management if needed
+        "chat_history": chat_history['user_id'],
         "context": context,
         "response_examples_json": response_examples_json,
         "channel": user_query.channel,
@@ -401,6 +412,8 @@ async def handle_query(user_query: UserQuery):
 
     try:
         response_json = json.loads(response["output"])
+        chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
+        chat_history["user_id"].append(AIMessage(content=response["output"]))
         messages = response_json.get("messages", [])
 
         # Get the correct abbreviation for the channel
@@ -411,7 +424,7 @@ async def handle_query(user_query: UserQuery):
                                 detail="Unsupported channel type.")
 
         # Construct the ManyChat API endpoint
-        manychat_api_url = f"https://api.manychat.com/{channel_abbreviation}/sending/sendContent"
+        manychat_api_url = f"https://api.manychat.com/fb/sending/sendContent"
 
         # Send the messages to ManyChat API
         headers = {
@@ -423,6 +436,7 @@ async def handle_query(user_query: UserQuery):
             "data": {
                 "version": "v2",
                 "content": {
+                    "type": user_query.channel,
                     "messages": messages,
                 }
             },
@@ -444,8 +458,18 @@ async def handle_query(user_query: UserQuery):
 
         logger.info(f"ManyChat response: {manychat_response.json()}")
 
-        return {"status": "success"}
-
+        return  #{"status": "success"}
+        """
+        {
+            "version": "v2",
+            "content": {
+                "type": user_query.channel,
+                "messages": messages,
+            },
+            "message_tag": "ACCOUNT_UPDATE",
+            "chat_history": chat_history['user_id'],
+        }  
+"""
     except json.JSONDecodeError:
         raise HTTPException(status_code=500,
                             detail="Failed to parse the response as JSON.")
