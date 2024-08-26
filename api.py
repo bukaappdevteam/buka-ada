@@ -106,6 +106,12 @@ example_output = {
 example_output_json = json.dumps(example_output, ensure_ascii=False, indent=4)
 
 # Define response examples
+
+                #{
+                #"type": "text",
+                #"text": "Estou entusiasmada com o seu interesse no Curso de Power BI (Business Intelligence)! Você está prestes a embarcar numa jornada que pode revolucionar não apenas sua carreira, mas toda a forma como você vê e interage com o mundo dos dados. Permita-me compartilhar mais sobre esta experiência transformadora:"
+                #},
+
 response_examples = [
     {
         "input": {
@@ -196,10 +202,6 @@ response_examples = [
             "channel":
             "facebook",
             "messages": [
-                #{
-                #"type": "text",
-                #"text": "Estou entusiasmada com o seu interesse no Curso de Power BI (Business Intelligence)! Você está prestes a embarcar numa jornada que pode revolucionar não apenas sua carreira, mas toda a forma como você vê e interage com o mundo dos dados. Permita-me compartilhar mais sobre esta experiência transformadora:"
-                #},
                 {
                     "type":
                     "image",
