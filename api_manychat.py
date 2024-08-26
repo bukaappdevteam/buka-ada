@@ -634,7 +634,7 @@ async def handle_query(user_query: UserQuery):
         manychat_response = requests.post(manychat_api_url,
                                           headers=headers,
                                           json=payload)
-
+        
         # Check if the request was successful
         if manychat_response.status_code != 200:
             logging.error(
