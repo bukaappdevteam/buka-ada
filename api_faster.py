@@ -546,7 +546,7 @@ response_examples_botconversa_json = json.dumps(response_examples_botconversa,
 # Define system prompt with dynamic examples
 qa_system_prompt = """"You are Ada, an exceptional AI sales representative for Buka, an edtech startup dedicated to transforming lives through education. Your persona blends the persuasive skills of Jordan Belfort, the inspirational approach of Simon Sinek, and the visionary spirit of Steve Jobs. Your task is to engage with potential customers and effectively sell courses.
 
-When responding to user queries, you may need to fetch available courses using the `get_courses` tool.
+When responding to user queries, you may need to fetch available courses using the `get_courses` tool. if asked about available courses send all the courses return by `get_courses` tool, if more than 10 courses you need to send multiple messages (multiple card on facebook and instagram).
 
 
 Here is some example of how you will respond:
@@ -586,8 +586,9 @@ Follow these steps to interact with the customer:
 
 ### Platform-Specific Message Types:
 
-- *Facebook Messenger*: Supports all message types, including structured messages like cards with titles, subtitles, images, and buttons.
-- *Instagram*: Supports all the above message types. Cards are supported but without complex structure (like titles or subtitles), and buttons link to URLs.
+- *Facebook Messenger*: Supports all message types, including structured messages like cards with titles, subtitles, images, and buttons. One card type can only contain up to 10 elements.
+
+- *Instagram*: Supports all the above message types. cards are supported but without complex structure (like titles or subtitles), and buttons link to URLs. One card type can only contain up to 10 elements.
 
 - *WhatsApp*: Suports only text and file(image, video, audio, doc, etc) messages.
 
@@ -645,15 +646,27 @@ async def handle_query(user_query: UserQuery):
         "channel": user_query.channel,
     }
 
-    # Use the agent executor to get the response
+    # Handle synchronous invoke
     try:
-        response = await asyncio.wait_for(agent_executor.invoke(agent_input), timeout=9)
+        response = await asyncio.wait_for(
+            asyncio.to_thread(agent_executor.invoke, agent_input),
+            timeout=9
+        )
         response_json = json.loads(response["output"])
-            
+        messages = response_json.get("messages", [])
+
         chat_history["user_id"].append(AIMessage(content=response["output"]))
-        return response_json
+        return {
+                "version": "v2",
+                "content": {
+                    "type": user_query.channel,
+                    "messages": messages,
+                }
+        }
     except asyncio.TimeoutError:
         # If the operation takes more than 9 seconds, send via ManyChat API
+        # Send a temporary processing message via ManyChat API
+        processing_message = "...processando... pode levar mais tempo que o habitual."
         manychat_api_url = f"https://api.manychat.com/fb/sending/sendContent"
         headers = {
             "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
@@ -665,16 +678,51 @@ async def handle_query(user_query: UserQuery):
                 "version": "v2",
                 "content": {
                     "type": user_query.channel,
-                    "messages": [{"type": "text", "text": "A operação está demorando mais do que o esperado. Por favor, aguarde enquanto processamos sua solicitação."}],
+                    "messages": [{
+                        "type": "text",
+                        "text": processing_message
+                    }],
                 }
             },
             "message_tag": "ACCOUNT_UPDATE",
         }
-        manychat_response = requests.post(manychat_api_url, headers=headers, json=payload)
-        if manychat_response.status_code != 200:
-            logging.error(f"Failed to send messages via ManyChat API: {manychat_response.text}")
-            raise HTTPException(status_code=500, detail="Failed to send messages via ManyChat API.")
+
+        async with httpx.AsyncClient() as client:
+            manychat_response = await client.post(manychat_api_url, headers=headers, json=payload)
+            if manychat_response.status_code != 200:
+                logging.error(f"Failed to send processing message via ManyChat API: {manychat_response.text}")
+                raise HTTPException(status_code=500, detail="Failed to send processing message via ManyChat API.")
+
+        #now process the ai response
+        response = await asyncio.to_thread(agent_executor.invoke, agent_input)
+        response_json = json.loads(response["output"])
+        messages = response_json.get("messages", [])
+        chat_history["user_id"].append(AIMessage(content=response["output"]))
+        manychat_api_url = f"https://api.manychat.com/fb/sending/sendContent"
+        headers = {
+            "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "subscriber_id": user_query.subscriber_id,
+            "data": {
+                "version": "v2",
+                "content": {
+                    "type": user_query.channel,
+                    "messages": messages,
+                }
+            },
+            "message_tag": "ACCOUNT_UPDATE",
+        }
+
+        # Use httpx for async request
+        async with httpx.AsyncClient() as client:
+            manychat_response = await client.post(manychat_api_url, headers=headers, json=payload)
+            if manychat_response.status_code != 200:
+                logging.error(f"Failed to send messages via ManyChat API: {manychat_response.text}")
+                raise HTTPException(status_code=500, detail="Failed to send messages via ManyChat API.")
         return {"status": "processing"}
+
 
 @app.post("/chat/botconversa")
 async def send_message(user_query: RequestBodyBotConversa):
