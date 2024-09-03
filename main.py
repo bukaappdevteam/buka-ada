@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from langchain_openai import ChatOpenAI
-from langchain_core.tools import tool
+from langchain_core.tools import BaseTool
 from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain_core.prompts import FewShotChatMessagePromptTemplate, ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import AIMessage, HumanMessage
@@ -16,9 +16,8 @@ import os
 import json
 from dotenv import load_dotenv
 import logging
-from cachetools import TTLCache
+from functools import lru_cache
 import asyncio
-from fastapi import BackgroundTasks
 
 # Load environment variables
 load_dotenv()
@@ -30,9 +29,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# Initialize logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # Initialize FastAPI
 
@@ -57,14 +53,17 @@ headersBotConversa = {
     os.getenv('BOTCONVERSA_KEY') if os.getenv('BOTCONVERSA_KEY') else "",
 }
 
+
 class RequestBodyBotConversa(BaseModel):
     phone: str
     subscriber_id: str = Field(default=None,
                                description="Optional Subscriber ID")
     prompt: str
 
+
 def get_phone_url(phone: str) -> str:
     return f"{os.getenv('BOTCONVERSA_URL')}/subscriber/get_by_phone/{phone}/"
+
 
 def send_message_url(subscriber_id: str) -> str:
     return f"{os.getenv('BOTCONVERSA_URL')}/subscriber/{subscriber_id}/send_message/"
@@ -84,43 +83,36 @@ all_splits = text_splitter.split_documents(docs)
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 vectorstore = FAISS.from_documents(documents=all_splits, embedding=embeddings)
 retriever = vectorstore.as_retriever(search_type="similarity",
-                                     search_kwargs={"k": 6})
+                                     search_kwargs={"k": 3})
 
-# Cache com tempo de vida de 1 hora (3600 segundos)
-course_cache = TTLCache(maxsize=1, ttl=3600)
 
-async def fetch_courses_async():
-    """Fetch courses from the server and cache them asynchronously."""
-    async with httpx.AsyncClient() as client:
-        response = await client.get("https://backend-produc.herokuapp.com/api/v1/cursos")
-        if response.status_code == 200:
-            course_cache['courses'] = response.json()
-        else:
-            logger.error(f"Error fetching courses: {response.status_code} - {response.text}")
-            course_cache['courses'] = []
+# Define the function to get courses
+def get_courses(tool_input: str = None) -> list:
+    """Get available courses from the API."""
+    response = requests.get(
+        "https://backend-produc.herokuapp.com/api/v1/cursos")
+    if response.status_code == 200:
+        return json.dumps(response.json(), ensure_ascii=False, indent=4)
+    else:
+        return []
 
-async def update_courses_periodically():
-    """Update courses in the cache periodically."""
-    while True:
-        await fetch_courses_async()
-        await asyncio.sleep(600)  # Atualiza a cada 10 minutos
+@lru_cache(maxsize=100)
+def cached_get_courses():
+    return get_courses()
 
-@app.on_event("startup")
-async def startup_event():
-    """Run tasks on startup."""
-    asyncio.create_task(update_courses_periodically())
+# Definir uma ferramenta fictícia
+class DummyTool(BaseTool):
+    name = "dummy_tool"
+    description = "A dummy tool that does nothing."
 
-# Define tools
-@tool
-def get_courses() -> str:
-    """Get available courses from the cache."""
-    if 'courses' not in course_cache:
-        asyncio.run(fetch_courses_async())
-    return course_cache['courses']
+    def _run(self, *args, **kwargs):
+        return "This is a dummy tool."
 
-# List of tools
-tools = [get_courses]
-#
+    async def _arun(self, *args, **kwargs):
+        return "This is a dummy tool."
+
+# Criar a lista de ferramentas com a ferramenta fictícia
+tools = [DummyTool()]
 
 example_output = {
     "channel": "string",
@@ -131,10 +123,10 @@ example_output = {
 example_output_json = json.dumps(example_output, ensure_ascii=False, indent=4)
 
 # Define response examples
-    #{
-    #"type": "text",
-    #"text": "Estou entusiasmada com o seu interesse no Curso de Power BI (Business Intelligence)! Você está prestes a embarcar numa jornada que pode revolucionar não apenas sua carreira, mas toda a forma como você vê e interage com o mundo dos dados. Permita-me compartilhar mais sobre esta experiência transformadora:"
-    #},
+#{
+#"type": "text",
+#"text": "Estou entusiasmada com o seu interesse no Curso de Power BI (Business Intelligence)! Você está prestes a embarcar numa jornada que pode revolucionar não apenas sua carreira, mas toda a forma como você vê e interage com o mundo dos dados. Permita-me compartilhar mais sobre esta experiência transformadora:"
+#},
 
 response_examples = [
     {
@@ -179,24 +171,28 @@ response_examples = [
             }, {
                 "type":
                 "cards",
-                "elements": [{
-                    "title":
-                    "Curso de Recursos Humanos com Aplicação às Novas Tecnologias",
-                    "subtitle":
-                    "Lidere a revolução no RH, moldando o futuro da gestão de pessoas.",
-                    "image_url":
-                    "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Frecursos-humanas-tecnologias.jpeg?alt=media&token=d12998b8-de54-490a-b28f-ea29c060e185",
-                }, {
-                    "title":
-                    "Administração Windows Server 2022",
-                    "subtitle":
-                    "Domine a arte de gerenciar servidores e torne-se indispensável no mundo da TI.",
-                }, {
-                    "title":
-                    "Higiene e Segurança no Trabalho",
-                    "subtitle":
-                    "Torne-se um guardião da segurança, protegendo vidas e transformando ambientes de trabalho.",
-                },],
+                "elements": [
+                    {
+                        "title":
+                        "Curso de Recursos Humanos com Aplicação às Novas Tecnologias",
+                        "subtitle":
+                        "Lidere a revolução no RH, moldando o futuro da gestão de pessoas.",
+                        "image_url":
+                        "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Frecursos-humanas-tecnologias.jpeg?alt=media&token=d12998b8-de54-490a-b28f-ea29c060e185",
+                    },
+                    {
+                        "title":
+                        "Administração Windows Server 2022",
+                        "subtitle":
+                        "Domine a arte de gerenciar servidores e torne-se indispensável no mundo da TI.",
+                    },
+                    {
+                        "title":
+                        "Higiene e Segurança no Trabalho",
+                        "subtitle":
+                        "Torne-se um guardião da segurança, protegendo vidas e transformando ambientes de trabalho.",
+                    },
+                ],
                 "image_aspect_ratio":
                 "horizontal"
             }, {
@@ -215,32 +211,27 @@ response_examples = [
         "output": {
             "channel":
             "facebook",
-            "messages": [
-                {
-                    "type":
-                    "image",
-                    "url":
-                    "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8",
-                },
-                {
-                    "type":
-                    "text",
-                    "text":
-                    "Curso de Power BI (Business Intelligence)\n\n- DESCRIÇÃO: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n- FORMATO/LOCALIZAÇÃO: Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n- PREÇO: 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n- DURAÇÃO: 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n- HORÁRIO: Sábados, das 09:00 às 13:00"
-                },
-                {
-                    "type":
-                    "text",
-                    "text":
-                    "Estamos falando de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?",
-                },
-                {
-                    "type":
-                    "text",
-                    "text":
-                    "Este curso é a chave para desbloquear um novo nível na sua carreira ou negócio. É ideal para visionários como você, que entendem o poder dos dados na era digital.\nEstou curiosa: o que exatamente despertou seu interesse no Power BI? Está buscando uma vantagem competitiva no seu trabalho atual, ou talvez sonhando em revolucionar um negócio próprio?"
-                }
-            ]
+            "messages": [{
+                "type":
+                "image",
+                "url":
+                "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8",
+            }, {
+                "type":
+                "text",
+                "text":
+                "Curso de Power BI (Business Intelligence)\n\n- DESCRIÇÃO: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n- FORMATO/LOCALIZAÇÃO: Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n- PREÇO: 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n- DURAÇÃO: 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n- HORÁRIO: Sábados, das 09:00 às 13:00"
+            }, {
+                "type":
+                "text",
+                "text":
+                "Estamos falando de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?",
+            }, {
+                "type":
+                "text",
+                "text":
+                "Este curso é a chave para desbloquear um novo nível na sua carreira ou negócio. É ideal para visionários como você, que entendem o poder dos dados na era digital.\nEstou curiosa: o que exatamente despertou seu interesse no Power BI? Está buscando uma vantagem competitiva no seu trabalho atual, ou talvez sonhando em revolucionar um negócio próprio?"
+            }]
         }
     },
     {
@@ -546,15 +537,17 @@ response_examples_botconversa_json = json.dumps(response_examples_botconversa,
 # Define system prompt with dynamic examples
 qa_system_prompt = """"You are Ada, an exceptional AI sales representative for Buka, an edtech startup dedicated to transforming lives through education. Your persona blends the persuasive skills of Jordan Belfort, the inspirational approach of Simon Sinek, and the visionary spirit of Steve Jobs. Your task is to engage with potential customers and effectively sell courses.
 
-When responding to user queries, you may need to fetch available courses using the `get_courses` tool. if asked about available courses send all the courses return by `get_courses` tool, if more than 10 courses you need to send multiple messages (multiple card on facebook and instagram).
-
+When responding to user queries, you may need to fetch available courses use this: {{courses}}
 
 Here is some example of how you will respond:
 <response example>
 {response_examples_json}
-</response example>
+</response example> 
 
 The communication channel for this interaction is: {{channel}}
+
+very important that you don't call any tool
+
 
 
 
@@ -586,9 +579,8 @@ Follow these steps to interact with the customer:
 
 ### Platform-Specific Message Types:
 
-- *Facebook Messenger*: Supports all message types, including structured messages like cards with titles, subtitles, images, and buttons. One card type can only contain up to 10 elements.
-
-- *Instagram*: Supports all the above message types. cards are supported but without complex structure (like titles or subtitles), and buttons link to URLs. One card type can only contain up to 10 elements.
+- *Facebook Messenger*: Supports all message types, including structured messages like cards with titles, subtitles, images, and buttons.
+- *Instagram*: Supports all the above message types. Cards are supported but without complex structure (like titles or subtitles), and buttons link to URLs.
 
 - *WhatsApp*: Suports only text and file(image, video, audio, doc, etc) messages.
 
@@ -628,77 +620,54 @@ qa_prompt = ChatPromptTemplate.from_messages([
     MessagesPlaceholder(variable_name="agent_scratchpad"),
 ])
 
-# Create the agent and bind the tools
+# Create the agent with the dummy tool
+chain = qa_prompt | llm
 agent = create_openai_tools_agent(llm, tools, prompt=qa_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+print(cached_get_courses())
 
 @app.post("/chat")
 async def handle_query(user_query: UserQuery):
     # Prepare the input for the agent
-    context_docs = retriever.get_relevant_documents(user_query.prompt)
+    context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
+                                           user_query.prompt)
     context = "\n".join([doc.page_content for doc in context_docs])
 
-    agent_input = {
-        "input": user_query.prompt,
-        "chat_history": chat_history['user_id'],
-        "context": context,
-        "response_examples_json": response_examples_json,
-        "channel": user_query.channel,
-    }
-
-    # Handle synchronous invoke
+    chat_history_list = chat_history['user_id']  # Alterado de str para lista
     try:
-        response = await asyncio.wait_for(
-            asyncio.to_thread(agent_executor.invoke, agent_input),
-            timeout=9
-        )
-        response_json = json.loads(response["output"])
-        messages = response_json.get("messages", [])
-
-        chat_history["user_id"].append(AIMessage(content=response["output"]))
-        return {
-                "version": "v2",
-                "content": {
-                    "type": user_query.channel,
-                    "messages": messages,
-                }
-        }
+        response = await asyncio.wait_for(asyncio.to_thread(
+            chain.invoke, {
+                "input": user_query.prompt,
+                "chat_history": chat_history_list,
+                "context": context,
+                "response_examples_json": response_examples_json,
+                "channel": user_query.channel,
+                "courses": cached_get_courses(),
+                "agent_scratchpad": []
+            }),
+                                          timeout=9.5)
     except asyncio.TimeoutError:
-        # If the operation takes more than 9 seconds, send via ManyChat API
-        # Send a temporary processing message via ManyChat API
-        processing_message = "...processando... pode levar mais tempo que o habitual."
-        manychat_api_url = f"https://api.manychat.com/fb/sending/sendContent"
-        headers = {
-            "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "subscriber_id": user_query.subscriber_id,
-            "data": {
-                "version": "v2",
-                "content": {
-                    "type": user_query.channel,
-                    "messages": [{
-                        "type": "text",
-                        "text": processing_message
-                    }],
-                }
-            },
-            "message_tag": "ACCOUNT_UPDATE",
-        }
+        raise HTTPException(status_code=408,
+                            detail="Tempo de resposta excedido")
 
-        async with httpx.AsyncClient() as client:
-            manychat_response = await client.post(manychat_api_url, headers=headers, json=payload)
-            if manychat_response.status_code != 200:
-                logging.error(f"Failed to send processing message via ManyChat API: {manychat_response.text}")
-                raise HTTPException(status_code=500, detail="Failed to send processing message via ManyChat API.")
+    try:
+        # Acessar o conteúdo da resposta corretamente
+        response_content = response.content if isinstance(response, AIMessage) else response["output"]
+        response_json = json.loads(response_content)
 
-        #now process the ai response
-        response = await asyncio.to_thread(agent_executor.invoke, agent_input)
-        response_json = json.loads(response["output"])
+        #print(response_content)
+
+        # Adicionar a resposta ao histórico de mensagens
+        chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
+        chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
-        chat_history["user_id"].append(AIMessage(content=response["output"]))
+
+        print (messages)
+        # Construct the ManyChat API endpoint
         manychat_api_url = f"https://api.manychat.com/fb/sending/sendContent"
+
+        # Send the messages to ManyChat API
         headers = {
             "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
             "Content-Type": "application/json"
@@ -715,38 +684,67 @@ async def handle_query(user_query: UserQuery):
             "message_tag": "ACCOUNT_UPDATE",
         }
 
-        # Use httpx for async request
-        async with httpx.AsyncClient() as client:
-            manychat_response = await client.post(manychat_api_url, headers=headers, json=payload)
-            if manychat_response.status_code != 200:
-                logging.error(f"Failed to send messages via ManyChat API: {manychat_response.text}")
-                raise HTTPException(status_code=500, detail="Failed to send messages via ManyChat API.")
-        return {"status": "processing"}
+        manychat_response = requests.post(manychat_api_url,
+                                          headers=headers,
+                                          json=payload)
+
+        # Check if the request was successful
+        if manychat_response.status_code != 200:
+            logging.error(
+                f"Failed to send messages via ManyChat API: {manychat_response.text}"
+            )
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to send messages via ManyChat API.")
+
+        #return  {"status": "success"}
+        return {
+            "version": "v2",
+            "content": {
+                "type": user_query.channel,
+                "messages": messages,
+            },
+            "message_tag": "ACCOUNT_UPDATE",
+        }  
+
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500,
+                            detail="Failed to parse the response as JSON.")
 
 
 @app.post("/chat/botconversa")
 async def send_message(user_query: RequestBodyBotConversa):
     # Prepare the input for the agent
-    context_docs = retriever.get_relevant_documents(user_query.prompt)
+    context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
+                                           user_query.prompt)
     context = "\n".join([doc.page_content for doc in context_docs])
 
-    agent_input = {
-        "input": user_query.prompt,
-        "chat_history": chat_history['user_id'],
-        "context": context,
-        "response_examples_json": response_examples_botconversa_json,
-        "channel": "whatsapp",
-    }
+    chat_history_list = chat_history['user_id']  # Alterado de str para lista
+    try:
+        response = await asyncio.wait_for(asyncio.to_thread(
+            chain.invoke, {
+                "input": user_query.prompt,
+                "chat_history": chat_history_list,
+                "context": context,
+                "response_examples_json": response_examples_botconversa_json,
+                "channel": "whatsapp",
+                "courses": cached_get_courses(),
+                "agent_scratchpad": []
+            }),
+                                          timeout=9.5)
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=408,
+                            detail="Tempo de resposta excedido")
 
-    # Use the agent executor to get the response
-    response = agent_executor.invoke(agent_input)
+
 
     try:
-        response_json = json.loads(response["output"])
+        response_json = json.loads(response["content"])
+
+        print(response_json)
         chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
-        chat_history["user_id"].append(AIMessage(content=response["output"]))
+        chat_history["user_id"].append(AIMessage(content=response["content"]))
         messages = response_json.get("messages", [])
-        print(messages)
 
         # Construct the ManyChat API endpoint
         subscriber_id = user_query.subscriber_id
