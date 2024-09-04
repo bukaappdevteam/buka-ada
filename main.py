@@ -739,12 +739,17 @@ async def send_message(user_query: RequestBodyBotConversa):
 
 
     try:
-        response_json = json.loads(response["content"])
+        # Acessar o conteúdo da resposta corretamente
+        response_content = response.content if isinstance(response, AIMessage) else response["output"]
+        response_json = json.loads(response_content)
 
-        print(response_json)
+        #print(response_json)
+        
+        # Adicionar a resposta ao histórico de mensagens
         chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
-        chat_history["user_id"].append(AIMessage(content=response["content"]))
+        chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
+
 
         # Construct the ManyChat API endpoint
         subscriber_id = user_query.subscriber_id
