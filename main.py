@@ -96,9 +96,11 @@ def get_courses(tool_input: str = None) -> list:
     else:
         return []
 
+
 @lru_cache(maxsize=100)
 def cached_get_courses():
     return get_courses()
+
 
 # Definir uma ferramenta fictícia
 class DummyTool(BaseTool):
@@ -110,6 +112,7 @@ class DummyTool(BaseTool):
 
     async def _arun(self, *args, **kwargs):
         return "This is a dummy tool."
+
 
 # Criar a lista de ferramentas com a ferramenta fictícia
 tools = [DummyTool()]
@@ -608,7 +611,6 @@ Here is additional information about Buka and its processes as context:
 {{CONTEXT}}
 </context>
 """
-
 # Create the few-shot prompt template
 few_shot_prompt = FewShotChatMessagePromptTemplate(
     input_variables=["input"],
@@ -630,6 +632,7 @@ agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 print(cached_get_courses())
 
+
 @app.post("/chat")
 async def handle_query(user_query: UserQuery):
     # Prepare the input for the agent
@@ -643,10 +646,10 @@ async def handle_query(user_query: UserQuery):
             chain.invoke, {
                 "input": user_query.prompt,
                 "chat_history": chat_history_list,
-                "context": context,
-                "response_examples_json": response_examples_json,
-                "channel": user_query.channel,
-                "courses": cached_get_courses(),
+                "CONTEXT": context,
+                "RESPONSE_EXAMPLES_JSON": response_examples_json,
+                "CHANNEL": user_query.channel,
+                "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
             }),
                                           timeout=9.5)
@@ -656,7 +659,8 @@ async def handle_query(user_query: UserQuery):
 
     try:
         # Acessar o conteúdo da resposta corretamente
-        response_content = response.content if isinstance(response, AIMessage) else response["output"]
+        response_content = response.content if isinstance(
+            response, AIMessage) else response["output"]
         response_json = json.loads(response_content)
 
         #print(response_content)
@@ -666,7 +670,7 @@ async def handle_query(user_query: UserQuery):
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
-        print (messages)
+        print(messages)
         # Construct the ManyChat API endpoint
         manychat_api_url = f"https://api.manychat.com/fb/sending/sendContent"
 
@@ -708,7 +712,7 @@ async def handle_query(user_query: UserQuery):
                 "messages": messages,
             },
             "message_tag": "ACCOUNT_UPDATE",
-        }  
+        }
 
     except json.JSONDecodeError:
         raise HTTPException(status_code=500,
@@ -723,15 +727,16 @@ async def send_message(user_query: RequestBodyBotConversa):
     context = "\n".join([doc.page_content for doc in context_docs])
 
     chat_history_list = chat_history['user_id']  # Alterado de str para lista
+
     try:
         response = await asyncio.wait_for(asyncio.to_thread(
             chain.invoke, {
                 "input": user_query.prompt,
                 "chat_history": chat_history_list,
-                "context": context,
-                "response_examples_json": response_examples_botconversa_json,
-                "channel": "whatsapp",
-                "courses": cached_get_courses(),
+                "CONTEXT": context,
+                "RESPONSE_EXAMPLES_JSON": response_examples_botconversa_json,
+                "CHANNEL": "whatsapp",
+                "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
             }),
                                           timeout=9.5)
@@ -739,20 +744,18 @@ async def send_message(user_query: RequestBodyBotConversa):
         raise HTTPException(status_code=408,
                             detail="Tempo de resposta excedido")
 
-
-
     try:
         # Acessar o conteúdo da resposta corretamente
-        response_content = response.content if isinstance(response, AIMessage) else response["output"]
+        response_content = response.content if isinstance(
+            response, AIMessage) else response["output"]
         response_json = json.loads(response_content)
 
         #print(response_json)
-        
+
         # Adicionar a resposta ao histórico de mensagens
         chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
-
 
         # Construct the ManyChat API endpoint
         subscriber_id = user_query.subscriber_id
