@@ -811,7 +811,7 @@ async def send_message(user_query: RequestBodyBotConversa):
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/chat/bot-whatsapp")
-async def send_message(user_query: RequestBodyBotConversa):
+async def send_bot_message(user_query: RequestBodyBotConversa):
     # Prepare the input for the agent
     context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
                                            user_query.prompt)
@@ -856,25 +856,24 @@ async def send_message(user_query: RequestBodyBotConversa):
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/chat/bot-chatwoot")
-async def send_bot_message(user_query: RequestBodyChatwoot):
+async def send_chatwoot_message(user_query: RequestBodyChatwoot):
     # Prepare the input for the agent
-    context_docs = retriever.get_relevant_documents( user_query.prompt);
+    context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
     context = "\n".join([doc.page_content for doc in context_docs])
 
     chat_history_list = chat_history['user_id']  # Alterado de str para lista
 
-    
-    response = await chain.invoke({
-        "input": user_query.prompt,
-        "chat_history": chat_history_list,
-                "CONTEXT": context,
-                "RESPONSE_EXAMPLES_JSON": response_examples_botconversa_json,
-                "CHANNEL": user_query.channel,
-                "COURSES": cached_get_courses(),
-                "agent_scratchpad": []
-            })
-
     try:
+        response = await asyncio.to_thread(chain.invoke, {
+            "input": user_query.prompt,
+            "chat_history": chat_history_list,
+            "CONTEXT": context,
+            "RESPONSE_EXAMPLES_JSON": response_examples_botconversa_json,
+            "CHANNEL": user_query.channel,
+            "COURSES": cached_get_courses(),
+            "agent_scratchpad": []
+        })
+
         # Acessar o conteúdo da resposta corretamente
         response_content = response.content if isinstance(
             response, AIMessage) else response["output"]
@@ -885,7 +884,6 @@ async def send_bot_message(user_query: RequestBodyChatwoot):
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
-        
         # Send the messages to Chatwoot
         headers = {            
             "Content-Type": "application/json",
@@ -894,7 +892,6 @@ async def send_bot_message(user_query: RequestBodyChatwoot):
 
         async with httpx.AsyncClient() as client:
             for message in messages:
-
                 message_data = {
                     "content": message
                 }
@@ -909,4 +906,5 @@ async def send_bot_message(user_query: RequestBodyChatwoot):
         return {"success": True}
 
     except Exception as e:
+        logging.error(f"Error in send_bot_message: {e}")
         raise HTTPException(status_code=400, detail=str(e))
