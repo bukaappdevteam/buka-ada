@@ -924,7 +924,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                                 #"linkPreview": "false"
                             }
                         }
-                        fullURLEvolutionAPI = urlEvolutionAPI+"/message/sendText/"+nameInstanceEvolutionAPI
+                        fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendText/{nameInstanceEvolutionAPI}"
                         
                         send_response = await client.post(
                         fullURLEvolutionAPI,
@@ -946,7 +946,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                                 "presence": "composing",
                             }
                         }
-                        fullURLEvolutionAPI = urlEvolutionAPI+"/message/sendMedia/"+nameInstanceEvolutionAPI
+                        fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
 
                         send_response = await client.post(
                         fullURLEvolutionAPI,
