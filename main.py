@@ -819,7 +819,7 @@ async def send_message(user_query: RequestBodyBotConversa):
                 "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
             }),
-                                          timeout=9.5)
+                                          timeout=15)
     except asyncio.TimeoutError:
         raise HTTPException(status_code=408,
                             detail="Tempo de resposta excedido")
