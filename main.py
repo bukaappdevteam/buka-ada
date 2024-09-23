@@ -48,10 +48,10 @@ class UserQuery(BaseModel):
 #Chatwoot
 
 class RequestBodyChatwoot(BaseModel):
-    url_chatwoot_: str
+    url_chatwoot: str
     token_chatwoot: str
     account_chatwoot: str
-    conversation_id: str
+    #conversation_id: str
     channel: str
     phone: str
     prompt: str
