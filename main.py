@@ -854,8 +854,8 @@ async def send_message(user_query: RequestBodyBotConversa):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/chat/bot-whatsapp")
-async def send_bot_whatsapp_message(user_query: RequestBodyChatwoot):
+@app.post("/chat/bot-chatwoot")
+async def send_bot_message(user_query: RequestBodyChatwoot):
     # Prepare the input for the agent
     context_docs = await retriever.get_relevant_documents( user_query.prompt);
     context = "\n".join([doc.page_content for doc in context_docs])
