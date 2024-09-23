@@ -886,7 +886,6 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                         headers=headersEvolutionAPI,
                         )
                         send_response.raise_for_status()
-                        await asyncio.sleep(1)
                     elif (message["type"] == "file"):
                         payload = {
                             "number": user_query.phone,
@@ -907,7 +906,6 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                         headers=headersEvolutionAPI,
                         )
                         send_response.raise_for_status()
-                        await asyncio.sleep(1)
 
 
         return {"success": True}
