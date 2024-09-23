@@ -113,19 +113,19 @@ def cached_get_courses():
 
 
 # Definir uma ferramenta fictícia
-class DummyTool(BaseTool):
-    name = "dummy_tool"
-    description = "A dummy tool that does nothing."
+#class DummyTool(BaseTool):
+#    name = "dummy_tool"
+#    description = "A dummy tool that does nothing."
 
-    def _run(self, *args, **kwargs):
-        return "This is a dummy tool."
+#    def _run(self, *args, **kwargs):
+#        return "This is a dummy tool."
 
-    async def _arun(self, *args, **kwargs):
-        return "This is a dummy tool."
+#    async def _arun(self, *args, **kwargs):
+#        return "This is a dummy tool."
 
 
 # Criar a lista de ferramentas com a ferramenta fictícia
-tools = [DummyTool()]
+#tools = [DummyTool()]
 
 example_output = {
     "channel": "string",
@@ -639,8 +639,8 @@ qa_prompt = ChatPromptTemplate.from_messages([
 
 # Create the agent with the dummy tool
 chain = qa_prompt | llm
-agent = create_openai_tools_agent(llm, tools, prompt=qa_prompt)
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+#agent = create_openai_tools_agent(llm, tools, prompt=qa_prompt)
+#agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 print(cached_get_courses())
 
