@@ -48,10 +48,11 @@ class UserQuery(BaseModel):
 #Chatwoot
 
 class RequestBodyChatwoot(BaseModel):
+    chatwoot_api_url: str
     url_chatwoot: str
     token_chatwoot: str
     account_chatwoot: str
-    #conversation_id: str
+    conversation_id: str
     channel: str
     phone: str
     prompt: str
@@ -884,10 +885,9 @@ async def send_bot_message(user_query: RequestBodyChatwoot):
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
-
+        
         # Send the messages to Chatwoot
-        headers = {
-            
+        headers = {            
             "Content-Type": "application/json",
             "api_access_token": user_query.api_access_token
         }
@@ -900,7 +900,7 @@ async def send_bot_message(user_query: RequestBodyChatwoot):
                 }
 
                 send_response = await client.post(
-                    user_query.api_url,
+                    user_query.chatwoot_api_url,
                     json=message_data,
                     headers=headers,
                 )
