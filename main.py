@@ -902,6 +902,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                     headers=headers,
                 )
                 send_response.raise_for_status()
+                await asyncio.sleep(1)
 
         return {"success": True}
 
