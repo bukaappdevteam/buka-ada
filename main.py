@@ -45,7 +45,6 @@ class UserQuery(BaseModel):
     channel: str
     prompt: str
 
-
 #Chatwoot
 
 class RequestBodyChatwoot(BaseModel):
@@ -53,9 +52,9 @@ class RequestBodyChatwoot(BaseModel):
     token_chatwoot: str
     account_chatwoot: str
     conversation_id: str
+    channel: str
     phone: str
     prompt: str
-
 
 #BotConversa
 
@@ -70,7 +69,6 @@ class RequestBodyBotConversa(BaseModel):
     subscriber_id: str = Field(default=None,
                                description="Optional Subscriber ID")
     prompt: str
-
 
 
 def get_phone_url(phone: str) -> str:
@@ -812,7 +810,7 @@ async def send_message(user_query: RequestBodyBotConversa):
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/chat/bot-whatsapp")
-async def send_bot_whatsapp_message(user_query: RequestBodyChatwoot):
+async def send_message(user_query: RequestBodyBotConversa):
     # Prepare the input for the agent
     context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
                                            user_query.prompt)
@@ -847,29 +845,11 @@ async def send_bot_whatsapp_message(user_query: RequestBodyChatwoot):
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
-
-        # Send the messages to ManyChat API
-        headers = {
-            
-            "Content-Type": "application/json",
-            "api_access_token": user_query.api_access_token
+        # Return the messages and channel instead of sending them
+        return {
+            "channel": "whatsapp",
+            "messages": messages,
         }
-
-        async with httpx.AsyncClient() as client:
-            for message in messages:
-
-                message_data = {
-                    "content": message
-                }
-
-                send_response = await client.post(
-                    user_query.api_url,
-                    json=message_data,
-                    headers=headers,
-                )
-                send_response.raise_for_status()
-
-        return {"success": True}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
