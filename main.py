@@ -884,25 +884,74 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
-        # Send the messages to Chatwoot
-        headers = {            
+        # headers Chatwoot
+        headersChatwoot = {            
             "Content-Type": "application/json",
             "api_access_token": user_query.token_chatwoot
         }
 
+        # headers EvolutionAPI
+        urlEvolutionAPI = os.getenv('EVOLUTION_API_V2_URL') if os.getenv('EVOLUTION_API_V2_URL') else ""
+        nameInstanceEvolutionAPI = os.getenv('EVOLUTION_API_INSTANCE_NAME') if os.getenv('EVOLUTION_API_INSTANCE_NAME') else ""
+        headersEvolutionAPI = {            
+            "Content-Type": "application/json",
+            "apiKey": os.getenv('EVOLUTION_API_KEY') if os.getenv('EVOLUTION_API_KEY') else "",
+        }
+
         async with httpx.AsyncClient() as client:
             for message in messages:
-                message_data = {
-                    "content": message["value"]
-                }
 
-                send_response = await client.post(
+                if (user_query.channel != "whatsapp"): 
+                    message_data = {
+                        "content": message["value"]
+                    }
+
+                    send_response = await client.post(
                     user_query.chatwoot_api_url,
                     json=message_data,
-                    headers=headers,
-                )
-                send_response.raise_for_status()
-                await asyncio.sleep(1)
+                    headers=headersChatwoot,
+                    )
+                    send_response.raise_for_status()
+                    await asyncio.sleep(1)
+                else:
+                    if (message["type"] == "text"):
+                        payload = {
+                            "number": user_query.phone,
+                            "text": message["value"],
+                            "options": {
+                                "delay": 500,
+                                "presence": "composing",
+                                #"linkPreview": "false"
+                            }
+                        }
+
+                        send_response = await client.post(
+                        urlEvolutionAPI+"/message/sendText/"+nameInstanceEvolutionAPI,
+                        json=payload,
+                        headers=headersEvolutionAPI,
+                        )
+                        send_response.raise_for_status()
+                    elif (message["type"] == "file"):
+                        payload = {
+                            "number": user_query.phone,
+                            "mediatype": "image", # image, video or document
+                            "mimetype": "image/png",
+                            "caption": "Imagem do Curso",
+                            "media": message["value"], #/* url or base64 */
+                            "fileName": "ImagemDoCurso.png",
+                            "options": {
+                                "delay": 500,
+                                "presence": "composing",
+                            }
+                        }
+
+                        send_response = await client.post(
+                        urlEvolutionAPI+"/message/sendMedia/"+nameInstanceEvolutionAPI,
+                        json=payload,
+                        headers=headersEvolutionAPI,
+                        )
+                        send_response.raise_for_status()
+
 
         return {"success": True}
 
