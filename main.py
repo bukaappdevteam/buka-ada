@@ -858,7 +858,7 @@ async def send_message(user_query: RequestBodyBotConversa):
 @app.post("/chat/bot-chatwoot")
 async def send_bot_message(user_query: RequestBodyChatwoot):
     # Prepare the input for the agent
-    context_docs = await retriever.get_relevant_documents( user_query.prompt);
+    context_docs = retriever.get_relevant_documents( user_query.prompt);
     context = "\n".join([doc.page_content for doc in context_docs])
 
     chat_history_list = chat_history['user_id']  # Alterado de str para lista
