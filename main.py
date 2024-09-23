@@ -812,7 +812,7 @@ async def send_message(user_query: RequestBodyBotConversa):
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/chat/bot-whatsapp")
-async def send_message(user_query: RequestBodyChatwoot):
+async def send_bot_whatsapp_message(user_query: RequestBodyChatwoot):
     # Prepare the input for the agent
     context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
                                            user_query.prompt)
