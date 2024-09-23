@@ -802,15 +802,13 @@ async def send_message(user_query: RequestBodyBotConversa):
 @app.post("/chat/bot-whatsapp")
 async def send_message(user_query: RequestBodyBotConversa):
     # Prepare the input for the agent
-    context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
-                                           user_query.prompt)
+    context_docs = await retriever.get_relevant_documents(user_query.prompt)
     context = "\n".join([doc.page_content for doc in context_docs])
 
     chat_history_list = chat_history['user_id']  # Alterado de str para lista
 
     try:
-        response = await asyncio.wait_for(asyncio.to_thread(
-            chain.invoke, {
+        response = await chain.invoke, {
                 "input": user_query.prompt,
                 "chat_history": chat_history_list,
                 "CONTEXT": context,
@@ -818,11 +816,9 @@ async def send_message(user_query: RequestBodyBotConversa):
                 "CHANNEL": "whatsapp",
                 "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
-            }),
-                                          timeout=15)
-    except asyncio.TimeoutError:
-        raise HTTPException(status_code=408,
-                            detail="Tempo de resposta excedido")
+            }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     try:
         # Acessar o conteúdo da resposta corretamente
