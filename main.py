@@ -895,7 +895,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
         nameInstanceEvolutionAPI = os.getenv('EVOLUTION_API_INSTANCE_NAME') if os.getenv('EVOLUTION_API_INSTANCE_NAME') else ""
         headersEvolutionAPI = {            
             "Content-Type": "application/json",
-            "apiKey": os.getenv('EVOLUTION_API_KEY') if os.getenv('EVOLUTION_API_KEY') else "",
+            "apiKey": os.getenv('EVOLUTION_API_V2_KEY') if os.getenv('EVOLUTION_API_V2_KEY') else "",
         }
 
         async with httpx.AsyncClient() as client:
