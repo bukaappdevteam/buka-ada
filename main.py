@@ -887,7 +887,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
         # Send the messages to Chatwoot
         headers = {            
             "Content-Type": "application/json",
-            "api_access_token": user_query.api_access_token
+            "api_access_token": user_query.token_chatwoot
         }
 
         async with httpx.AsyncClient() as client:
