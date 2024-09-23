@@ -893,7 +893,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
         async with httpx.AsyncClient() as client:
             for message in messages:
                 message_data = {
-                    "content": message
+                    "content": message["value"]
                 }
 
                 send_response = await client.post(
