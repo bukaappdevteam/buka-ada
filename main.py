@@ -810,51 +810,6 @@ async def send_message(user_query: RequestBodyBotConversa):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/chat/bot-whatsapp")
-async def send_bot_message(user_query: RequestBodyBotConversa):
-    # Prepare the input for the agent
-    context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
-                                           user_query.prompt)
-    context = "\n".join([doc.page_content for doc in context_docs])
-
-    chat_history_list = chat_history['user_id']  # Alterado de str para lista
-
-    try:
-        response = await asyncio.wait_for(asyncio.to_thread(
-            chain.invoke, {
-                "input": user_query.prompt,
-                "chat_history": chat_history_list,
-                "CONTEXT": context,
-                "RESPONSE_EXAMPLES_JSON": response_examples_botconversa_json,
-                "CHANNEL": "whatsapp",
-                "COURSES": cached_get_courses(),
-                "agent_scratchpad": []
-            }),
-                                          timeout=15)
-    except asyncio.TimeoutError:
-        raise HTTPException(status_code=408,
-                            detail="Tempo de resposta excedido")
-
-    try:
-        # Acessar o conteúdo da resposta corretamente
-        response_content = response.content if isinstance(
-            response, AIMessage) else response["output"]
-        response_json = json.loads(response_content)
-
-        # Adicionar a resposta ao histórico de mensagens
-        chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
-        chat_history["user_id"].append(AIMessage(content=response_content))
-        messages = response_json.get("messages", [])
-
-        # Return the messages and channel instead of sending them
-        return {
-            "channel": "whatsapp",
-            "messages": messages,
-        }
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
 @app.post("/chat/bot-chatwoot")
 async def send_chatwoot_message(user_query: RequestBodyChatwoot):
     # Prepare the input for the agent
@@ -931,6 +886,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                         headers=headersEvolutionAPI,
                         )
                         send_response.raise_for_status()
+                        await asyncio.sleep(1)
                     elif (message["type"] == "file"):
                         payload = {
                             "number": user_query.phone,
@@ -951,6 +907,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                         headers=headersEvolutionAPI,
                         )
                         send_response.raise_for_status()
+                        await asyncio.sleep(1)
 
 
         return {"success": True}
