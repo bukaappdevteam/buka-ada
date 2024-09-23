@@ -857,27 +857,21 @@ async def send_message(user_query: RequestBodyBotConversa):
 @app.post("/chat/bot-whatsapp")
 async def send_bot_whatsapp_message(user_query: RequestBodyChatwoot):
     # Prepare the input for the agent
-    context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
-                                           user_query.prompt)
+    context_docs = await retriever.get_relevant_documents( user_query.prompt);
     context = "\n".join([doc.page_content for doc in context_docs])
 
     chat_history_list = chat_history['user_id']  # Alterado de str para lista
 
-    try:
-        response = await asyncio.wait_for(asyncio.to_thread(
-            chain.invoke, {
-                "input": user_query.prompt,
-                "chat_history": chat_history_list,
+    
+    response = await chain.invoke({
+        "input": user_query.prompt,
+        "chat_history": chat_history_list,
                 "CONTEXT": context,
                 "RESPONSE_EXAMPLES_JSON": response_examples_botconversa_json,
                 "CHANNEL": user_query.channel,
                 "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
-            }),
-                                          timeout=15)
-    except asyncio.TimeoutError:
-        raise HTTPException(status_code=408,
-                            detail="Tempo de resposta excedido")
+            })
 
     try:
         # Acessar o conteúdo da resposta corretamente
@@ -891,7 +885,7 @@ async def send_bot_whatsapp_message(user_query: RequestBodyChatwoot):
         messages = response_json.get("messages", [])
 
 
-        # Send the messages to ManyChat API
+        # Send the messages to Chatwoot
         headers = {
             
             "Content-Type": "application/json",
