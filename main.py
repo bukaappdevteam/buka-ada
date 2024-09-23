@@ -798,7 +798,7 @@ async def send_message(user_query: RequestBodyBotConversa):
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
+        
 @app.post("/chat/bot-whatsapp")
 async def send_message(user_query: RequestBodyBotConversa):
     # Prepare the input for the agent
