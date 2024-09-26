@@ -900,64 +900,66 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
 
         async with httpx.AsyncClient() as client:
             for message in messages:
-
-                if (user_query.channel != "whatsapp"): 
-                    message_data = {
-                        "content": message["value"]
-                    }
-
-                    send_response = await client.post(
-                    user_query.chatwoot_api_url,
-                    json=message_data,
-                    headers=headersChatwoot,
-                    )
-                    send_response.raise_for_status()
-                    await asyncio.sleep(1)
-                else:
-                    if (message["type"] == "text"):
-                        payload = {
-                            "number": user_query.phone,
-                            "text": message["value"],
-                            "options": {
-                                "delay": 500,
-                                "presence": "composing",
-                                #"linkPreview": "false"
-                            }
+                try:
+                    if user_query.channel != "whatsapp": 
+                        message_data = {
+                            "content": message["value"]
                         }
-                        fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendText/{nameInstanceEvolutionAPI}"
-                        
-                        send_response = await client.post(
-                        fullURLEvolutionAPI,
-                        json=payload,
-                        headers=headersEvolutionAPI,
-                        )
-                        send_response.raise_for_status()
-                        
-                    elif (message["type"] == "file"):
-                        payload = {
-                            "number": user_query.phone,
-                            "mediatype": "image", # image, video or document
-                            "mimetype": "image/png",
-                            "caption": "Imagem do Curso",
-                            "media": message["value"], #/* url or base64 */
-                            "fileName": "ImagemDoCurso.png",
-                            "options": {
-                                "delay": 500,
-                                "presence": "composing",
-                            }
-                        }
-                        fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
 
                         send_response = await client.post(
-                        fullURLEvolutionAPI,
-                        json=payload,
-                        headers=headersEvolutionAPI,
+                            user_query.chatwoot_api_url,
+                            json=message_data,
+                            headers=headersChatwoot,
                         )
                         send_response.raise_for_status()
-                        
+                        await asyncio.sleep(1)
+                    else:
+                        if message["type"] == "text":
+                            payload = {
+                                "number": user_query.phone,
+                                "text": message["value"],
+                                "options": {
+                                    "delay": 500,
+                                    "presence": "composing",
+                                }
+                            }
+                            fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendText/{nameInstanceEvolutionAPI}"
+                            
+                            send_response = await client.post(
+                                fullURLEvolutionAPI,
+                                json=payload,
+                                headers=headersEvolutionAPI,
+                            )
+                            send_response.raise_for_status()
+                            
+                        elif message["type"] == "file":
+                            payload = {
+                                "number": user_query.phone,
+                                "mediatype": "image",  # image, video or document
+                                "mimetype": "image/png",
+                                "caption": "Imagem do Curso",
+                                "media": message["value"],  # /* url or base64 */
+                                "fileName": "ImagemDoCurso.png",
+                                "options": {
+                                    "delay": 500,
+                                    "presence": "composing",
+                                }
+                            }
+                            fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
+
+                            send_response = await client.post(
+                                fullURLEvolutionAPI,
+                                json=payload,
+                                headers=headersEvolutionAPI,
+                            )
+                            send_response.raise_for_status()
+
+                except httpx.HTTPStatusError as e:
+                    logging.error(f"Failed to send message: {e.response.status_code} - {e.response.text}")
+                    # Continue to the next message without breaking the loop
 
         return {"success": True}
 
     except Exception as e:
-        logging.error(f"Error in send_bot_message: {e}")
+        logging.error(f"Error in send_chatwoot_message: {e}")
         raise HTTPException(status_code=400, detail=str(e))
