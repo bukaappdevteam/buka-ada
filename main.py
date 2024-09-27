@@ -645,6 +645,7 @@ chain = qa_prompt | llm
 
 print(cached_get_courses())
 
+
 @app.post("/chat")
 async def handle_query(user_query: UserQuery):
     # Prepare the input for the agent
@@ -702,7 +703,7 @@ async def handle_query(user_query: UserQuery):
             logging.error(f"Failed to send messages via ManyChat API: {manychat_response.text}")
             raise HTTPException(status_code=500, detail=f"Failed to send messages via ManyChat API: {manychat_response.text}")
 
-        return {"status": manychat_response.json(), "response": manychat_response }
+        return { "response": manychat_response.json()}
 
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
