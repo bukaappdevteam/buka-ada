@@ -685,6 +685,8 @@ async def handle_query(user_query: UserQuery):
             "subscriber_id": user_query.subscriber_id,
             "data": {
                 "version": "v2",
+                # Add the "type" field if the channel is "instagram"
+                **({"type": user_query.channel} if user_query.channel == "instagram" else {}),
                 "content": {
                     "messages": messages,
                 }
@@ -692,8 +694,8 @@ async def handle_query(user_query: UserQuery):
             "message_tag": "ACCOUNT_UPDATE",
         }
 
-        print("payload: ",payload);
-        
+        print("payload: ", payload);
+
         # Send the messages to ManyChat API
         headers = {
             "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
