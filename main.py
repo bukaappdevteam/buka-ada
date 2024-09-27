@@ -698,96 +698,21 @@ async def handle_query(user_query: UserQuery):
 
         manychat_response = requests.post(manychat_api_url, headers=headers, json=payload)
 
+        # Log the response for debugging
+        logging.info(f"ManyChat API response: {manychat_response.status_code} - {manychat_response.text}")
+
         # Check if the request was successful
         if manychat_response.status_code != 200:
             logging.error(f"Failed to send messages via ManyChat API: {manychat_response.text}")
             raise HTTPException(status_code=500, detail=f"Failed to send messages via ManyChat API: {manychat_response.text}")
 
-        return { "response": manychat_response.json()}
+        return {"response": manychat_response.json()}
 
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
     except Exception as e:
         logging.error(f"Error in /chat endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
-
-@app.post("/chat/botconversa")
-async def send_message(user_query: RequestBodyBotConversa):
-    # Prepare the input for the agent
-    context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
-                                           user_query.prompt)
-    context = "\n".join([doc.page_content for doc in context_docs])
-
-    chat_history_list = chat_history['user_id']  # Alterado de str para lista
-
-    try:
-        response = await asyncio.wait_for(asyncio.to_thread(
-            chain.invoke, {
-                "input": user_query.prompt,
-                "chat_history": chat_history_list,
-                "CONTEXT": context,
-                "RESPONSE_EXAMPLES_JSON": response_examples_botconversa_json,
-                "CHANNEL": "whatsapp",
-                "COURSES": cached_get_courses(),
-                "agent_scratchpad": []
-            }),
-                                          timeout=9.5)
-    except asyncio.TimeoutError:
-        raise HTTPException(status_code=408,
-                            detail="Tempo de resposta excedido")
-
-    try:
-        # Acessar o conteúdo da resposta corretamente
-        response_content = response.content if isinstance(
-            response, AIMessage) else response["output"]
-        response_json = json.loads(response_content)
-
-        #print(response_json)
-
-        # Adicionar a resposta ao histórico de mensagens
-        chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
-        chat_history["user_id"].append(AIMessage(content=response_content))
-        messages = response_json.get("messages", [])
-
-        # Construct the ManyChat API endpoint
-        subscriber_id = user_query.subscriber_id
-
-        # If subscriber_id is not provided, fetch it using the phone number
-        if not subscriber_id:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(get_phone_url(user_query.phone),
-                                            headers=headersBotConversa)
-                response.raise_for_status()
-                subscriber_id = response.json().get('id')
-
-        if not subscriber_id:
-            raise HTTPException(status_code=404,
-                                detail="Subscriber ID not found")
-
-        # Send each message in the array one at a time
-        async with httpx.AsyncClient() as client:
-            for message in messages:
-                message_type = message.get("type")
-                if message_type not in ["text", "file"]:
-                    raise ValueError(
-                        "Invalid message type. Only 'text' and 'file' are allowed."
-                    )
-
-                message_data = {
-                    "type": message_type,
-                    "value":
-                    message["value"]  # Send the provided value directly
-                }
-                send_response = await client.post(
-                    send_message_url(subscriber_id),
-                    json=message_data,
-                    headers=headersBotConversa)
-                send_response.raise_for_status()
-
-        return {"success": True, "subscriber_id": subscriber_id}
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/chat/bot-whatsapp")
 async def send_bot_message(user_query: RequestBodyBotConversa):
