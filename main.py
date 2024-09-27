@@ -655,7 +655,7 @@ async def handle_query(user_query: UserQuery):
 
     chat_history_list = chat_history['user_id']  # Alterado de str para lista
     try:
-        response = await asyncio.wait_for(asyncio.to_thread(
+        response = asyncio.to_thread(
             chain.invoke, {
                 "input": user_query.prompt,
                 "chat_history": chat_history_list,
@@ -664,13 +664,7 @@ async def handle_query(user_query: UserQuery):
                 "CHANNEL": user_query.channel,
                 "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
-            }),
-                                          timeout=9.5)
-    except asyncio.TimeoutError:
-        raise HTTPException(status_code=408,
-                            detail="Tempo de resposta excedido")
-
-    try:
+            })
         # Acessar o conteúdo da resposta corretamente
         response_content = response.content if isinstance(
             response, AIMessage) else response["output"]
@@ -717,15 +711,15 @@ async def handle_query(user_query: UserQuery):
                 status_code=500,
                 detail="Failed to send messages via ManyChat API.")
 
-        #return  {"status": "success"}
-        return {
-            "version": "v2",
-            "content": {
-                "type": user_query.channel,
-                "messages": messages,
-            },
-            "message_tag": "ACCOUNT_UPDATE",
-        }
+        return  {"status": "success"}
+        #return {
+        #    "version": "v2",
+        #    "content": {
+        #        "type": user_query.channel,
+        #        "messages": messages,
+        #    },
+        #    "message_tag": "ACCOUNT_UPDATE",
+        #}
 
     except json.JSONDecodeError:
         raise HTTPException(status_code=500,
