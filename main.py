@@ -675,6 +675,8 @@ async def handle_query(user_query: UserQuery):
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
+        print(messages: messages);
+
         # Construct the ManyChat API endpoint
         manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
 
@@ -690,6 +692,8 @@ async def handle_query(user_query: UserQuery):
             "message_tag": "ACCOUNT_UPDATE",
         }
 
+        print("payload": payload);
+        
         # Send the messages to ManyChat API
         headers = {
             "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
