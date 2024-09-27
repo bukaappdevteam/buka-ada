@@ -645,17 +645,15 @@ chain = qa_prompt | llm
 
 print(cached_get_courses())
 
-
 @app.post("/chat")
 async def handle_query(user_query: UserQuery):
     # Prepare the input for the agent
-    context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
-                                           user_query.prompt)
+    context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
     context = "\n".join([doc.page_content for doc in context_docs])
 
-    chat_history_list = chat_history['user_id']  # Alterado de str para lista
+    chat_history_list = chat_history['user_id']  # Ensure this is user-specific if needed
     try:
-        response = asyncio.to_thread(
+        response = await asyncio.to_thread(
             chain.invoke, {
                 "input": user_query.prompt,
                 "chat_history": chat_history_list,
@@ -664,67 +662,53 @@ async def handle_query(user_query: UserQuery):
                 "CHANNEL": user_query.channel,
                 "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
-            })
-        # Acessar o conteúdo da resposta corretamente
-        response_content = response.content if isinstance(
-            response, AIMessage) else response["output"]
+            }
+        )
+
+        # Access the content of the response correctly
+        response_content = response.content if isinstance(response, AIMessage) else response["output"]
         response_json = json.loads(response_content)
 
-        #print(response_content)
-
-        # Adicionar a resposta ao histórico de mensagens
+        # Add the user query and AI response to chat history
         chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
-        print(messages)
         # Construct the ManyChat API endpoint
-        manychat_api_url = f"https://api.manychat.com/fb/sending/sendContent"
+        manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
 
-        # Send the messages to ManyChat API
-        headers = {
-            "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
-            "Content-Type": "application/json"
-        }
+        # Prepare the payload for ManyChat
         payload = {
             "subscriber_id": user_query.subscriber_id,
             "data": {
                 "version": "v2",
                 "content": {
-                    "type": user_query.channel,
                     "messages": messages,
                 }
             },
             "message_tag": "ACCOUNT_UPDATE",
         }
 
-        manychat_response = requests.post(manychat_api_url,
-                                          headers=headers,
-                                          json=payload)
+        # Send the messages to ManyChat API
+        headers = {
+            "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
+            "Content-Type": "application/json"
+        }
+
+        manychat_response = requests.post(manychat_api_url, headers=headers, json=payload)
 
         # Check if the request was successful
         if manychat_response.status_code != 200:
-            logging.error(
-                f"Failed to send messages via ManyChat API: {manychat_response.text}"
-            )
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to send messages via ManyChat API.")
+            logging.error(f"Failed to send messages via ManyChat API: {manychat_response.text}")
+            raise HTTPException(status_code=500, detail=f"Failed to send messages via ManyChat API: {manychat_response.text}")
 
-        return  {"status": "success"}
-        #return {
-        #    "version": "v2",
-        #    "content": {
-        #        "type": user_query.channel,
-        #        "messages": messages,
-        #    },
-        #    "message_tag": "ACCOUNT_UPDATE",
-        #}
+        return {"status": "success", "response": manychat_response.json()}
 
     except json.JSONDecodeError:
-        raise HTTPException(status_code=500,
-                            detail="Failed to parse the response as JSON.")
-
+        raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
+    except Exception as e:
+        logging.error(f"Error in /chat endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
 
 @app.post("/chat/botconversa")
 async def send_message(user_query: RequestBodyBotConversa):
