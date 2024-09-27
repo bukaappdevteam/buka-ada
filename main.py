@@ -664,8 +664,8 @@ async def handle_query(user_query: UserQuery):
             "data": {
                 "version": "v2",
                 # Add the "type" field if the channel is "instagram"
-                **({"type": user_query.channel} if user_query.channel == "instagram" else {}),
                 "content": {
+                    **({"type": user_query.channel} if user_query.channel == "instagram" else {}),
                     "messages": messages,
                 }
             },
