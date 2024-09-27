@@ -184,31 +184,9 @@ response_examples = [
                 "Excelente pergunta! Estou entusiasmada em apresentar-lhe nossa gama diversificada de cursos transformadores. Cada um deles foi criado não apenas para ensinar, mas para inspirar e capacitar. Aqui está uma visão geral dos nossos cursos:"
             }, {
                 "type":
-                "cards",
-                "elements": [
-                    {
-                        "title":
-                        "Curso de Recursos Humanos com Aplicação às Novas Tecnologias",
-                        "subtitle":
-                        "Lidere a revolução no RH, moldando o futuro da gestão de pessoas.",
-                        "image_url":
-                        "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2Frecursos-humanas-tecnologias.jpeg?alt=media&token=d12998b8-de54-490a-b28f-ea29c060e185",
-                    },
-                    {
-                        "title":
-                        "Administração Windows Server 2022",
-                        "subtitle":
-                        "Domine a arte de gerenciar servidores e torne-se indispensável no mundo da TI.",
-                    },
-                    {
-                        "title":
-                        "Higiene e Segurança no Trabalho",
-                        "subtitle":
-                        "Torne-se um guardião da segurança, protegendo vidas e transformando ambientes de trabalho.",
-                    },
-                ],
-                "image_aspect_ratio":
-                "horizontal"
+                "text",
+                "text":
+                "*1. Curso de Recursos Humanos com Aplicação às Novas Tecnologias*\n📌 Lidere a revolução no RH, moldando o futuro da gestão de pessoas.\n\n*2. Administração Windows Server 2022*\n📌 Domine a arte de gerenciar servidores e torne-se indispensável no mundo da TI.\n\n*3. Higiene e Segurança no Trabalho*\n📌 Torne-se um guardião da segurança, protegendo vidas e transformando ambientes de trabalho.\n\n*4. Curso de Power BI (Business Intelligence)*\n📌 Desbloqueie o poder dos dados e torne-se um visionário nos negócios.\n\n*5. Curso Base de Dados Relacional com MySQL*\n📌 Torne-se um mestre em dados, construindo a espinha dorsal da era digital."
             }, {
                 "type":
                 "text",
