@@ -39,8 +39,8 @@ app.add_middleware(
 llm = ChatOpenAI(
     model="gpt-4o-mini-2024-07-18",
     streaming=True,  # Enable streaming if required
+    temperature=0,
     model_kwargs={
-        "temperature": 0,
         'response_format': {"type": "json_object"}
     }
 )
