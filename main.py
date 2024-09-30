@@ -18,6 +18,9 @@ from dotenv import load_dotenv
 import logging
 from functools import lru_cache
 import asyncio
+import ijson
+import io
+from tenacity import retry, wait_exponential, stop_after_attempt
 
 # Load environment variables
 load_dotenv()
@@ -624,6 +627,155 @@ chain = qa_prompt | llm
 print(cached_get_courses())
 
 
+# Helper function to build message payload
+def build_message_payload(channel: str, message: dict, subscriber_id: int) -> dict:
+    """
+    Builds the payload for ManyChat API with conditional inclusion of the 'channel' field.
+
+    Args:
+        channel (str): The platform/channel (e.g., 'facebook', 'instagram').
+        message (dict): The structured message content.
+        subscriber_id (int): The ID of the subscriber/user.
+
+    Returns:
+        dict: The payload to be sent to ManyChat API.
+    """
+    content_message = message  # Assuming messages are already correctly structured
+
+    # Initialize the content dictionary
+    content = {
+        "messages": [content_message]
+    }
+
+    # Include 'channel' only if it's not Facebook Messenger
+    if channel.lower() != "facebook":
+        content["channel"] = channel.lower()
+
+    payload = {
+        "subscriber_id": subscriber_id,
+        "data": {
+            "version": "v2",
+            "content": content
+        },
+        "message_tag": "ACCOUNT_UPDATE",
+    }
+
+    logging.debug(f"Built payload for channel '{channel}': {json.dumps(payload, indent=2)}")
+    return payload
+
+# Initialize a persistent HTTP client
+client = httpx.AsyncClient()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await client.aclose()
+
+@retry(wait=wait_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(3))
+async def send_message_async(message: dict, channel: str, subscriber_id: int):
+    """
+    Sends a single message to the ManyChat API based on the channel with retry logic.
+
+    Args:
+        message (dict): The message content.
+        channel (str): The platform/channel (e.g., 'facebook', 'instagram').
+        subscriber_id (int): The ID of the subscriber/user.
+    """
+    manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"  # Verify if this endpoint is suitable for all channels
+
+    # Build the payload with conditional 'channel' inclusion
+    payload = build_message_payload(channel, message, subscriber_id)
+
+    headers = {
+        "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
+        "Content-Type": "application/json"
+    }
+
+    logging.debug(f"Sending payload to ManyChat: {json.dumps(payload, indent=2)}")
+
+    try:
+        manychat_response = await client.post(manychat_api_url, headers=headers, json=payload)
+        manychat_response.raise_for_status()
+        logging.info(f"ManyChat API response: {manychat_response.status_code} - {manychat_response.text}")
+    except httpx.HTTPStatusError as e:
+        logging.error(f"Failed to send message via ManyChat API: {e.response.text}")
+        raise
+    except Exception as e:
+        logging.error(f"Unexpected error while sending message: {e}")
+        raise
+
+async def event_stream(channel: str, subscriber_id: int):
+    """
+    Handles the streaming of messages, parses them incrementally,
+    and sends each message to ManyChat based on the channel.
+
+    Args:
+        channel (str): The platform/channel for the messages.
+        subscriber_id (int): The ID of the subscriber/user.
+    """
+    buffer = ""
+
+    async for response in llm.stream({
+        "input": user_query.prompt,
+        "chat_history": chat_history_list,
+        "CONTEXT": context,
+        "CHANNEL": channel,
+        "COURSES": cached_get_courses(),
+        "agent_scratchpad": []
+    }):
+        # Append incoming chunk to buffer
+        chunk = response.get("output", "")
+        buffer += chunk
+
+        try:
+            # Define a function to parse messages using ijson
+            def parse_messages(buf):
+                stream = io.StringIO(buf)
+                parser = ijson.items(stream, 'messages.item')
+                return list(parser)
+            
+            # Run parsing in a separate thread
+            messages = await asyncio.to_thread(parse_messages, buffer)
+            
+            for message in messages:
+                await send_message_async(message, channel, subscriber_id)
+
+            # Clear buffer after successful parsing
+            buffer = ""
+        except ijson.common.JSONError:
+            # Incomplete JSON; wait for more data
+            continue
+        except Exception as e:
+            logging.error(f"Error during parsing or sending messages: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/chat-stream")
+async def handle_query_stream(user_query: UserQuery):
+    """
+    Handles incoming chat queries, processes streaming responses,
+    and sends messages to ManyChat based on the specified channel.
+
+    Args:
+        user_query (UserQuery): The user's query containing subscriber_id, channel, and prompt.
+
+    Returns:
+        dict: Success response.
+    """
+    # Prepare the input for the agent
+    context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
+    context = "\n".join([doc.page_content for doc in context_docs])
+    chat_history_list = chat_history['user_id']
+
+    try:
+        await event_stream(
+            channel=user_query.channel,           # Pass the channel from user_query
+            subscriber_id=user_query.subscriber_id
+        )
+    except Exception as e:
+        logging.error(f"Error in /chat endpoint: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
+
+    return {"success": True}
+
 @app.post("/chat")
 async def handle_query(user_query: UserQuery):
     # Prepare the input for the agent
@@ -851,3 +1003,81 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
     except Exception as e:
         logging.error(f"Error in send_chatwoot_message: {e}")
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/chat-stream")
+async def handle_query(user_query: UserQuery):
+    # Prepare the input for the agent
+    context_docs = await asyncio.to_thread(llm.retriever.get_relevant_documents, user_query.prompt)
+    context = "\n".join([doc.page_content for doc in context_docs])
+    chat_history_list = chat_history['user_id']
+
+    async def event_stream():
+        buffer = ""
+        manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
+        headers = {
+            "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
+            "Content-Type": "application/json"
+        }
+
+        async for response in llm.stream({
+            "input": user_query.prompt,
+            "chat_history": chat_history_list,
+            "CONTEXT": context,
+            "CHANNEL": user_query.channel,
+            "COURSES": courses_cache(),
+            "agent_scratchpad": []
+        }):
+            # Assuming response is a dict containing 'output'
+            chunk = response.get("output", "")
+            buffer += chunk
+
+            try:
+                # Incrementally parse messages
+                parser = ijson.items(io.StringIO(buffer), 'messages.item')
+                async for message in asyncio.to_thread(list, parser):
+                    await send_message_async(message, headers, manychat_api_url, user_query.subscriber_id)
+                buffer = ""  # Reset buffer after successful parsing
+            except ijson.JSONError:
+                # Incomplete JSON, wait for more data
+                continue
+            except Exception as e:
+                logging.error(f"Error during parsing or sending messages: {e}")
+                raise HTTPException(status_code=500, detail=str(e))
+
+    async def send_message_async(message, headers, api_url, subscriber_id):
+        message_type = message.get("type")
+        message_content = message.get("text", "")
+
+        payload = {
+            "subscriber_id": subscriber_id,
+            "data": {
+                "version": "v2",
+                "content": {
+                    "messages": [{
+                        "type": message_type,
+                        "text": message_content.strip()
+                    }]
+                }
+            },
+            "message_tag": "ACCOUNT_UPDATE",
+        }
+
+        try:
+            async with httpx.AsyncClient() as client:
+                manychat_response = await client.post(api_url, headers=headers, json=payload)
+                manychat_response.raise_for_status()
+                logging.info(f"ManyChat API response: {manychat_response.status_code} - {manychat_response.text}")
+        except httpx.HTTPStatusError as e:
+            logging.error(f"Failed to send message via ManyChat API: {e.response.text}")
+            # Optionally implement retry logic here
+        except Exception as e:
+            logging.error(f"Unexpected error while sending message: {e}")
+            # Handle other exceptions as needed
+
+    try:
+        await event_stream()
+    except Exception as e:
+        logging.error(f"Error in /chat endpoint: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
+
+    return {"success": True}
