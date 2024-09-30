@@ -36,10 +36,14 @@ app.add_middleware(
 # Initialize FastAPI
 
 # Initialize the language model
-llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",
-                 model_kwargs={'response_format': {
-                     "type": "json_object"
-                 }})
+llm = ChatOpenAI(
+    model="gpt-4o-mini-2024-07-18",
+    streaming=True,  # Enable streaming if required
+    model_kwargs={
+        "temperature": 0,
+        'response_format': {"type": "json_object"}
+    }
+)
 
 
 # Define the request model
@@ -690,18 +694,17 @@ async def send_message_async(message: dict, channel: str, subscriber_id: int):
         "Content-Type": "application/json"
     }
 
-    logging.debug(f"Sending payload to ManyChat: {json.dumps(payload, indent=2)}")
-
     try:
+        # Reuse the persistent HTTP client
         manychat_response = await client.post(manychat_api_url, headers=headers, json=payload)
         manychat_response.raise_for_status()
         logging.info(f"ManyChat API response: {manychat_response.status_code} - {manychat_response.text}")
     except httpx.HTTPStatusError as e:
         logging.error(f"Failed to send message via ManyChat API: {e.response.text}")
-        raise
+        raise  # Triggers retry
     except Exception as e:
         logging.error(f"Unexpected error while sending message: {e}")
-        raise
+        raise  # Triggers retry
 
 async def event_stream(channel: str, subscriber_id: int, prompt: str, chat_history: list, context: str):
     """
@@ -711,42 +714,52 @@ async def event_stream(channel: str, subscriber_id: int, prompt: str, chat_histo
     Args:
         channel (str): The platform/channel for the messages.
         subscriber_id (int): The ID of the subscriber/user.
+        prompt (str): The user's input prompt.
+        chat_history (list): The history of the conversation.
+        context (str): Additional contextual information.
     """
     buffer = ""
 
-    async for response in llm.stream({
-        "input": prompt,
-        "chat_history": chat_history,
-        "CONTEXT": context,
-        "CHANNEL": channel,
-        "COURSES": cached_get_courses(),
-        "agent_scratchpad": []
-    }):
-        # Append incoming chunk to buffer
-        chunk = response.get("output", "")
-        buffer += chunk
+    try:
+        # Initiate the asynchronous stream from the language model using astream
+        async for response in llm.astream({
+            "input": prompt,
+            "chat_history": chat_history,
+            "CONTEXT": context,
+            "CHANNEL": channel,
+            "COURSES": cached_get_courses(),  # Ensure this function is defined
+            "agent_scratchpad": []
+        }):
+            # Append incoming chunk to buffer
+            chunk = response.get("output", "")
+            buffer += chunk
 
-        try:
-            # Define a function to parse messages using ijson
-            def parse_messages(buf):
-                stream = io.StringIO(buf)
-                parser = ijson.items(stream, 'messages.item')
-                return list(parser)
-            
-            # Run parsing in a separate thread
-            messages = await asyncio.to_thread(parse_messages, buffer)
-            
-            for message in messages:
-                await send_message_async(message, channel, subscriber_id)
+            try:
+                # Define a function to parse messages using ijson
+                def parse_messages(buf):
+                    stream = io.StringIO(buf)
+                    parser = ijson.items(stream, 'messages.item')
+                    return list(parser)
 
-            # Clear buffer after successful parsing
-            buffer = ""
-        except ijson.common.JSONError:
-            # Incomplete JSON; wait for more data
-            continue
-        except Exception as e:
-            logging.error(f"Error during parsing or sending messages: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
+                # Run parsing in a separate thread to avoid blocking the event loop
+                messages = await asyncio.to_thread(parse_messages, buffer)
+
+                for message in messages:
+                    await send_message_async(message, channel, subscriber_id)
+
+                # Clear buffer after successful parsing
+                buffer = ""
+
+            except ijson.JSONError:
+                # Incomplete JSON; wait for more data
+                continue
+            except Exception as e:
+                logging.error(f"Error during parsing or sending messages: {e}")
+                raise HTTPException(status_code=500, detail=str(e))
+
+    except Exception as e:
+        logging.error(f"Error in event_stream: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred during streaming.")
 
 @app.post("/chat-stream")
 async def handle_query_stream(user_query: UserQuery):
@@ -761,20 +774,23 @@ async def handle_query_stream(user_query: UserQuery):
         dict: Success response.
     """
     # Prepare the input for the agent
-    context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
+    context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)  # Ensure 'retriever' is defined
     context = "\n".join([doc.page_content for doc in context_docs])
-    chat_history_list = chat_history['user_id']
+    chat_history_list = chat_history.get('user_id', [])
 
     try:
         await event_stream(
-            channel=user_query.channel,           # Pass the channel from user_query
+            channel=user_query.channel,            # Pass the channel from user_query
             subscriber_id=user_query.subscriber_id,
             prompt=user_query.prompt,
             chat_history=chat_history_list,
             context=context
         )
+    except HTTPException as e:
+        # Re-raise FastAPI HTTPExceptions
+        raise e
     except Exception as e:
-        logging.error(f"Error in /chat endpoint: {e}")
+        logging.error(f"Error in /chat-stream endpoint: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
 
     return {"success": True}
