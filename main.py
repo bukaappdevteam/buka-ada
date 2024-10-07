@@ -748,56 +748,57 @@ async def send_bot_message(user_query: RequestBodyBotConversa):
 
 @app.post("/chat/bot-chatwoot")
 async def send_chatwoot_message(user_query: RequestBodyChatwoot):
-    # Prepare the input for the agent
+    # Preparar a entrada para o agente
     context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
     context = "\n".join([doc.page_content for doc in context_docs])
 
     chat_history_list = chat_history['user_id']
 
     try:
-        # Prepare the input for the language model
+        # Preparar os dados de entrada para o modelo de linguagem
         input_data = {
             "chat_history": chat_history_list,
             "CONTEXT": context,
-            "RESPONSE_EXAMPLES_JSON": response_examples_botconversa_json,
+            "RESPONSE_EXAMPLES_JSON": response_examples_botconversa_json,  # Uso correto da variável
             "CHANNEL": user_query.channel,
             "COURSES": cached_get_courses(),
             "agent_scratchpad": []
         }
 
-        # Prepare the user message for chat history and model input
+        # Preparar a mensagem do usuário para o histórico de chat e entrada do modelo
         user_message_content = []
 
-        # If an image URL is provided, include it first in the input and chat history
+        # Se uma URL de imagem for fornecida, incluir primeiro na entrada e no histórico de chat
         if user_query.image_url:
             user_message_content.append({"type": "image_url", "image_url": str(user_query.image_url)})
         
-        # Add the text prompt after the image (if any)
+        # Adicionar o prompt de texto após a imagem (se houver)
         user_message_content.append({"type": "text", "text": user_query.prompt})
             
-        # Add the user message to chat history
+        # Adicionar a mensagem do usuário ao histórico de chat
         chat_history["user_id"].append(HumanMessage(content=user_message_content))
 
-        # Set the input for the model
+        # Definir a entrada para o modelo
         input_data["input"] = user_message_content
 
+        # Invocar a cadeia com tempo limite
         response = await asyncio.to_thread(chain.invoke, input_data)
 
-        # Access the content of the response correctly
+        # Acessar o conteúdo da resposta corretamente
         response_content = response.content if isinstance(response, AIMessage) else response["output"]
         response_json = json.loads(response_content)
 
-        # Add the AI response to chat history
+        # Adicionar a resposta da IA ao histórico de chat
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
-        # headers Chatwoot
+        # Cabeçalhos para Chatwoot
         headersChatwoot = {            
             "Content-Type": "application/json",
             "api_access_token": user_query.token_chatwoot
         }
 
-        # headers EvolutionAPI
+        # Cabeçalhos para EvolutionAPI
         urlEvolutionAPI = os.getenv('EVOLUTION_API_V2_URL', "")
         nameInstanceEvolutionAPI = os.getenv('EVOLUTION_API_INSTANCE_NAME', "")
         headersEvolutionAPI = {            
@@ -842,10 +843,10 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                         elif message["type"] == "file":
                             payload = {
                                 "number": user_query.phone,
-                                "mediatype": "image",  # image, video or document
+                                "mediatype": "image",  # image, video ou document
                                 "mimetype": "image/png",
                                 "caption": "Imagem do Curso",
-                                "media": message["value"],  # /* url or base64 */
+                                "media": message["value"],  # URL ou base64
                                 "fileName": "ImagemDoCurso.png",
                                 "options": {
                                     "delay": 500,
@@ -863,10 +864,11 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
 
                 except httpx.HTTPStatusError as e:
                     logging.error(f"Failed to send message: {e.response.status_code} - {e.response.text}")
-                    # Continue to the next message without breaking the loop
+                    # Continuar para a próxima mensagem sem interromper o loop
 
         return {"success": True}
 
     except Exception as e:
         logging.error(f"Error in send_chatwoot_message: {e}")
         raise HTTPException(status_code=400, detail=str(e))
+ 
