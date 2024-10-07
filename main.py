@@ -611,12 +611,6 @@ Here is additional information about Buka and its processes as context:
 {{CONTEXT}}
 </context>
 """
-# Create the few-shot prompt template
-few_shot_prompt = FewShotChatMessagePromptTemplate(
-    input_variables=["input"],
-    examples=response_examples,
-    example_prompt=ChatPromptTemplate.from_messages([("human", "{input}"),
-                                                     ("ai", "{output}")]))
 
 qa_prompt = ChatPromptTemplate.from_messages([
     ("system", qa_system_prompt),
@@ -639,40 +633,40 @@ async def handle_query(user_query: UserQuery):
     context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
     context = "\n".join([doc.page_content for doc in context_docs])
 
-    chat_history_list = chat_history['user_id']  # Ensure this is user-specific if needed
+    chat_history_list = chat_history['user_id']  # Assegure-se de que isso seja específico para o usuário se necessário
     try:
         response = await asyncio.to_thread(
             chain.invoke, {
                 "input": user_query.prompt,
                 "chat_history": chat_history_list,
                 "CONTEXT": context,
-                "RESPONSE_EXAMPLES_JSON": response_examples_json,
+                "RESPONSE_EXAMPLES_JSON": response_examples_json,  # Uso correto da variável
                 "CHANNEL": user_query.channel,
                 "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
             }
         )
 
-        # Access the content of the response correctly
+        # Acessar o conteúdo da resposta corretamente
         response_content = response.content if isinstance(response, AIMessage) else response["output"]
         response_json = json.loads(response_content)
 
-        # Add the user query and AI response to chat history
+        # Adicionar a consulta do usuário e a resposta da IA ao histórico de chat
         chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
-        print("messages: ", messages);
+        print("messages: ", messages)
 
-        # Construct the ManyChat API endpoint
+        # Construir o endpoint da API ManyChat
         manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
 
-        # Prepare the payload for ManyChat
+        # Preparar o payload para ManyChat
         payload = {
             "subscriber_id": user_query.subscriber_id,
             "data": {
                 "version": "v2",
-                # Add the "type" field if the channel is "instagram"
+                # Adicionar o campo "type" se o canal for "instagram"
                 "content": {
                     **({"type": user_query.channel} if user_query.channel == "instagram" else {}),
                     "messages": messages,
@@ -681,9 +675,9 @@ async def handle_query(user_query: UserQuery):
             "message_tag": "ACCOUNT_UPDATE",
         }
 
-        print("payload: ", payload);
+        print("payload: ", payload)
 
-        # Send the messages to ManyChat API
+        # Enviar as mensagens para a API ManyChat
         headers = {
             "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
             "Content-Type": "application/json"
@@ -691,10 +685,10 @@ async def handle_query(user_query: UserQuery):
 
         manychat_response = requests.post(manychat_api_url, headers=headers, json=payload)
 
-        # Log the response for debugging
+        # Registrar a resposta para depuração
         logging.info(f"ManyChat API response: {manychat_response.status_code} - {manychat_response.text}")
 
-        # Check if the request was successful
+        # Verificar se a requisição foi bem-sucedida
         if manychat_response.status_code != 200:
             logging.error(f"Failed to send messages via ManyChat API: {manychat_response.text}")
             raise HTTPException(status_code=500, detail=f"Failed to send messages via ManyChat API: {manychat_response.text}")
