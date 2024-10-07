@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import BaseTool
 from langchain.agents import AgentExecutor, create_openai_tools_agent
@@ -21,6 +21,7 @@ import asyncio
 import ijson
 import io
 from tenacity import retry, wait_exponential, stop_after_attempt
+from typing import Optional
 
 # Load environment variables
 load_dotenv()
@@ -63,6 +64,7 @@ class RequestBodyChatwoot(BaseModel):
     channel: str
     phone: str
     prompt: str
+    image_url: Optional[HttpUrl] = None
 
 #BotConversa
 
@@ -162,7 +164,7 @@ response_examples = [
                 "type":
                 "text",
                 "text":
-                "Olá! Bem-vindo à Buka, onde não apenas ensinamos, mas mudamos vidas por meio da educação da educação. Sou a Ada, assistente IA virtual da Buka, e sua guia pessoal nesta jornada emocionante de descoberta e crescimento. Estou aqui para ajudá-lo(a) a encontrar o curso perfeito que não só impulsionará sua carreira e/ou futuro, mas também realizará seus objetivos mais profundos."
+                "Olá! Bem-vindo à Buka, onde não apenas ensinamos, mas mudamos vidas por meio da educação. Sou a Ada, assistente IA virtual da Buka, e sua guia pessoal nesta jornada emocionante de descoberta e crescimento. Estou aqui para ajudá-lo(a) a encontrar o curso perfeito que não só impulsionará sua carreira e/ou futuro, mas também realizará seus objetivos mais profundos."
             }, {
                 "type":
                 "text",
@@ -756,26 +758,42 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
     context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
     context = "\n".join([doc.page_content for doc in context_docs])
 
-    chat_history_list = chat_history['user_id']  # Alterado de str para lista
+    chat_history_list = chat_history['user_id']
 
     try:
-        response = await asyncio.to_thread(chain.invoke, {
-            "input": user_query.prompt,
+        # Prepare the input for the language model
+        input_data = {
             "chat_history": chat_history_list,
             "CONTEXT": context,
             "RESPONSE_EXAMPLES_JSON": response_examples_botconversa_json,
             "CHANNEL": user_query.channel,
             "COURSES": cached_get_courses(),
             "agent_scratchpad": []
-        })
+        }
 
-        # Acessar o conteúdo da resposta corretamente
-        response_content = response.content if isinstance(
-            response, AIMessage) else response["output"]
+        # Prepare the user message for chat history and model input
+        user_message_content = []
+
+        # If an image URL is provided, include it first in the input and chat history
+        if user_query.image_url:
+            user_message_content.append({"type": "image_url", "image_url": str(user_query.image_url)})
+        
+        # Add the text prompt after the image (if any)
+        user_message_content.append({"type": "text", "text": user_query.prompt})
+            
+        # Add the user message to chat history
+        chat_history["user_id"].append(HumanMessage(content=user_message_content))
+
+        # Set the input for the model
+        input_data["input"] = user_message_content
+
+        response = await asyncio.to_thread(chain.invoke, input_data)
+
+        # Access the content of the response correctly
+        response_content = response.content if isinstance(response, AIMessage) else response["output"]
         response_json = json.loads(response_content)
 
-        # Adicionar a resposta ao histórico de mensagens
-        chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
+        # Add the AI response to chat history
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
@@ -786,11 +804,11 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
         }
 
         # headers EvolutionAPI
-        urlEvolutionAPI = os.getenv('EVOLUTION_API_V2_URL') if os.getenv('EVOLUTION_API_V2_URL') else ""
-        nameInstanceEvolutionAPI = os.getenv('EVOLUTION_API_INSTANCE_NAME') if os.getenv('EVOLUTION_API_INSTANCE_NAME') else ""
+        urlEvolutionAPI = os.getenv('EVOLUTION_API_V2_URL', "")
+        nameInstanceEvolutionAPI = os.getenv('EVOLUTION_API_INSTANCE_NAME', "")
         headersEvolutionAPI = {            
             "Content-Type": "application/json",
-            "apiKey": os.getenv('EVOLUTION_API_V2_KEY') if os.getenv('EVOLUTION_API_V2_KEY') else "",
+            "apiKey": os.getenv('EVOLUTION_API_V2_KEY', ""),
         }
 
         async with httpx.AsyncClient() as client:
