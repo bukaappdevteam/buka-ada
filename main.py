@@ -648,12 +648,33 @@ async def handle_query(user_query: UserQuery):
         chat_history["user_id"].append(AIMessage(content=response_content))
         messages = response_json.get("messages", [])
 
-        print("messages: ", messages)
+        print("Original messages from LLM: ", messages)
 
+        # **Transformar 'value' em 'text' para compatibilidade com ManyChat**
+        transformed_messages = []
+        for message in messages:
+            if message["type"] == "text":
+                transformed_message = {
+                    "type": "text",
+                    "text": message.get("value", "")
+                }
+                transformed_messages.append(transformed_message)
+            else:
+                transformed_messages.append(message)  # Outros tipos de mensagem permanecem inalterados
+
+        print("Transformed messages for ManyChat: ", transformed_messages)
+        
+        # Validar mensagens antes de enviar
+        for msg in transformed_messages:
+            if msg["type"] == "text" and "text" not in msg:
+                logging.error(f"Mensagem de texto sem a chave 'text': {msg}")
+                raise HTTPException(status_code=500, detail="Mensagem de texto inválida sem a chave 'text'.")
+
+        
         # Construir o endpoint da API ManyChat
         manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
 
-        # Preparar o payload para ManyChat
+        # Preparar o payload para ManyChat com mensagens transformadas
         payload = {
             "subscriber_id": user_query.subscriber_id,
             "data": {
@@ -661,7 +682,7 @@ async def handle_query(user_query: UserQuery):
                 # Adicionar o campo "type" se o canal for "instagram"
                 "content": {
                     **({"type": user_query.channel} if user_query.channel == "instagram" else {}),
-                    "messages": messages,
+                    "messages": transformed_messages,  # Usar mensagens transformadas
                 }
             },
             "message_tag": "ACCOUNT_UPDATE",
@@ -692,6 +713,7 @@ async def handle_query(user_query: UserQuery):
     except Exception as e:
         logging.error(f"Error in /chat endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
+
 
 @app.post("/chat/bot-whatsapp")
 async def send_bot_message(user_query: RequestBodyBotConversa):
