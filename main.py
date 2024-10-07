@@ -151,185 +151,6 @@ example_output_json = json.dumps(example_output, ensure_ascii=False, indent=4)
 #"text": "Estou entusiasmada com o seu interesse no Curso de Power BI (Business Intelligence)! Você está prestes a embarcar numa jornada que pode revolucionar não apenas sua carreira, mas toda a forma como você vê e interage com o mundo dos dados. Permita-me compartilhar mais sobre esta experiência transformadora:"
 #},
 
-response_examples = [
-    {
-        "input": {
-            "channel": "facebook",
-            "prompt": "Olá"
-        },
-        "output": {
-            "channel":
-            "facebook",
-            "messages": [{
-                "type":
-                "text",
-                "text":
-                "Olá! Bem-vindo à Buka, onde não apenas ensinamos, mas mudamos vidas por meio da educação. Sou a Ada, assistente IA virtual da Buka, e sua guia pessoal nesta jornada emocionante de descoberta e crescimento. Estou aqui para ajudá-lo(a) a encontrar o curso perfeito que não só impulsionará sua carreira e/ou futuro, mas também realizará seus objetivos mais profundos."
-            }, {
-                "type":
-                "text",
-                "text":
-                "Temos uma variedade incrível de cursos disponíveis. E cada curso foi cuidadosamente projetado para oferecer não apenas conhecimentos, mas verdadeiras ferramentas de mudança de vida."
-            }, {
-                "type":
-                "text",
-                "text":
-                "Estou curiosa: o que o(a) traz à Buka hoje? Está em busca de uma transformação profissional específica ou está aberto a explorar novas possibilidades?"
-            }]
-        }
-    },
-    {
-        "input": {
-            "channel": "facebook",
-            "prompt": "Quais são todos os cursos disponíveis?"
-        },
-        "output": {
-            "channel":
-            "facebook",
-            "messages": [{
-                "type":
-                "text",
-                "text":
-                "Excelente pergunta! Estou entusiasmada em apresentar-lhe nossa gama diversificada de cursos transformadores. Cada um deles foi criado não apenas para ensinar, mas para inspirar e capacitar. Aqui está uma visão geral dos nossos cursos:"
-            }, {
-                "type":
-                "text",
-                "text":
-                "*1. Curso de Recursos Humanos com Aplicação às Novas Tecnologias*\n📌 Lidere a revolução no RH, moldando o futuro da gestão de pessoas.\n\n*2. Administração Windows Server 2022*\n📌 Domine a arte de gerenciar servidores e torne-se indispensável no mundo da TI.\n\n*3. Higiene e Segurança no Trabalho*\n📌 Torne-se um guardião da segurança, protegendo vidas e transformando ambientes de trabalho.\n\n*4. Curso de Power BI (Business Intelligence)*\n📌 Desbloqueie o poder dos dados e torne-se um visionário nos negócios.\n\n*5. Curso Base de Dados Relacional com MySQL*\n📌 Torne-se um mestre em dados, construindo a espinha dorsal da era digital."
-            }, {
-                "type":
-                "text",
-                "text":
-                "Cada um destes cursos é uma porta para um futuro brilhante. Qual deles faz seu coração bater mais forte? Algum chamou-lhe a atenção? Ou há alguma área específica da sua vida ou carreira que você sonha em transformar? Escreva aqui em baixo"
-            }]
-        }
-    },
-    {
-        "input": {
-            "channel": "facebook",
-            "prompt": "Fale-me mais sobre o curso de Power BI"
-        },
-        "output": {
-            "channel":
-            "facebook",
-            "messages": [{
-                "type":
-                "image",
-                "url":
-                "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8",
-            }, {
-                "type":
-                "text",
-                "text":
-                "Curso de Power BI (Business Intelligence)\n\n- DESCRIÇÃO: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n- FORMATO/LOCALIZAÇÃO: Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n- PREÇO: 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n- DURAÇÃO: 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n- HORÁRIO: Sábados, das 09:00 às 13:00"
-            }, {
-                "type":
-                "text",
-                "text":
-                "Estamos falando de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?"
-            }, {
-                "type":
-                "text",
-                "text":
-                "Este curso é a chave para desbloquear um novo nível na sua carreira ou negócio. É ideal para visionários como você, que entendem o poder dos dados na era digital.\nEstou curiosa: o que exatamente despertou seu interesse no Power BI? Está buscando uma vantagem competitiva no seu trabalho atual, ou talvez sonhando em revolucionar um negócio próprio?"
-            }]
-        }
-    },
-    {
-        "input": {
-            "channel": "facebook",
-            "prompt": "Estou a pensar em usar para o meu negócio."
-        },
-        "output": {
-            "channel":
-            "facebook",
-            "messages": [{
-                "type":
-                "text",
-                "text":
-                "Fantástico! Você está prestes a dar um passo transformador para o seu negócio. O Power BI não é apenas uma ferramenta; é como ter um consultor de negócios genial trabalhando para você 24/7. Veja como este curso pode ser o catalisador para uma revolução no seu empreendimento:"
-            }, {
-                "type":
-                "text",
-                "text":
-                "Imagine ter o poder de:\n\n1. Tomar decisões com precisão e visão estratégica\n2. Identificar oportunidades de ouro antes dos concorrentes\n3. Criar apresentações impressionantes para investidores e clientes\n4. Otimizar cada aspecto do seu negócio como um maestro afinando uma orquestra"
-            }, {
-                "type":
-                "text",
-                "text":
-                "Este curso foi projetado para empreendedores visionários como você. Em apenas dois sábados intensivos, você não apenas aprenderá a usar o Power BI; você se tornará um mestre em transformar dados em ouro. Por 60.000 Kz, você está investindo em uma vantagem competitiva real para o seu negócio."
-            }, {
-                "type":
-                "text",
-                "text":
-                "Estou fascinada pelo potencial do seu empreendimento. Que aspectos do seu negócio você mais anseia por transformar? Vendas, satisfação do cliente ou eficiência operacional?"
-            }]
-        }
-    },
-    {
-        "input": {
-            "channel": "facebook",
-            "prompt": "As 3 que mencionaste são importantes."
-        },
-        "output": {
-            "channel":
-            "facebook",
-            "messages": [{
-                "type":
-                "text",
-                "text":
-                "Impressionante! Vendas, satisfação do cliente e eficiência operacional são pilares fundamentais para um império empresarial. E o Power BI pode atuar como um super-herói para cada um desses pilares. Veja como:"
-            }, {
-                "type":
-                "text",
-                "text":
-                "1. **Vendas Estratosféricas:**\n   Imagine um painel que prevê suas vendas, identifica produtos estrelas e mostra onde investir. É como ter um sexto sentido para oportunidades de vendas.\n\n2. **Clientes Apaixonados:**\n   Visualize um mapa interativo de satisfação que revela o que seus clientes pensam e sentem. Antecipe necessidades antes mesmo de serem expressas.\n\n3. **Eficiência Operacional de Outro Mundo:**\n   Tenha um raio-X do seu negócio, mostrando onde cada recurso está sendo usado. Otimize processos como um maestro conduzindo uma orquestra perfeita."
-            }, {
-                "type":
-                "text",
-                "text":
-                "Você dominará tudo isso em apenas dois sábados! Imagine ver instantaneamente quais produtos são mais lucrativos, quais clientes são mais fiéis e onde estão os gargalos operacionais, tudo em um único dashboard. É exatamente isso que você aprenderá a criar."
-            }, {
-                "type":
-                "text",
-                "text":
-                "O impacto? Vendas que crescem exponencialmente, clientes que se tornam embaixadores da sua marca e uma operação tão eficiente que parece magia. É alcançável com as habilidades que você adquirirá."
-            }, {
-                "type":
-                "text",
-                "text":
-                "Estou empolgada com as possibilidades para o seu negócio. Nossas turmas são intencionalmente pequenas para garantir uma experiência personalizada e de alta qualidade, por isso, as vagas são limitadas e costumam preencher rapidamente."
-            }, {
-                "type":
-                "text",
-                "text":
-                "Se estiver pronto para começar essa jornada transformadora, posso guiá-lo pelos próximos passos agora mesmo. O processo de inscrição é simples e rápido. Pense nisso como um investimento no futuro do seu negócio!"
-            }]
-        }
-    },
-    {
-        "input": {
-            "channel": "facebook",
-            "prompt": "Quais são os tópicos/temas/programa deste curso?"
-        },
-        "output": {
-            "channel":
-            "facebook",
-            "messages": [
-                {
-                    "type":
-                    "text",
-                    "text":
-                    "Temas abordados:\n• Fundamentos de Power BI e Configuração Inicial - Construindo sua base de poder\n• Visualizações e Publicação - Transformando números em narrativas visuais impactantes\n• Aprofundamento na Modelagem de Dados - Dominando a arte de estruturar informações\n• Design Avançado de Relatórios e Dashboards - Criando insights que impactam"
-                },
-            ]
-        }
-    },
-]
-
-response_examples_json = json.dumps(response_examples,
-                                    ensure_ascii=False,
-                                    indent=4)
 
 response_examples_botconversa = [
     {
@@ -542,6 +363,188 @@ async def handle_query(user_query: UserQuery):
     context = "\n".join([doc.page_content for doc in context_docs])
 
     chat_history_list = chat_history['user_id']  # Assegure-se de que isso seja específico para o usuário se necessário
+    
+    response_examples = [
+    {
+            "input": {
+                "channel": "facebook",
+                "prompt": "Olá"
+            },
+            "output": {
+                "channel":
+                "facebook",
+                "messages": [{
+                    "type":
+                    "text",
+                    "text":
+                    "Olá! Bem-vindo à Buka, onde não apenas ensinamos, mas mudamos vidas por meio da educação. Sou a Ada, assistente IA virtual da Buka, e sua guia pessoal nesta jornada emocionante de descoberta e crescimento. Estou aqui para ajudá-lo(a) a encontrar o curso perfeito que não só impulsionará sua carreira e/ou futuro, mas também realizará seus objetivos mais profundos."
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Temos uma variedade incrível de cursos disponíveis. E cada curso foi cuidadosamente projetado para oferecer não apenas conhecimentos, mas verdadeiras ferramentas de mudança de vida."
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Estou curiosa: o que o(a) traz à Buka hoje? Está em busca de uma transformação profissional específica ou está aberto a explorar novas possibilidades?"
+                }]
+            }
+        },
+        {
+            "input": {
+                "channel": "facebook",
+                "prompt": "Quais são todos os cursos disponíveis?"
+            },
+            "output": {
+                "channel":
+                "facebook",
+                "messages": [{
+                    "type":
+                    "text",
+                    "text":
+                    "Excelente pergunta! Estou entusiasmada em apresentar-lhe nossa gama diversificada de cursos transformadores. Cada um deles foi criado não apenas para ensinar, mas para inspirar e capacitar. Aqui está uma visão geral dos nossos cursos:"
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "*1. Curso de Recursos Humanos com Aplicação às Novas Tecnologias*\n📌 Lidere a revolução no RH, moldando o futuro da gestão de pessoas.\n\n*2. Administração Windows Server 2022*\n📌 Domine a arte de gerenciar servidores e torne-se indispensável no mundo da TI.\n\n*3. Higiene e Segurança no Trabalho*\n📌 Torne-se um guardião da segurança, protegendo vidas e transformando ambientes de trabalho.\n\n*4. Curso de Power BI (Business Intelligence)*\n📌 Desbloqueie o poder dos dados e torne-se um visionário nos negócios.\n\n*5. Curso Base de Dados Relacional com MySQL*\n📌 Torne-se um mestre em dados, construindo a espinha dorsal da era digital."
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Cada um destes cursos é uma porta para um futuro brilhante. Qual deles faz seu coração bater mais forte? Algum chamou-lhe a atenção? Ou há alguma área específica da sua vida ou carreira que você sonha em transformar? Escreva aqui em baixo"
+                }]
+            }
+        },
+        {
+            "input": {
+                "channel": "facebook",
+                "prompt": "Fale-me mais sobre o curso de Power BI"
+            },
+            "output": {
+                "channel":
+                "facebook",
+                "messages": [{
+                    "type":
+                    "image",
+                    "url":
+                    "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8",
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Curso de Power BI (Business Intelligence)\n\n- DESCRIÇÃO: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n- FORMATO/LOCALIZAÇÃO: Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n- PREÇO: 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n- DURAÇÃO: 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n- HORÁRIO: Sábados, das 09:00 às 13:00"
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Estamos falando de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?"
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Este curso é a chave para desbloquear um novo nível na sua carreira ou negócio. É ideal para visionários como você, que entendem o poder dos dados na era digital.\nEstou curiosa: o que exatamente despertou seu interesse no Power BI? Está buscando uma vantagem competitiva no seu trabalho atual, ou talvez sonhando em revolucionar um negócio próprio?"
+                }]
+            }
+        },
+        {
+            "input": {
+                "channel": "facebook",
+                "prompt": "Estou a pensar em usar para o meu negócio."
+            },
+            "output": {
+                "channel":
+                "facebook",
+                "messages": [{
+                    "type":
+                    "text",
+                    "text":
+                    "Fantástico! Você está prestes a dar um passo transformador para o seu negócio. O Power BI não é apenas uma ferramenta; é como ter um consultor de negócios genial trabalhando para você 24/7. Veja como este curso pode ser o catalisador para uma revolução no seu empreendimento:"
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Imagine ter o poder de:\n\n1. Tomar decisões com precisão e visão estratégica\n2. Identificar oportunidades de ouro antes dos concorrentes\n3. Criar apresentações impressionantes para investidores e clientes\n4. Otimizar cada aspecto do seu negócio como um maestro afinando uma orquestra"
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Este curso foi projetado para empreendedores visionários como você. Em apenas dois sábados intensivos, você não apenas aprenderá a usar o Power BI; você se tornará um mestre em transformar dados em ouro. Por 60.000 Kz, você está investindo em uma vantagem competitiva real para o seu negócio."
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Estou fascinada pelo potencial do seu empreendimento. Que aspectos do seu negócio você mais anseia por transformar? Vendas, satisfação do cliente ou eficiência operacional?"
+                }]
+            }
+        },
+        {
+            "input": {
+                "channel": "facebook",
+                "prompt": "As 3 que mencionaste são importantes."
+            },
+            "output": {
+                "channel":
+                "facebook",
+                "messages": [{
+                    "type":
+                    "text",
+                    "text":
+                    "Impressionante! Vendas, satisfação do cliente e eficiência operacional são pilares fundamentais para um império empresarial. E o Power BI pode atuar como um super-herói para cada um desses pilares. Veja como:"
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "1. **Vendas Estratosféricas:**\n   Imagine um painel que prevê suas vendas, identifica produtos estrelas e mostra onde investir. É como ter um sexto sentido para oportunidades de vendas.\n\n2. **Clientes Apaixonados:**\n   Visualize um mapa interativo de satisfação que revela o que seus clientes pensam e sentem. Antecipe necessidades antes mesmo de serem expressas.\n\n3. **Eficiência Operacional de Outro Mundo:**\n   Tenha um raio-X do seu negócio, mostrando onde cada recurso está sendo usado. Otimize processos como um maestro conduzindo uma orquestra perfeita."
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Você dominará tudo isso em apenas dois sábados! Imagine ver instantaneamente quais produtos são mais lucrativos, quais clientes são mais fiéis e onde estão os gargalos operacionais, tudo em um único dashboard. É exatamente isso que você aprenderá a criar."
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "O impacto? Vendas que crescem exponencialmente, clientes que se tornam embaixadores da sua marca e uma operação tão eficiente que parece magia. É alcançável com as habilidades que você adquirirá."
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Estou empolgada com as possibilidades para o seu negócio. Nossas turmas são intencionalmente pequenas para garantir uma experiência personalizada e de alta qualidade, por isso, as vagas são limitadas e costumam preencher rapidamente."
+                }, {
+                    "type":
+                    "text",
+                    "text":
+                    "Se estiver pronto para começar essa jornada transformadora, posso guiá-lo pelos próximos passos agora mesmo. O processo de inscrição é simples e rápido. Pense nisso como um investimento no futuro do seu negócio!"
+                }]
+            }
+        },
+        {
+            "input": {
+                "channel": "facebook",
+                "prompt": "Quais são os tópicos/temas/programa deste curso?"
+            },
+            "output": {
+                "channel":
+                "facebook",
+                "messages": [
+                    {
+                        "type":
+                        "text",
+                        "text":
+                        "Temas abordados:\n• Fundamentos de Power BI e Configuração Inicial - Construindo sua base de poder\n• Visualizações e Publicação - Transformando números em narrativas visuais impactantes\n• Aprofundamento na Modelagem de Dados - Dominando a arte de estruturar informações\n• Design Avançado de Relatórios e Dashboards - Criando insights que impactam"
+                    },
+                ]
+            }
+        },
+    ]
+
+    response_examples_json = json.dumps(response_examples,
+                                    ensure_ascii=False,
+                                    indent=4)
+
+    
     try:
         # Construir o prompt dinamicamente
         qa_system_prompt_formatted = f"""You are Ada, an exceptional AI sales representative for Buka, an edtech startup dedicated to transforming lives through education. Your persona blends the persuasive skills of Jordan Belfort, the inspirational approach of Simon Sinek, and the visionary spirit of Steve Jobs. Your task is to engage with potential customers and effectively sell courses.
@@ -631,13 +634,21 @@ async def handle_query(user_query: UserQuery):
         # Criar a cadeia (chain) dinamicamente
         chain_dynamic = qa_chat_prompt | llm
 
-        response = await asyncio.to_thread(
-            chain_dynamic.invoke, {
-                "input": user_query.prompt,
-                "chat_history": chat_history_list,
-                "agent_scratchpad": []
-            }
-        )
+        # Definir a entrada para o modelo
+        input_data = {
+            "input": user_query.prompt,
+            "chat_history": chat_history_list,
+            "agent_scratchpad": []
+        }
+
+        # Invocar a cadeia com tempo limite
+        try:
+            response = await asyncio.wait_for(
+                   asyncio.to_thread(chain_dynamic.invoke, input_data),
+                   timeout=20
+               )
+        except asyncio.TimeoutError:
+            raise HTTPException(status_code=408, detail="Tempo de resposta excedido")
 
         # Acessar o conteúdo da resposta corretamente
         response_content = response.content if isinstance(response, AIMessage) else response["output"]
@@ -653,24 +664,24 @@ async def handle_query(user_query: UserQuery):
         # **Transformar 'value' em 'text' para compatibilidade com ManyChat**
         transformed_messages = []
         for message in messages:
-            if message["type"] == "text":
-                transformed_message = {
-                    "type": "text",
-                    "text": message.get("value", "")
-                }
-                transformed_messages.append(transformed_message)
-            else:
-                transformed_messages.append(message)  # Outros tipos de mensagem permanecem inalterados
+               if message["type"] == "text":
+                   transformed_message = {
+                       "type": "text",
+                       "text": message.get("text", message.get("value", ""))
+                   }
+                   transformed_messages.append(transformed_message)
+               else:
+                   transformed_messages.append(message)  # Outros tipos de mensagem permanecem inalterados
 
         print("Transformed messages for ManyChat: ", transformed_messages)
-        
+
         # Validar mensagens antes de enviar
         for msg in transformed_messages:
-            if msg["type"] == "text" and "text" not in msg:
-                logging.error(f"Mensagem de texto sem a chave 'text': {msg}")
-                raise HTTPException(status_code=500, detail="Mensagem de texto inválida sem a chave 'text'.")
+               if msg["type"] == "text":
+                   if "text" not in msg or not msg["text"]:
+                       logging.error(f"Mensagem de texto inválida: {msg}")
+                       raise HTTPException(status_code=500, detail="Mensagem de texto inválida sem a chave 'text'.")
 
-        
         # Construir o endpoint da API ManyChat
         manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
 
@@ -688,7 +699,7 @@ async def handle_query(user_query: UserQuery):
             "message_tag": "ACCOUNT_UPDATE",
         }
 
-        print("payload: ", payload)
+        print("Payload for ManyChat: ", payload)
 
         # Enviar as mensagens para a API ManyChat
         headers = {
