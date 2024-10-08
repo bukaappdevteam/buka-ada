@@ -683,40 +683,49 @@ async def handle_query(user_query: UserQuery):
         # If we've made it here, the structure is correct
         messages = response_json["messages"]
 
-        # Prepare the payload for ManyChat
-        payload = {
-            "subscriber_id": user_query.subscriber_id,
+        # Function to send a single message
+        async def send_single_message(message):
+            payload = {
+                "subscriber_id": user_query.subscriber_id,
                 "data": {
                     "version": "v2",
                     "content": {
                         **({"type": user_query.channel} if user_query.channel == "instagram" else {}),
-                        "messages": messages,
+                        "messages": [message],
                     }
                 },
-            "message_tag": "ACCOUNT_UPDATE",
-        }
+                "message_tag": "ACCOUNT_UPDATE",
+            }
 
-        print("Payload for ManyChat: ", payload)
-        # Enviar as mensagens para a API ManyChat
-        headers = {
-            "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
-            "Content-Type": "application/json"
-        }
+            headers = {
+                "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
+                "Content-Type": "application/json"
+            }
 
-        # Construir o endpoint da API ManyChat
-        manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
+            manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
 
-        manychat_response = requests.post(manychat_api_url, headers=headers, json=payload)
+            async with httpx.AsyncClient() as client:
+                manychat_response = await client.post(manychat_api_url, headers=headers, json=payload)
+                
+                logging.info(f"ManyChat API response for message {message['type']}: {manychat_response.status_code} - {manychat_response.text}")
 
-        # Registrar a resposta para depuração
-        logging.info(f"ManyChat API response: {manychat_response.status_code} - {manychat_response.text}")
+                if manychat_response.status_code != 200:
+                    logging.error(f"Failed to send message via ManyChat API: {manychat_response.text}")
+                    return False
+                return True
 
-        # Verificar se a requisição foi bem-sucedida
-        if manychat_response.status_code != 200:
-            logging.error(f"Failed to send messages via ManyChat API: {manychat_response.text}")
-            raise HTTPException(status_code=500, detail=f"Failed to send messages via ManyChat API: {manychat_response.text}")
+        # Send messages one by one with delay
+        success_count = 0
+        for message in messages:
+            success = await send_single_message(message)
+            if success:
+                success_count += 1
+            await asyncio.sleep(1)  # 1 second delay between messages
 
-        return {"response": manychat_response.json()}
+        if success_count == len(messages):
+            return {"response": f"Successfully sent {success_count} out of {len(messages)} messages."}
+        else:
+            return {"response": f"Partially successful. Sent {success_count} out of {len(messages)} messages."}
 
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
