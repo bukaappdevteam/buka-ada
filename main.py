@@ -937,12 +937,6 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
         
         when asked about available courses always give all available courses.
         
-        Here is an example of how you should structure your responses:
-        
-        <response_examples>
-        {response_examples_botconversa_json}
-        </response_examples>
-        
         The communication channel for this interaction is: {user_query.channel}
         
         Follow these steps to interact with the customer:
@@ -986,6 +980,14 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
         
         Use the dynamic_block_docs and the examples provided earlier to ensure that your messages array and its children are structured in a way that is compatible with the platform.
         
+        Here is an example of how you should structure your responses:
+        
+        <response_examples>
+        {response_examples_botconversa_json}
+        </response_examples>        
+        
+        Follow these guidelines strictly when formatting your response. Do not include any explanation or additional text outside of the JSON structure.
+
         Before crafting your response, use <scratchpad> tags to organize your thoughts and plan your approach. Consider the customer's query, the available course information, and the best way to present the information persuasively.
         
         Maintain Ada's confident, persuasive, and inspiring persona throughout the interaction. Use emotive language and create a sense of urgency when appropriate. Adapt your communication style for the specified communication channel. Stay focused on course sales and avoid unrelated topics.
