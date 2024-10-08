@@ -683,7 +683,7 @@ async def handle_query(user_query: UserQuery):
         # If we've made it here, the structure is correct
         messages = response_json["messages"]
 
-        # Function to send a single message
+        @retry(wait=wait_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(3))
         async def send_single_message(message):
             payload = {
                 "subscriber_id": user_query.subscriber_id,
@@ -710,20 +710,21 @@ async def handle_query(user_query: UserQuery):
                 logging.info(f"ManyChat API response for message {message['type']}: {manychat_response.status_code} - {manychat_response.text}")
 
                 if manychat_response.status_code != 200:
-                    logging.error(f"Failed to send message via ManyChat API: {manychat_response.text}")
-                    return False
+                    raise Exception(f"Failed to send message via ManyChat API: {manychat_response.text}")
                 return True
 
-        # Send messages one by one with delay
-        success_count = 0
-        for message in messages:
-            success = await send_single_message(message)
-            if success:
-                success_count += 1
-            await asyncio.sleep(1)  # 1 second delay between messages
+        # Send messages concurrently with a semaphore to limit concurrency
+        semaphore = asyncio.Semaphore(5)  # Adjust this value based on API rate limits
+        async def send_with_semaphore(message):
+            async with semaphore:
+                return await send_single_message(message)
+
+        results = await asyncio.gather(*[send_with_semaphore(message) for message in messages], return_exceptions=True)
+
+        success_count = sum(1 for result in results if result is True)
 
         if success_count == len(messages):
-            return {"response": f"Successfully sent {success_count} out of {len(messages)} messages."}
+            return {"response": f"Successfully sent all {len(messages)} messages."}
         else:
             return {"response": f"Partially successful. Sent {success_count} out of {len(messages)} messages."}
 
@@ -1082,4 +1083,3 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
     except Exception as e:
         logging.error(f"Error in send_chatwoot_message: {e}")
         raise HTTPException(status_code=400, detail=str(e))
- 
