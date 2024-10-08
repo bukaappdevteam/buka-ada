@@ -723,7 +723,7 @@ async def handle_query(user_query: UserQuery):
             async with semaphore:
                 success = await send_single_message(message)
                 if message['type'] == 'image':
-                    await asyncio.sleep(2)  # Longer delay after sending images
+                    await asyncio.sleep(4)  # Longer delay after sending images
                 else:
                     await asyncio.sleep(1)  # Standard delay for other message types
                 return success
