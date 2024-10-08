@@ -684,7 +684,7 @@ async def handle_query(user_query: UserQuery):
         messages = response_json["messages"]
 
         @retry(wait=wait_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(3))
-        async def send_single_message(message):
+        async def send_single_message(message, retry_count: int = 0):
             payload = {
                 "subscriber_id": user_query.subscriber_id,
                 "data": {
@@ -710,18 +710,35 @@ async def handle_query(user_query: UserQuery):
                 logging.info(f"ManyChat API response for message {message['type']}: {manychat_response.status_code} - {manychat_response.text}")
 
                 if manychat_response.status_code != 200:
+                    if retry_count < 2 and message['type'] == 'image':
+                        # Fallback for images: try sending as a link instead
+                        message['type'] = 'text'
+                        message['text'] = f"Image: {message['url']}"
+                        return await send_single_message(message, retry_count + 1)
                     raise Exception(f"Failed to send message via ManyChat API: {manychat_response.text}")
                 return True
 
-        # Send messages concurrently with a semaphore to limit concurrency
-        semaphore = asyncio.Semaphore(5)  # Adjust this value based on API rate limits
+        semaphore = asyncio.Semaphore(3)  # Reduced concurrency for more stability
         async def send_with_semaphore(message):
             async with semaphore:
-                return await send_single_message(message)
+                success = await send_single_message(message)
+                if message['type'] == 'image':
+                    await asyncio.sleep(2)  # Longer delay after sending images
+                else:
+                    await asyncio.sleep(1)  # Standard delay for other message types
+                return success
 
-        results = await asyncio.gather(*[send_with_semaphore(message) for message in messages], return_exceptions=True)
+        results = []
+        for message in messages:
+            try:
+                success = await send_with_semaphore(message)
+                results.append(success)
+                logging.info(f"Message sent successfully: {message['type']}")
+            except Exception as e:
+                logging.error(f"Failed to send message: {message['type']} - Error: {str(e)}")
+                results.append(False)
 
-        success_count = sum(1 for result in results if result is True)
+        success_count = sum(results)
 
         if success_count == len(messages):
             return {"response": f"Successfully sent all {len(messages)} messages."}
@@ -1083,3 +1100,4 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
     except Exception as e:
         logging.error(f"Error in send_chatwoot_message: {e}")
         raise HTTPException(status_code=400, detail=str(e))
+ 
