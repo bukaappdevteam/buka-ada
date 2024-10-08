@@ -718,34 +718,58 @@ async def handle_query(user_query: UserQuery):
                     raise Exception(f"Failed to send message via ManyChat API: {manychat_response.text}")
                 return True
 
-        semaphore = asyncio.Semaphore(3)  # Reduced concurrency for more stability
+        def split_long_message(message, max_length=1000):
+            if len(message['text']) <= max_length:
+                return [message]
+            
+            words = message['text'].split()
+            chunks = []
+            current_chunk = ""
+
+            for word in words:
+                if len(current_chunk) + len(word) + 1 > max_length:
+                    chunks.append({'type': 'text', 'text': current_chunk.strip()})
+                    current_chunk = word
+                else:
+                    current_chunk += " " + word
+
+            if current_chunk:
+                chunks.append({'type': 'text', 'text': current_chunk.strip()})
+
+            return chunks
+
+        semaphore = asyncio.Semaphore(1)  # Limit to one concurrent request
         async def send_with_semaphore(message):
             async with semaphore:
                 success = await send_single_message(message)
-                if message['type'] == 'image':
-                    await asyncio.sleep(4)  # Longer delay after sending images
-                else:
-                    await asyncio.sleep(1)  # Standard delay for other message types
+                await asyncio.sleep(2)  # Consistent 2-second delay between all messages
                 return success
 
         results = []
         for index, message in enumerate(messages):
             try:
-                success = await send_with_semaphore(message)
-                results.append(success)
-                logging.info(f"Message {index + 1} sent successfully: {message['type']}")
+                if message['type'] == 'text':
+                    split_messages = split_long_message(message)
+                    for split_index, split_message in enumerate(split_messages):
+                        success = await send_with_semaphore(split_message)
+                        results.append(success)
+                        logging.info(f"Split message {index + 1}.{split_index + 1} sent successfully: {split_message['type']}")
+                else:
+                    success = await send_with_semaphore(message)
+                    results.append(success)
+                    logging.info(f"Message {index + 1} sent successfully: {message['type']}")
             except Exception as e:
                 logging.error(f"Failed to send message {index + 1}: {message['type']} - Error: {str(e)}")
                 results.append(False)
 
         success_count = sum(results)
 
-        if success_count == len(messages):
-            return {"response": f"Successfully sent all {len(messages)} messages."}
+        if success_count == len(results):
+            return {"response": f"Successfully sent all {len(results)} messages."}
         else:
             failed_messages = [i+1 for i, r in enumerate(results) if not r]
             return {
-                "response": f"Partially successful. Sent {success_count} out of {len(messages)} messages.",
+                "response": f"Partially successful. Sent {success_count} out of {len(results)} messages.",
                 "failed_messages": failed_messages
             }
 
