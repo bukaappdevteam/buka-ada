@@ -729,13 +729,13 @@ async def handle_query(user_query: UserQuery):
                 return success
 
         results = []
-        for message in messages:
+        for index, message in enumerate(messages):
             try:
                 success = await send_with_semaphore(message)
                 results.append(success)
-                logging.info(f"Message sent successfully: {message['type']}")
+                logging.info(f"Message {index + 1} sent successfully: {message['type']}")
             except Exception as e:
-                logging.error(f"Failed to send message: {message['type']} - Error: {str(e)}")
+                logging.error(f"Failed to send message {index + 1}: {message['type']} - Error: {str(e)}")
                 results.append(False)
 
         success_count = sum(results)
@@ -743,7 +743,11 @@ async def handle_query(user_query: UserQuery):
         if success_count == len(messages):
             return {"response": f"Successfully sent all {len(messages)} messages."}
         else:
-            return {"response": f"Partially successful. Sent {success_count} out of {len(messages)} messages."}
+            failed_messages = [i+1 for i, r in enumerate(results) if not r]
+            return {
+                "response": f"Partially successful. Sent {success_count} out of {len(messages)} messages.",
+                "failed_messages": failed_messages
+            }
 
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
