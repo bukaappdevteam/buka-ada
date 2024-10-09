@@ -349,7 +349,7 @@ response_examples_botconversa = [
                 "type":
                 "text",
                 "value":
-                "✨ Temos uma variedade incrível de cursos disponíveis. E cada curso foi cuidadosamente projetado para oferecer não apenas conhecimentos, mas verdadeiras ferramentas de mudança de vida."
+                "✨ Temos uma variedade incr��vel de cursos disponíveis. E cada curso foi cuidadosamente projetado para oferecer não apenas conhecimentos, mas verdadeiras ferramentas de mudança de vida."
             }, {
                 "type":
                 "text",
@@ -921,67 +921,58 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
         async with httpx.AsyncClient() as client:
             for index, message in enumerate(messages, start=1):
                 try:
-                    if message["type"] == "text":
-                        payload = {
-                            "number": user_query.phone,
-                            "text": message["text"],
-                            "options": {
-                                "delay": 500,
-                                "presence": "composing",
+                    if isinstance(message, dict) and "value" in message:
+                        # Handle messages with "value" key
+                        if message.get("type") == "text":
+                            payload = {
+                                "number": user_query.phone,
+                                "text": message["value"],
+                                "options": {
+                                    "delay": 500,
+                                    "presence": "composing",
+                                }
                             }
-                        }
-                        fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendText/{nameInstanceEvolutionAPI}"
-                        await send_single_message(client, fullURLEvolutionAPI, headersEvolutionAPI, payload, "text", index)
+                            fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendText/{nameInstanceEvolutionAPI}"
+                        elif message.get("type") == "file":
+                            payload = {
+                                "number": user_query.phone,
+                                "mediatype": "image",  # Adjust based on actual file type
+                                "mimetype": "image/png",  # Adjust based on actual MIME type
+                                "media": message["value"],
+                                "fileName": f"image_{index}.png",  # Generate a filename
+                                "options": {
+                                    "delay": 500,
+                                    "presence": "composing",
+                                }
+                            }
+                            fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
+                        elif message.get("type") == "location":
+                            location_data = message["value"]
+                            payload = {
+                                "number": user_query.phone,
+                                "location": {
+                                    "latitude": location_data["latitude"],
+                                    "longitude": location_data["longitude"],
+                                    "name": "Localização",
+                                    "address": ""
+                                },
+                                "options": {
+                                    "delay": 500,
+                                    "presence": "composing",
+                                }
+                            }
+                            fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendLocation/{nameInstanceEvolutionAPI}"
+                        else:
+                            logging.warning(f"Unsupported message type: {message.get('type')} in message {index}")
+                            continue
+
+                        await send_single_message(client, fullURLEvolutionAPI, headersEvolutionAPI, payload, message.get("type", "unknown"), index)
                         await asyncio.sleep(1)  # Short delay between messages
-
-                    elif message["type"] == "image":
-                        payload = {
-                            "number": user_query.phone,
-                            "mediatype": "image",  # Could be 'image', 'video', or 'document'
-                            "mimetype": "image/png",  # Adjust based on actual MIME type
-                            "caption": message["caption"],
-                            "media": message["url"],  # URL or base64
-                            "fileName": message["fileName"],
-                            "options": {
-                                "delay": 500,
-                                "presence": "composing",
-                            }
-                        }
-                        fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
-                        await send_single_message(client, fullURLEvolutionAPI, headersEvolutionAPI, payload, "image", index)
-                        await asyncio.sleep(2)  # Longer delay after images
-
-                    elif message["type"] == "location":
-                        latitude = message.get("latitude")
-                        longitude = message.get("longitude")
-                        if not latitude or not longitude:
-                            raise ValueError("Latitude and Longitude are required for location messages.")
-
-                        payload = {
-                            "number": user_query.phone,
-                            "location": {
-                                "latitude": latitude,
-                                "longitude": longitude,
-                                "name": message.get("name", "Localização"),
-                                "address": message.get("address", "")
-                            },
-                            "options": {
-                                "delay": 500,
-                                "presence": "composing",
-                            }
-                        }
-                        fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendLocation/{nameInstanceEvolutionAPI}"
-                        await send_single_message(client, fullURLEvolutionAPI, headersEvolutionAPI, payload, "location", index)
-                        await asyncio.sleep(2)  # Longer delay after location messages
-
                     else:
-                        logging.warning(f"Unsupported message type: {message['type']} in message {index}")
-                        # Optionally handle other message types or skip
+                        logging.warning(f"Unexpected message format in message {index}: {message}")
 
-                except httpx.HTTPStatusError as e:
-                    logging.error(f"HTTP error sending message {index} ({message['type']}): {e.response.status_code} - {e.response.text}")
                 except Exception as e:
-                    logging.error(f"Unexpected error sending message {index} ({message['type']}): {str(e)}")
+                    logging.error(f"Unexpected error sending message {index}: {str(e)}")
 
         return {"success": True}
 
