@@ -975,13 +975,25 @@ async def send_bot_message(user_query: RequestBodyBotConversa):
 
 @app.post("/chat/bot-chatwoot")
 async def send_chatwoot_message(user_query: RequestBodyChatwoot):
-    """Handle incoming Chatwoot messages and forward them to Evolution API v2."""
+    """Handle incoming Chatwoot messages and forward them to Evolution API v2 with enhanced logging."""
+
+# Prepare the input for the agent
+    context_docs = await asyncio.to_thread(retriever.get_relevant_documents,
+                                           user_query.prompt)
+    context = "\n".join([doc.page_content for doc in context_docs])
+
+    chat_history_list = chat_history['user_id']  # Alterado de str para lista
 
     # Initialize HTTP client
     async with httpx.AsyncClient() as client:
         try:
+            # Log the receipt of the request
+            logging.info("Received /chat/bot-chatwoot request from phone: %s", user_query.phone)
+            logging.debug("User query: %s", user_query.prompt)
+            
             # Retrieve relevant courses from cache
             courses = cached_get_courses()
+            logging.debug("Cached courses retrieved ")
 
             # Construct the system prompt for the LLM
             system_prompt = f"""You are Ada, an exceptional AI sales representative for Buka, an edtech startup dedicated to transforming lives through education. Your persona blends the persuasive skills of Jordan Belfort, the inspirational approach of Simon Sinek, and the visionary spirit of Steve Jobs. Your task is to engage with potential customers and effectively sell courses.
@@ -1107,10 +1119,21 @@ Maintain Ada's confident, persuasive, and inspiring persona throughout the inter
 Begin with European Portuguese, but adjust your language to match the customer if they use a different language. Use Portuguese from Portugal for all internal notes.
 
 Provide your final response as Ada in the JSON format specified above.
+
+        Here is additional information about Buka and its processes as context:
+        
+        <context>
+        {context}
+        </context>
 """
+
+            # Log the system prompt construction
+            logging.debug("System prompt constructed.")
 
             # Generate the response using the language model
             response = await llm.agenerate([HumanMessage(content=system_prompt)])
+            logging.info("LLM response received.")
+            logging.debug("LLM response content: %s", response.generations[0].text)
 
             # Parse the JSON response
             try:
@@ -1123,8 +1146,12 @@ Provide your final response as Ada in the JSON format specified above.
             messages = response_json.get("messages", [])
             internal_notes = response_json.get("internal_notes", "")
 
-            # Log the internal notes if needed
-            logging.info(f"Internal Notes: {internal_notes}")
+            # Log the number of messages to be sent
+            logging.info("Sending %d messages to Evolution API.", len(messages))
+
+            # Log internal notes if any
+            if internal_notes:
+                logging.info("Internal notes: %s", internal_notes)
 
             # Prepare headers for Evolution API
             headers_evolution = {
@@ -1136,11 +1163,12 @@ Provide your final response as Ada in the JSON format specified above.
             for index, message in enumerate(messages, start=1):
                 try:
                     if message["type"] == "text":
+                        logging.info("Sending text message %d: %s", index, message["text"])
                         payload = {
                             "number": user_query.phone,
                             "text": message["text"],
                             "options": {
-                                "delay": 500,
+                                "delay": 1000,
                                 "presence": "composing",
                             }
                         }
@@ -1151,19 +1179,20 @@ Provide your final response as Ada in the JSON format specified above.
                             headers=headers_evolution,
                         )
                         send_response.raise_for_status()
-                        logging.info(f"Text message {index} sent successfully.")
+                        logging.info("Text message %d sent successfully.", index)
                         await asyncio.sleep(1)  # Short delay between messages
 
-                    elif message["type"] == "file":
+                    elif message["type"] == "image":
+                        logging.info("Sending image message %d: %s", index, message["url"])
                         payload = {
                             "number": user_query.phone,
                             "mediatype": "image",  # Adjust based on actual MIME type
                             "mimetype": "image/png",
-                            "caption": message["caption"],
+                            "caption": "Imagem do Curso",
                             "media": message["url"],  # URL or base64
-                            "fileName": message["fileName"],
+                            "fileName": "CursoImagem.png",
                             "options": {
-                                "delay": 500,
+                                "delay": 2000,
                                 "presence": "composing",
                             }
                         }
@@ -1174,7 +1203,7 @@ Provide your final response as Ada in the JSON format specified above.
                             headers=headers_evolution,
                         )
                         send_response.raise_for_status()
-                        logging.info(f"File message {index} sent successfully.")
+                        logging.info("Image message %d sent successfully.", index)
                         await asyncio.sleep(2)  # Longer delay after media
 
                     elif message["type"] == "location":
@@ -1184,9 +1213,10 @@ Provide your final response as Ada in the JSON format specified above.
                         address = message.get("address", "")
 
                         if not latitude or not longitude:
-                            logging.warning(f"Location message {index} is missing latitude or longitude.")
+                            logging.warning("Location message %d is missing latitude or longitude.", index)
                             continue  # Skip this message
 
+                        logging.info("Sending location message %d: Latitude %s, Longitude %s", index, latitude, longitude)
                         payload = {
                             "number": user_query.phone,
                             "location": {
@@ -1196,7 +1226,7 @@ Provide your final response as Ada in the JSON format specified above.
                                 "address": address
                             },
                             "options": {
-                                "delay": 500,
+                                "delay": 2000,
                                 "presence": "composing",
                             }
                         }
@@ -1207,28 +1237,26 @@ Provide your final response as Ada in the JSON format specified above.
                             headers=headers_evolution,
                         )
                         send_response.raise_for_status()
-                        logging.info(f"Location message {index} sent successfully.")
+                        logging.info("Location message %d sent successfully.", index)
                         await asyncio.sleep(2)  # Longer delay after location
 
                     else:
-                        logging.warning(f"Unsupported message type: {message['type']} in message {index}")
+                        logging.warning("Unsupported message type: %s in message %d", message['type'], index)
                         # Optionally handle other message types or skip
 
                 except httpx.HTTPStatusError as e:
-                    logging.error(f"Failed to send message {index} ({message['type']}): {e.response.status_code} - {e.response.text}")
+                    logging.error("Failed to send message %d (%s): %s - %s", index, message['type'], e.response.status_code, e.response.text)
                     # Optionally implement retry logic here
                 except Exception as e:
-                    logging.error(f"Unexpected error sending message {index} ({message['type']}): {str(e)}")
+                    logging.error("Unexpected error sending message %d (%s): %s", index, message['type'], str(e))
                     # Optionally handle other exceptions here
-
-            # Optionally send internal notes or perform other actions here
 
             return {"success": True, "internal_notes": internal_notes}
 
         except httpx.RequestError as e:
-            logging.error(f"An error occurred while requesting Evolution API: {e}")
+            logging.error("An error occurred while requesting Evolution API: %s", str(e))
             raise HTTPException(status_code=503, detail="Service unavailable.")
         except Exception as e:
-            logging.error(f"Error in /chat/bot-chatwoot endpoint: {str(e)}")
+            logging.error("Error in /chat/bot-chatwoot endpoint: %s", str(e))
             raise HTTPException(status_code=500, detail="An internal server error occurred.")
  
