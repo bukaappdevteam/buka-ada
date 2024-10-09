@@ -994,37 +994,52 @@ Here is the JSON containing the current list of courses:
 {courses}
 </courses>
 
-Please identify which institution and location will host a specific training course based on the course name provided. Use the following information to determine the correct institution, address, and coordinates for each course.
+## Course Hosting/Location Information
 
-- "Sublimação e Design de Produção":
+Identify the hosting institution and location for a specific training course based on the provided course name. Use the following predefined information to determine the correct institution, address, and geographic coordinates for each course.
 
-  - Institution: BusCenter do Empreendedor
+### Course Mapping
 
-  - Address: Galeria dos Desportos, Cidadela, Luanda, Angola
+- **"Sublimação e Design de Produção"**:
+  
+  - **Institution**: BusCenter do Empreendedor
+  
+  - **Address**: Galeria dos Desportos, Cidadela, Luanda, Angola
+  
+  - **Coordinates**:
+    - **Latitude**: -8.8260395
+    - **Longitude**: 13.2517865
 
-  - Coordinates: Latitude: -8.8260395, Longitude: 13.2517865
+- **"VideoPro: Desperto o Empreendedor"**:
+  
+  - **Institution**: BusCenter - Xyami Nova Vida
+  
+  - **Address**: Xyami Shopping, Av. Pedro de Castro Van-Dúnem Loy, Luanda, Angola
+  
+  - **Coordinates**:
+    - **Latitude**: -8.896883
+    - **Longitude**: 13.226758
 
-- "VideoPro: Desperto o Empreendedor":
+- **All Other Courses**:
+  
+  - **Institution**: Digital.AO
+  
+  - **Address**: DIGITAL.ao, Bairro CTT, Rangel, Luanda, Angola
+  
+  - **Coordinates**:
+    - **Latitude**: -8.8189648
+    - **Longitude**: 13.2644553
 
-  - Institution: BusCenter - Xyami Nova Vida
+### Steps to Identify Hosting Institution and Location
 
-  - Address: Xyami Shopping, Av. Pedro de Castro Van-Dúnem Loy, Luanda, Angola
+1. **Receive Course Name**:
+   - Input: A specific training course name (e.g., "Sublimação e Design de Produção").
 
-  - Coordinates: Latitude: -8.896883, Longitude: 13.226758
-
-- All other courses:
-
-  - Institution: Digital.AO
-
-  - Address: DIGITAL.ao, Bairro CTT, Rangel, Luanda, Angola
-
-  - Coordinates: Latitude: -8.8189648, Longitude: 13.2644553
-
-# Steps
-
-1. Identify the Course Name: Receive a course name as input.
-
-2. Match to Institution: Determine the corresponding institution and location based on the course name.
+2. **Match Course to Institution**:
+   - **Exact Match**:
+     - If the course name exactly matches one of the predefined courses ("Sublimação e Design de Produção" or "VideoPro: Desperto o Empreendedor"), assign the corresponding institution and location.
+   - **Default Assignment**:
+     - For any other course name not explicitly listed, assign it to **Digital.AO** with the default address and coordinates.
 
 
 When asked about available courses always give all available courses.
