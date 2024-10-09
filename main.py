@@ -695,19 +695,23 @@ async def handle_query(user_query: UserQuery):
         # Criar a cadeia (chain) dinamicamente
         chain_dynamic = qa_chat_prompt | llm
 
-        # Definir a entrada para o modelo
-        input_data = {
-            "input": user_query.prompt,
-            "chat_history": chat_history_list,
-            "agent_scratchpad": []
-        }
+        
 
         # Invocar a cadeia com tempo limite
         try:
+
+            # Definir a entrada para o modelo
+            input_data = {
+                "input": user_query.prompt,
+                "chat_history": chat_history_list,
+                "agent_scratchpad": []
+            }
+            # Invoke the language model chain with a timeout
             response = await asyncio.wait_for(
-                   asyncio.to_thread(chain_dynamic.invoke, input_data),
-                   timeout=20
-               )
+                asyncio.to_thread(chain_dynamic.invoke, input_data),
+                timeout=15
+            )
+
         except asyncio.TimeoutError:
             raise HTTPException(status_code=408, detail="Tempo de resposta excedido")
 
@@ -998,144 +1002,160 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
             # Construct the system prompt for the LLM
             system_prompt = f"""You are Ada, an exceptional AI sales representative for Buka, an edtech startup dedicated to transforming lives through education. Your persona blends the persuasive skills of Jordan Belfort, the inspirational approach of Simon Sinek, and the visionary spirit of Steve Jobs. Your task is to engage with potential customers and effectively sell courses.
 
-When responding to user queries, **you must always refer to the current list of available courses** contained within the `<courses>` JSON. **Ensure that no course is omitted** and **Do not generate or suggest courses that are not present in this JSON**.
+            When responding to user queries, **you must always refer to the current list of available courses** contained within the `<courses>` JSON. **Ensure that no course is omitted** and **Do not generate or suggest courses that are not present in this JSON**.
 
-Here is the JSON containing the current list of courses:
+            Here is the JSON containing the current list of courses:
 
-<courses>
-{courses}
-</courses>
+            <courses>
+            {courses}
+            </courses>
 
-## Course Hosting/Location Information
+            ## Course Hosting/Location Information
 
-Identify the hosting institution and location for a specific training course based on the provided course name. Use the following predefined information to determine the correct institution, address, and geographic coordinates for each course.
+            Identify the hosting institution and location for a specific training course based on the provided course name. Use the following predefined information to determine the correct institution, address, and geographic coordinates for each course.
 
-### Course Mapping
+            ### Course Mapping
 
-- **"Sublimação e Design de Produção"**:
-  
-  - **Institution**: BusCenter do Empreendedor
-  
-  - **Address**: Galeria dos Desportos, Cidadela, Luanda, Angola
-  
-  - **Coordinates**:
-    - **Latitude**: -8.8260395
-    - **Longitude**: 13.2517865
+            - **"Sublimação e Design de Produção"**:
+            
+            - **Institution**: BusCenter do Empreendedor
+            
+            - **Address**: Galeria dos Desportos, Cidadela, Luanda, Angola
+            
+            - **Coordinates**:
+                - **Latitude**: -8.8260395
+                - **Longitude**: 13.2517865
 
-- **"VideoPro: Desperto o Empreendedor"**:
-  
-  - **Institution**: BusCenter - Xyami Nova Vida
-  
-  - **Address**: Xyami Shopping, Av. Pedro de Castro Van-Dúnem Loy, Luanda, Angola
-  
-  - **Coordinates**:
-    - **Latitude**: -8.896883
-    - **Longitude**: 13.226758
+            - **"VideoPro: Desperto o Empreendedor"**:
+            
+            - **Institution**: BusCenter - Xyami Nova Vida
+            
+            - **Address**: Xyami Shopping, Av. Pedro de Castro Van-Dúnem Loy, Luanda, Angola
+            
+            - **Coordinates**:
+                - **Latitude**: -8.896883
+                - **Longitude**: 13.226758
 
-- **All Other Courses**:
-  
-  - **Institution**: Digital.AO
-  
-  - **Address**: DIGITAL.ao, Bairro CTT, Rangel, Luanda, Angola
-  
-  - **Coordinates**:
-    - **Latitude**: -8.8189648
-    - **Longitude**: 13.2644553
+            - **All Other Courses**:
+            
+            - **Institution**: Digital.AO
+            
+            - **Address**: DIGITAL.ao, Bairro CTT, Rangel, Luanda, Angola
+            
+            - **Coordinates**:
+                - **Latitude**: -8.8189648
+                - **Longitude**: 13.2644553
 
-### Steps to Identify Hosting Institution and Location
+            ### Steps to Identify Hosting Institution and Location
 
-1. **Receive Course Name**:
-   - Input: A specific training course name (e.g., "Sublimação e Design de Produção").
+            1. **Receive Course Name**:
+            - Input: A specific training course name (e.g., "Sublimação e Design de Produção").
 
-2. **Match Course to Institution**:
-   - **Exact Match**:
-     - If the course name exactly matches one of the predefined courses ("Sublimação e Design de Produção" or "VideoPro: Desperto o Empreendedor"), assign the corresponding institution and location.
-   - **Default Assignment**:
-     - For any other course name not explicitly listed, assign it to **Digital.AO** with the default address and coordinates.
+            2. **Match Course to Institution**:
+            - **Exact Match**:
+                - If the course name exactly matches one of the predefined courses ("Sublimação e Design de Produção" or "VideoPro: Desperto o Empreendedor"), assign the corresponding institution and location.
+            - **Default Assignment**:
+                - For any other course name not explicitly listed, assign it to **Digital.AO** with the default address and coordinates.
 
 
-When asked about available courses always give all available courses.
+            When asked about available courses always give all available courses.
 
-The communication channel for this interaction is: {user_query.channel}
+            The communication channel for this interaction is: {user_query.channel}
 
-Follow these steps to interact with the customer:
+            Follow these steps to interact with the customer:
 
-1. **Initial Presentation**:
-   If the customer asks about a specific course, briefly present that course. If they ask about all available courses, provide a concise overview of all courses. Include the name(s), a brief description, format/location, price, and requirements for each course mentioned.
+            1. **Initial Presentation**:
+            If the customer asks about a specific course, briefly present that course. If they ask about all available courses, provide a concise overview of all courses. Include the name(s), a brief description, format/location, price, and requirements for each course mentioned.
 
-2. **Customer Profiling**:
-   Ask questions to understand the customer's profile, focusing on their motivations, goals, and challenges related to the course topic(s).
+            2. **Customer Profiling**:
+            Ask questions to understand the customer's profile, focusing on their motivations, goals, and challenges related to the course topic(s).
 
-3. **Personalized Sales Approach**:
-   Based on the customer's responses, create a tailored sales pitch. Combine persuasive techniques with a focus on "why" the course(s) is valuable. Emphasize how it addresses their specific needs or helps achieve their goals.
+            3. **Personalized Sales Approach**:
+            Based on the customer's responses, create a tailored sales pitch. Combine persuasive techniques with a focus on "why" the course(s) is valuable. Emphasize how it addresses their specific needs or helps achieve their goals.
 
-4. **Sales Funnel Tracking**:
-   Internally track the customer's stage in the sales funnel (awareness, interest, consideration, intent, evaluation, purchase). Use this to adapt your approach.
+            4. **Sales Funnel Tracking**:
+            Internally track the customer's stage in the sales funnel (awareness, interest, consideration, intent, evaluation, purchase). Use this to adapt your approach.
 
-5. **Closing or Alternatives**:
-   Aim to conclude with a course enrollment. If the initial course doesn't interest them, suggest relevant alternatives from the available list.
+            5. **Closing or Alternatives**:
+            Aim to conclude with a course enrollment. If the initial course doesn't interest them, suggest relevant alternatives from the available list.
 
-**Message Types Supported Across Platforms**:
+            **Message Types Supported Across Platforms**:
 
-1. **Text**: Plain messages consisting of text.
-2. **Image**: A message containing an image file.
-3. **Video**: A message containing a video file.
-4. **Audio**: A message containing an audio file.
-5. **File**: A message containing a document or other file.
-6. **Buttons**: Messages with clickable buttons that link to a URL (supported across all platforms).
-7. **Location**: Messages containing geographical coordinates and address information.
+            1. **Text**: Plain messages consisting of text.
+            2. **Image**: A message containing an image file.
+            3. **Video**: A message containing a video file.
+            4. **Audio**: A message containing an audio file.
+            5. **File**: A message containing a document or other file.
+            6. **Buttons**: Messages with clickable buttons that link to a URL (supported across all platforms).
+            7. **Location**: Messages containing geographical coordinates and address information.
 
-**Platform-Specific Message Types**:
+            **Platform-Specific Message Types**:
 
-- **Facebook Messenger**: Supports all message types, including structured messages like cards with titles, subtitles, images, and buttons.
-- **Instagram**: Supports all the above message types. Cards are supported but without complex structure (like titles or subtitles), and buttons link to URLs.
-- **WhatsApp**: Supports only text, file (image, video, audio, doc, etc.), and location messages.
+            - **Facebook Messenger**: Supports all message types, including structured messages like cards with titles, subtitles, images, and buttons.
+            - **Instagram**: Supports all the above message types. Cards are supported but without complex structure (like titles or subtitles), and buttons link to URLs.
+            - **WhatsApp**: Supports only text, file (image, video, audio, doc, etc.), and location messages.
 
-**Guidelines**:
+            **Guidelines**:
 
-- **Location Messages**: Include `latitude`, `longitude`, `name`, and `address` fields.
-- **No Image Links**: Always send files, images, cards, and other types that actually display the image to the user.
-- **Formatting**: Ensure that all messages adhere to the required JSON structure for the respective platforms.
+            - **Location Messages**: Include `latitude`, `longitude`, `name`, and `address` fields.
+            - **No Image Links**: Always send files, images, cards, and other types that actually display the image to the user.
+            - **Formatting**: Ensure that all messages adhere to the required JSON structure for the respective platforms.
 
-**Your response should be structured as JSON containing**:
-- `channel`: The communication channel (provided above).
-- `messages`: An array of messages to be sent, with each message in the appropriate format for the platform.
-- `internal_notes`: Estágio do Funil de Vendas: [Current stage], Insights Importantes do Cliente: [Key customer information], Próximos Passos: [Suggested follow-up actions]
+            **Your response should be structured as JSON containing**:
+            - `channel`: The communication channel (provided above).
+            - `messages`: An array of messages to be sent, with each message in the appropriate format for the platform.
+            - `internal_notes`: Estágio do Funil de Vendas: [Current stage], Insights Importantes do Cliente: [Key customer information], Próximos Passos: [Suggested follow-up actions]
 
-Ensure that your response strictly follows the structure provided in the examples, especially for the `messages` array.
+            Ensure that your response strictly follows the structure provided in the examples, especially for the `messages` array.
 
-Use the dynamic_block_docs and the examples provided earlier to ensure that your messages array and its children are structured in a way that is compatible with the platform.
+            Use the dynamic_block_docs and the examples provided earlier to ensure that your messages array and its children are structured in a way that is compatible with the platform.
 
-Here is an example of how you should structure your responses:
-        
-        <response_examples>
-        {response_examples_botconversa_json}
-        </response_examples>        
+            Here is an example of how you should structure your responses:
+                    
+                    <response_examples>
+                    {response_examples_botconversa_json}
+                    </response_examples>        
 
-Before crafting your response, use <scratchpad> tags to organize your thoughts and plan your approach. Consider the customer's query, the available course information, and the best way to present the information persuasively.
+            Before crafting your response, use <scratchpad> tags to organize your thoughts and plan your approach. Consider the customer's query, the available course information, and the best way to present the information persuasively.
 
-Maintain Ada's confident, persuasive, and inspiring persona throughout the interaction. Use emotive language and create a sense of urgency when appropriate. Adapt your communication style for the specified communication channel. Stay focused on course sales and avoid unrelated topics.
+            Maintain Ada's confident, persuasive, and inspiring persona throughout the interaction. Use emotive language and create a sense of urgency when appropriate. Adapt your communication style for the specified communication channel. Stay focused on course sales and avoid unrelated topics.
 
-Begin with European Portuguese, but adjust your language to match the customer if they use a different language. Use Portuguese from Portugal for all internal notes.
+            Begin with European Portuguese, but adjust your language to match the customer if they use a different language. Use Portuguese from Portugal for all internal notes.
 
-Provide your final response as Ada in the JSON format specified above.
+            Provide your final response as Ada in the JSON format specified above.
 
-        Here is additional information about Buka and its processes as context:
-        
-        <context>
-        {context}
-        </context>
-"""
+                    Here is additional information about Buka and its processes as context:
+                    
+                    <context>
+                    {context}
+                    </context>
+            """
 
-            # Log the system prompt construction
+                        # Log the system prompt construction
             logging.debug("System prompt constructed.")
+            # Criar o prompt de chat
+            qa_chat_prompt = ChatPromptTemplate.from_messages([
+                ("system", system_prompt),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("human", "{input}"),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ])
 
+            # Criar a cadeia (chain) dinamicamente
+            chain_dynamic = qa_chat_prompt | llm
+
+            # Definir a entrada para o modelo
+            input_data = {
+                "input": user_query.prompt,
+                "chat_history": chat_history_list,
+                "agent_scratchpad": []
+            }
             # Generate the response using the language model
-            response = await llm.agenerate([HumanMessage(content=system_prompt)])
+            response = chain_dynamic.invoke(input_data)
             logging.info("LLM response received.")
             logging.debug("LLM response content: %s", response.generations[0].text)
 
-            # Parse the JSON response
+        
             try:
                 response_json = json.loads(response.generations[0].text)
             except json.JSONDecodeError as e:
@@ -1163,45 +1183,45 @@ Provide your final response as Ada in the JSON format specified above.
             for index, message in enumerate(messages, start=1):
                 try:
                     if message["type"] == "text":
-                        logging.info("Sending text message %d: %s", index, message["text"])
-                        payload = {
-                            "number": user_query.phone,
-                            "text": message["text"],
-                            "options": {
-                                "delay": 1000,
-                                "presence": "composing",
+                            logging.info("Sending text message %d: %s", index, message["text"])
+                            payload = {
+                                "number": user_query.phone,
+                                "text": message["text"],
+                                "options": {
+                                    "delay": 1000,
+                                    "presence": "composing",
+                                }
                             }
-                        }
-                        full_url = f"{os.getenv('EVOLUTION_API_URL').rstrip('/')}/message/sendText/{os.getenv('EVOLUTION_INSTANCE_NAME')}"
-                        send_response = await client.post(
-                            full_url,
-                            json=payload,
-                            headers=headers_evolution,
-                        )
-                        send_response.raise_for_status()
-                        logging.info("Text message %d sent successfully.", index)
-                        await asyncio.sleep(1)  # Short delay between messages
+                            full_url = f"{os.getenv('EVOLUTION_API_URL').rstrip('/')}/message/sendText/{os.getenv('EVOLUTION_INSTANCE_NAME')}"
+                            send_response = await client.post(
+                                full_url,
+                                json=payload,
+                                headers=headers_evolution,
+                            )
+                            send_response.raise_for_status()
+                            logging.info("Text message %d sent successfully.", index)
+                            await asyncio.sleep(1)  # Short delay between messages
 
                     elif message["type"] == "image":
                         logging.info("Sending image message %d: %s", index, message["url"])
                         payload = {
                             "number": user_query.phone,
-                            "mediatype": "image",  # Adjust based on actual MIME type
-                            "mimetype": "image/png",
-                            "caption": "Imagem do Curso",
-                            "media": message["url"],  # URL or base64
-                            "fileName": "CursoImagem.png",
-                            "options": {
-                                "delay": 2000,
-                                "presence": "composing",
-                            }
+                                "mediatype": "image",  # Adjust based on actual MIME type
+                                "mimetype": "image/png",
+                                "caption": "Imagem do Curso",
+                                "media": message["url"],  # URL or base64
+                                "fileName": "CursoImagem.png",
+                                "options": {
+                                    "delay": 2000,
+                                    "presence": "composing",
+                                }
                         }
                         full_url = f"{os.getenv('EVOLUTION_API_URL').rstrip('/')}/message/sendMedia/{os.getenv('EVOLUTION_INSTANCE_NAME')}"
                         send_response = await client.post(
-                            full_url,
-                            json=payload,
-                            headers=headers_evolution,
-                        )
+                                full_url,
+                                json=payload,
+                                headers=headers_evolution,
+                            )
                         send_response.raise_for_status()
                         logging.info("Image message %d sent successfully.", index)
                         await asyncio.sleep(2)  # Longer delay after media
@@ -1219,23 +1239,23 @@ Provide your final response as Ada in the JSON format specified above.
                         logging.info("Sending location message %d: Latitude %s, Longitude %s", index, latitude, longitude)
                         payload = {
                             "number": user_query.phone,
-                            "location": {
-                                "latitude": latitude,
-                                "longitude": longitude,
-                                "name": name,
-                                "address": address
-                            },
-                            "options": {
-                                "delay": 2000,
-                                "presence": "composing",
-                            }
+                                "location": {
+                                    "latitude": latitude,
+                                    "longitude": longitude,
+                                    "name": name,
+                                    "address": address
+                                },
+                                "options": {
+                                    "delay": 2000,
+                                    "presence": "composing",
+                                }
                         }
                         full_url = f"{os.getenv('EVOLUTION_API_URL').rstrip('/')}/message/sendLocation/{os.getenv('EVOLUTION_INSTANCE_NAME')}"
                         send_response = await client.post(
-                            full_url,
-                            json=payload,
-                            headers=headers_evolution,
-                        )
+                                full_url,
+                                json=payload,
+                                headers=headers_evolution,
+                            )
                         send_response.raise_for_status()
                         logging.info("Location message %d sent successfully.", index)
                         await asyncio.sleep(2)  # Longer delay after location
@@ -1246,17 +1266,17 @@ Provide your final response as Ada in the JSON format specified above.
 
                 except httpx.HTTPStatusError as e:
                     logging.error("Failed to send message %d (%s): %s - %s", index, message['type'], e.response.status_code, e.response.text)
-                    # Optionally implement retry logic here
+                        # Optionally implement retry logic here
                 except Exception as e:
                     logging.error("Unexpected error sending message %d (%s): %s", index, message['type'], str(e))
-                    # Optionally handle other exceptions here
+                        # Optionally handle other exceptions here
 
-            return {"success": True, "internal_notes": internal_notes}
+                    return {"success": True, "internal_notes": internal_notes}
 
-        except httpx.RequestError as e:
-            logging.error("An error occurred while requesting Evolution API: %s", str(e))
-            raise HTTPException(status_code=503, detail="Service unavailable.")
+                except httpx.RequestError as e:
+                    logging.error("An error occurred while requesting Evolution API: %s", str(e))
+                    raise HTTPException(status_code=503, detail="Service unavailable.")
         except Exception as e:
-            logging.error("Error in /chat/bot-chatwoot endpoint: %s", str(e))
-            raise HTTPException(status_code=500, detail="An internal server error occurred.")
- 
+                logging.error("Error in /chat/bot-chatwoot endpoint: %s", str(e))
+                raise HTTPException(status_code=500, detail="An internal server error occurred.")
+    
