@@ -20,7 +20,7 @@ from functools import lru_cache
 import asyncio
 import ijson
 import io
-from tenacity import retry, wait_exponential, stop_after_attempt
+from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 from typing import Optional
 
 # Load environment variables
@@ -845,12 +845,21 @@ def split_long_message(message, max_length=1000):
     return chunks
 
 # Retry configuration using Tenacity
-@retry(wait=wait_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(3))
+# Retry configuration using Tenacity
+@retry(
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type(HTTPException)
+)
 async def send_single_message(client, url, headers, payload, message_type, index):
     response = await client.post(url, headers=headers, json=payload)
-    if response.status_code != 200:
-        logging.error(f"Failed to send {message_type} message {index}: {response.status_code} - {response.text}")
-        raise HTTPException(status_code=response.status_code, detail=response.text)
+    if not response.is_success:
+        logging.error(
+            f"Failed to send {message_type} message {index}: {response.status_code} - {response.text}"
+        )
+        raise HTTPException(
+            status_code=response.status_code, detail=response.text
+        )
     logging.info(f"{message_type.capitalize()} message {index} sent successfully.")
     return True
 
