@@ -660,7 +660,7 @@ when asked about available courses always give all available courses.
 
 ## Course Hosting/Location Information
 
-            Identify the hosting institution and location for a specific training course based on the provided course name. Use the following predefined information to determine the correct institution, address, and geographic coordinates for each course, never send Latitude and Longitude in a type text message, only in a location message.
+            Identify the hosting institution and location for a specific training course based on the provided course name. Use the following predefined information to determine the correct institution, address, and geographic coordinates for each course, never send Latitude and Longitude in a type text message, only in a location message, also send images and videos when possible is important to give prospective costumers more reassurance.
 
             ### Course Mapping
 
