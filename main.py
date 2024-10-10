@@ -411,7 +411,7 @@ response_examples_botconversa = [
                 #    },
                 {
                     "type":
-                    "file",
+                    "image",
                     "value":
                     "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8",
                 },
@@ -558,8 +558,85 @@ response_examples_botconversa = [
                     "latitude": "-8.838333",
                     "longitude": "13.234444"
                 }
+            },
+            {
+                "type": "text",
+                "value": "A Digital.ao é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS). A Digital.ao atua como um hub de inovação, apoiando o desenvolvimento de startups e projetos tecnológicos, promovendo a transformação digital e impulsionando o empreendedorismo tecnológico em Angola."
+            },
+            {
+                "type": "image",
+                "value": "https://drive.google.com/uc?export=view&id=1FM7fQSNz5Qe8ItwYIwwJHIO5Exdp-qx-"
+            },
+            {
+                "type": "video",
+                "value": "https://drive.google.com/uc?export=view&id=1StQXzt3MCca_s1g5b1NJlyOzNAT1xtq9"
             }
             ]
+        }
+    },
+    {
+        "input": {
+            "channel": "whatsapp",
+            "prompt": "Como chegar ao Digital.AO?"
+        },
+        "output": {
+            "channel": "whatsapp",
+            "messages": [{
+                "type": "text",
+                "value": "📍 Para chegar ao Digital.AO, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
+            }]
+        }
+    },
+    {
+        "input": {
+            "channel": "whatsapp",
+            "prompt": "Quero me inscrever no curso de Power BI."
+        },
+        "output": {
+            "channel": "whatsapp",
+            "messages": [{
+                "type": "text",
+                "value": "*Que bom saber que você está interessado em garantir sua vaga no curso de PowerBI!_* Na Buka, nossa missão é mudar vidas por meio da educação, e isso inclui a sua. Dominar essa ferramenta poderosa poderá abrir portas para muitas novas oportunidades."
+            },
+            {
+                "type": "text",
+                "value": "O investimento para o curso é de *_60.000 Kz_*, e você pode optar por dividir em *_2 prestações de 30.000 Kz_*. Para garantir sua vaga, siga os próximos passos:\n\n1. *Pagamento*: Você pode pagar o valor total ou a primeira parcela por transferência ou depósito bancário.\n\n   *Dados bancários para o pagamento*:\n   - *Titular*: BUKA PREST SERVIÇOS, Lda.\n   - *Conta BAI*: 188803004 10 001\n   - *IBAN*: AO06 0040 0000 8880 3004 1014 1\n   - *Valor*: 60.000 Kz (total) ou 30.000 Kz (1ª parcela)\n\n2. *Envio do comprovativo*: Após realizar o pagamento, envie o comprovativo diretamente aqui pelo WhatsApp. Isso nos ajuda a processar sua inscrição de forma mais rápida e segura.\n\n3. *Inscrição online*: Acesse nosso site *www.BukaApp.net* para completar sua inscrição. O processo é simples e leva apenas alguns minutos."
+            },
+            {
+                "type": "text",
+                "value": "> *_Importante_*: A sua vaga só estará garantida após a confirmação do pagamento, seja do valor total ou da primeira parcela. As vagas são limitadas, então não perca tempo!"
+            },
+            {
+                "type": "text",
+                "value": "Caso tenha qualquer dúvida ou precise de mais informações, estamos à disposição para ajudar aqui pelo WhatsApp.\n\n*_Garanta sua vaga e comece a transformação com o PowerBI!_* "
+            }   
+            ]
+        }
+    },
+    {
+        "input": {
+            "channel": "whatsapp",
+            "prompt": "Como chegar ao BusCenter?",
+        },
+        "output": {
+            "channel": "whatsapp",
+            "messages": [{
+                "type": "text",
+                "value": "Se refere ao BusCenter do Empreendedor ou BusCenter Arte e Tecnologia (Xyami Nova Vida)?"
+            }]
+        }
+    },
+    {
+        "input": {
+            "channel": "whatsapp",
+            "prompt": "BusCenter Xyami Nova Vida"
+        },
+        "output": {
+            "channel": "whatsapp",
+            "messages": [{
+                "type": "text",
+                "value": "📍 Para chegar ao BusCenter Xyami Nova Vida, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
+            }]
         }
     }
 ]
@@ -589,33 +666,60 @@ when asked about available courses always give all available courses.
 
             - *"Sublimação e Design de Produção"*:
             
-            - *Institution*: BusCenter do Empreendedor
+            - *Institution*: BusCenter do Empreendedor (Galeria dos Desportos, Cidadela)
+
+            - *Description*: O BusCenter do Empreendedor, localizado na Galeria dos Desportos, Cidadela, é um autocarro sala de aulas dedicado a formar jovens empreendedores. Equipado com recursos para capacitação e desenvolvimento de negócios, o espaço ajuda futuros líderes a transformar ideias inovadoras em soluções sustentáveis, incentivando o crescimento econômico e social.
             
             - *Address*: Galeria dos Desportos, Cidadela, Luanda, Angola
+
+            - *Google Maps Link*: https://maps.app.goo.gl/rrHxhDJ5pk4rbzHS9
             
             - *Coordinates*:
                 - *Latitude*: -8.8260395
                 - *Longitude*: 13.2517865
 
+            - *Images*:
+                - *Image 1*: https://drive.google.com/uc?export=view&id=1A6nAnu8HNN_pYhhUydYrRm3qd4uGzT5k
+            
             - *"VideoPro: Desperto o Empreendedor"*:
             
-            - *Institution*: BusCenter - Xyami Nova Vida
-            
+            - *Institution*: BusCenter Arte e Tecnologia (Xyami Nova Vida)
+
+            - *Google Maps Link*: https://maps.app.goo.gl/QSXScVvnDRCjasft9
+
+            - *Description*: O BusCenter Arte e Tecnologia é um machimbombo/autocarro transformado em sala de aulas, estacionado no Shopping Xyami Nova Vida. Focado na conexão entre arte e inovação digital, este espaço oferece oportunidades práticas de aprendizagem para jovens, promovendo a criatividade e o uso da tecnologia como ferramentas de expressão e desenvolvimento.
+
             - *Address*: Xyami Shopping, Av. Pedro de Castro Van-Dúnem Loy, Luanda, Angola
             
             - *Coordinates*:
                 - *Latitude*: -8.896883
                 - *Longitude*: 13.226758
 
+            - *Images*:
+                - *Image 1*: https://drive.google.com/uc?export=view&id=1A6nAnu8HNN_pYhhUydYrRm3qd4uGzT5k
+                - *Image 2*: https://drive.google.com/uc?export=view&id=1nRGyeanaq_77KaW7lvQQkN3hhitB19r6
+                - *Image 3*: https://drive.google.com/uc?export=view&id=1Y812SwNg68snwb1LFI28Gi1YtyER3O3M
+
             - *All Other Courses*:
             
             - *Institution*: Digital.AO
+
+            - *Description*: A *Digital.AO* é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS). A Digital.ao atua como um hub de inovação, apoiando o desenvolvimento de startups e projetos tecnológicos, promovendo a transformação digital e impulsionando o empreendedorismo tecnológico em Angola.
             
             - *Address*: DIGITAL.ao, Bairro CTT, Rangel, Luanda, Angola
+
+            - *Google Maps Link*: https://goo.gl/maps/sMBXu4tv5AhQNGsLA
             
             - *Coordinates*:
                 - *Latitude*: -8.8189648
                 - *Longitude*: 13.2644553
+
+            - *Images*:
+                - *Image 1*: https://drive.google.com/uc?export=view&id=1FM7fQSNz5Qe8ItwYIwwJHIO5Exdp-qx-
+            
+            - *Videos*:
+                - *Video 1*: https://drive.google.com/uc?export=view&id=1StQXzt3MCca_s1g5b1NJlyOzNAT1xtq9
+
 
             ### Steps to Identify Hosting Institution and Location
 
