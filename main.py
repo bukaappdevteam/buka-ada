@@ -22,6 +22,16 @@ import ijson
 import io
 from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 from typing import Optional
+import sys
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,  # Set to INFO to capture both INFO and ERROR logs
+    format='%(levelname)s:%(name)s:%(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)  # Ensure logs are sent to stdout
+    ]
+)
 
 # Load environment variables
 load_dotenv()
@@ -349,7 +359,7 @@ response_examples_botconversa = [
                 "type":
                 "text",
                 "value":
-                "✨ Temos uma variedade incr��vel de cursos disponíveis. E cada curso foi cuidadosamente projetado para oferecer não apenas conhecimentos, mas verdadeiras ferramentas de mudança de vida."
+                "✨ Temos uma variedade incrível de cursos disponíveis. E cada curso foi cuidadosamente projetado para oferecer não apenas conhecimentos, mas verdadeiras ferramentas de mudança de vida."
             }, {
                 "type":
                 "text",
@@ -852,16 +862,21 @@ def split_long_message(message, max_length=1000):
     retry=retry_if_exception_type(HTTPException)
 )
 async def send_single_message(client, url, headers, payload, message_type, index):
-    response = await client.post(url, headers=headers, json=payload)
-    if not response.is_success:
-        logging.error(
-            f"Failed to send {message_type} message {index}: {response.status_code} - {response.text}"
-        )
-        raise HTTPException(
-            status_code=response.status_code, detail=response.text
-        )
-    logging.info(f"{message_type.capitalize()} message {index} sent successfully.")
-    return True
+    try:
+        response = await client.post(url, headers=headers, json=payload)
+        if 200 <= response.status_code < 300:
+            logging.info(f"{message_type.capitalize()} message {index} sent successfully with status {response.status_code}.")
+            return True
+        else:
+            logging.error(
+                f"Failed to send {message_type} message {index}: {response.status_code} - {response.text}"
+            )
+            raise HTTPException(
+                status_code=response.status_code, detail=response.text
+            )
+    except Exception as e:
+        logging.error(f"Unexpected error sending {message_type} message {index}: {str(e)}")
+        raise
 
 @app.post("/chat/bot-chatwoot")
 async def send_chatwoot_message(user_query: RequestBodyChatwoot):
