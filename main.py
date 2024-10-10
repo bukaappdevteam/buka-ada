@@ -990,12 +990,10 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
 
                             payload = {
                                 "number": user_query.phone,
-                                "location": {
-                                    "latitude": latitude,
-                                    "longitude": longitude,
-                                    "name": name,
-                                    "address": address
-                                },
+                                "latitude": latitude,
+                                "longitude": longitude,
+                                "name": name,
+                                "address": address,
                                 "options": {
                                     "delay": 500,
                                     "presence": "composing",
