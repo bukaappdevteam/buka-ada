@@ -553,6 +553,8 @@ response_examples_botconversa = [
             {
                 "type": "location",
                 "value": {
+                    "name": "Digital.AO",
+                    "address": "Bairro CTT, Rangel, Luanda, Angola",
                     "latitude": "-8.838333",
                     "longitude": "13.234444"
                 }
@@ -855,7 +857,6 @@ def split_long_message(message, max_length=1000):
     return chunks
 
 # Retry configuration using Tenacity
-# Retry configuration using Tenacity
 @retry(
     wait=wait_exponential(multiplier=1, min=4, max=10),
     stop=stop_after_attempt(3),
@@ -863,7 +864,11 @@ def split_long_message(message, max_length=1000):
 )
 async def send_single_message(client, url, headers, payload, message_type, index):
     try:
+        # Log the outgoing request for debugging
+        logging.debug(f"Sending {message_type} message {index} to {url} with payload: {payload}")
+        
         response = await client.post(url, headers=headers, json=payload)
+        
         if 200 <= response.status_code < 300:
             logging.info(f"{message_type.capitalize()} message {index} sent successfully with status {response.status_code}.")
             return True
@@ -972,13 +977,24 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                             fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
                         elif message.get("type") == "location":
                             location_data = message["value"]
+                            #Ensure latitude and longitude are floats
+                            try:
+                                latitude = float(location_data["latitude"])
+                                longitude = float(location_data["longitude"])
+                                name = location_data["name"]
+                                address = location_data["address"]  
+                            except (ValueError, KeyError) as parse_error:
+                                logging.error(f"Invalid location data in message {index}: {parse_error}")
+                                raise HTTPException(status_code=400, detail="Invalid location data.")
+
+
                             payload = {
                                 "number": user_query.phone,
                                 "location": {
-                                    "latitude": location_data["latitude"],
-                                    "longitude": location_data["longitude"],
-                                    "name": "Localização",
-                                    "address": ""
+                                    "latitude": latitude,
+                                    "longitude": longitude,
+                                    "name": name,
+                                    "address": address
                                 },
                                 "options": {
                                     "delay": 500,
@@ -990,6 +1006,9 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                             logging.warning(f"Unsupported message type: {message.get('type')} in message {index}")
                             logging.info("Location message: %s", message)
                             continue
+
+                        # Log the payload being sent for debugging
+                        logging.info(f"Sending payload to {fullURLEvolutionAPI}: {payload}")
 
                         await send_single_message(client, fullURLEvolutionAPI, headersEvolutionAPI, payload, message.get("type", "unknown"), index)
                         await asyncio.sleep(1)  # Short delay between messages
