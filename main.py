@@ -548,7 +548,7 @@ response_examples_botconversa = [
             "channel": "whatsapp",
             "messages": [{
                 "type": "text",
-                "value": "📍 O curso de Power BI será realizado na Digital.AO, localizada no Bairro CTT, Rangel, Luanda, Angola."
+                "value": "📍 O curso de *Power BI* será realizado na Digital.AO, localizada no Bairro CTT, Rangel, Luanda, Angola."
             },
             {
                 "type": "location",
@@ -1055,42 +1055,46 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
             for index, message in enumerate(messages, start=1):
                 try:
                     if isinstance(message, dict) and "value" in message:
-                        # Handle messages with "value" key
-                        if message.get("type") == "text":
-                            payload = {
-                                "number": user_query.phone,
-                                "text": message["value"],
-                                "options": {
-                                    "delay": 500,
-                                    "presence": "composing",
-                                }
-                            }
-                            fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendText/{nameInstanceEvolutionAPI}"
-                        elif message.get("type") == "file":
-                            payload = {
-                                "number": user_query.phone,
-                                "mediatype": "image",  # Adjust based on actual file type
-                                "mimetype": "image/png",  # Adjust based on actual MIME type
-                                "media": message["value"],
-                                "fileName": f"image_{index}.png",  # Generate a filename
-                                "options": {
-                                    "delay": 500,
-                                    "presence": "composing",
-                                }
-                            }
-                            fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
-                        elif message.get("type") == "location":
-                            location_data = message["value"]
-                            #Ensure latitude and longitude are floats
-                            try:
-                                latitude = float(location_data["latitude"])
-                                longitude = float(location_data["longitude"])
-                                name = location_data["name"]
-                                address = location_data["address"]  
-                            except (ValueError, KeyError) as parse_error:
-                                logging.error(f"Invalid location data in message {index}: {parse_error}")
-                                raise HTTPException(status_code=400, detail="Invalid location data.")
+                        message_type = message.get("type")
+                        message_value = message.get("value")
 
+                        if message_type == "text":
+                            payload = {
+                                "number": user_query.phone,
+                                "text": message_value,
+                                "options": {
+                                    "delay": 500,
+                                    "presence": "composing",
+                                }
+                            }
+                            endpoint = f"{urlEvolutionAPI.rstrip('/')}/message/sendText/{nameInstanceEvolutionAPI}"
+                            logging.info(f"Sending payload to {endpoint}: {payload}")
+                            await send_single_message(client, endpoint, headersEvolutionAPI, payload, "text", index)
+
+                        elif message_type in ["image", "video"]:
+                            mimetype = "image/png" if message_type == "image" else "video/mp4"
+
+                            payload = {
+                                "number": user_query.phone,
+                                "mediatype": message_type,
+                                "mimetype": mimetype,
+                                "media": message_value,
+                                "fileName": f"{message_type}_{index}.{mimetype.split('/')[-1]}",
+                                "options": {
+                                    "delay": 500,
+                                    "presence": "composing",
+                                }
+                            }
+                            endpoint = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
+                            logging.info(f"Sending payload to {endpoint}: {payload}")
+                            await send_single_message(client, endpoint, headersEvolutionAPI, payload, message_type, index)
+
+                        elif message_type == "location":
+                            location_data = message.get("value", {})
+                            latitude = float(location_data.get("latitude", 0))
+                            longitude = float(location_data.get("longitude", 0))
+                            name = location_data.get("name", "")
+                            address = location_data.get("address", "")
 
                             payload = {
                                 "number": user_query.phone,
@@ -1103,17 +1107,13 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                                     "presence": "composing",
                                 }
                             }
-                            fullURLEvolutionAPI = f"{urlEvolutionAPI.rstrip('/')}/message/sendLocation/{nameInstanceEvolutionAPI}"
+                            endpoint = f"{urlEvolutionAPI.rstrip('/')}/message/sendLocation/{nameInstanceEvolutionAPI}"
+                            logging.info(f"Sending payload to {endpoint}: {payload}")
+                            await send_single_message(client, endpoint, headersEvolutionAPI, payload, "location", index)
+
                         else:
-                            logging.warning(f"Unsupported message type: {message.get('type')} in message {index}")
-                            logging.info("Location message: %s", message)
-                            continue
+                            logging.warning(f"Unsupported message type: {message_type} in message {index}")
 
-                        # Log the payload being sent for debugging
-                        logging.info(f"Sending payload to {fullURLEvolutionAPI}: {payload}")
-
-                        await send_single_message(client, fullURLEvolutionAPI, headersEvolutionAPI, payload, message.get("type", "unknown"), index)
-                        await asyncio.sleep(1)  # Short delay between messages
                     else:
                         logging.warning(f"Unexpected message format in message {index}: {message}")
 
