@@ -595,6 +595,10 @@ response_examples_botconversa = [
             {
                 "type": "video",
                 "value": "https://drive.google.com/uc?export=view&id=1StQXzt3MCca_s1g5b1NJlyOzNAT1xtq9"
+            },
+            {
+                "type": "text",
+                "value": "📍 Caso precise de saber como chegar ao Digital.AO, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
             }
             ]
         }
@@ -651,19 +655,6 @@ response_examples_botconversa = [
             }]
         }
     },
-    {
-        "input": {
-            "channel": "whatsapp",
-            "prompt": "BusCenter Xyami Nova Vida"
-        },
-        "output": {
-            "channel": "whatsapp",
-            "messages": [{
-                "type": "text",
-                "value": "📍 Para chegar ao BusCenter Xyami Nova Vida, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
-            }]
-        }
-    }
 ]
 
 response_examples_botconversa_json = json.dumps(response_examples_botconversa,
