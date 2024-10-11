@@ -381,7 +381,10 @@ response_examples = [
                 "text": "*Que bom saber que você está interessado em garantir sua vaga no curso de PowerBI!_* Na Buka, nossa missão é mudar vidas por meio da educação, e isso inclui a sua. Dominar essa ferramenta poderosa poderá abrir portas para muitas novas oportunidades."
             }, {
                 "type": "text",
-                "text": "O investimento para o curso é de *_60.000 Kz_*, e você pode optar por dividir em *_2 prestações de 30.000 Kz_*. Para garantir sua vaga, siga os próximos passos:\n\n1. *Pagamento*: Você pode pagar o valor total ou a primeira parcela por transferência ou depósito bancário.\n\n   *Dados bancários para o pagamento*:\n   - *Titular*: BUKA PREST SERVIÇOS, Lda.\n   - *Conta BAI*: 188803004 10 001\n   - *IBAN*: AO06 0040 0000 8880 3004 1014 1\n   - *Valor*: 60.000 Kz (total) ou 30.000 Kz (1ª parcela)\n\n2. *Envio do comprovativo*: Após realizar o pagamento, envie o comprovativo diretamente aqui pelo WhatsApp. Isso nos ajuda a processar sua inscrição de forma mais rápida e segura.\n\n3. *Inscrição online*: Acesse nosso site *www.BukaApp.net* para completar sua inscrição. O processo é simples e leva apenas alguns minutos."
+                "text": "O investimento para o curso é de *_60.000 Kz_*, e você pode optar por dividir em *_2 prestações de 30.000 Kz_*."
+            }, {
+                "type": "text",
+                "text": "Para garantir sua vaga, siga os próximos passos:\n\n1. *Pagamento*: Você pode pagar o valor total ou a primeira parcela por transferência ou depósito bancário.\n\n   *Dados bancários para o pagamento*:\n   - *Titular*: BUKA PREST SERVIÇOS, Lda.\n   - *Conta BAI*: 188803004 10 001\n   - *IBAN*: AO06 0040 0000 8880 3004 1014 1\n   - *Valor*: 60.000 Kz (total) ou 30.000 Kz (1ª parcela)\n\n2. *Envio do comprovativo*: Após realizar o pagamento, envie o comprovativo diretamente aqui pelo WhatsApp. Isso nos ajuda a processar sua inscrição de forma mais rápida e segura.\n\n3. *Inscrição online*: Acesse nosso site *www.BukaApp.net* para completar sua inscrição. O processo é simples e leva apenas alguns minutos."
             }, {
                 "type": "text",
                 "text": "> *_Importante_*: A sua vaga só estará garantida após a confirmação do pagamento, seja do valor total ou da primeira parcela. As vagas são limitadas, então não perca tempo!"
@@ -708,7 +711,11 @@ response_examples_botconversa = [
             },
             {
                 "type": "text",
-                "value": "O investimento para o curso é de *_60.000 Kz_*, e você pode optar por dividir em *_2 prestações de 30.000 Kz_*. Para garantir sua vaga, siga os próximos passos:\n\n1. *Pagamento*: Você pode pagar o valor total ou a primeira parcela por transferência ou depósito bancário.\n\n   *Dados bancários para o pagamento*:\n   - *Titular*: BUKA PREST SERVIÇOS, Lda.\n   - *Conta BAI*: 188803004 10 001\n   - *IBAN*: AO06 0040 0000 8880 3004 1014 1\n   - *Valor*: 60.000 Kz (total) ou 30.000 Kz (1ª parcela)\n\n2. *Envio do comprovativo*: Após realizar o pagamento, envie o comprovativo diretamente aqui pelo WhatsApp. Isso nos ajuda a processar sua inscrição de forma mais rápida e segura.\n\n3. *Inscrição online*: Acesse nosso site *www.BukaApp.net* para completar sua inscrição. O processo é simples e leva apenas alguns minutos."
+                "value": "O investimento para o curso é de *_60.000 Kz_*, e você pode optar por dividir em *_2 prestações de 30.000 Kz_*."
+            },
+            {
+                "type": "text",
+                "value": "Para garantir sua vaga, siga os próximos passos:\n\n1. *Pagamento*: Você pode pagar o valor total ou a primeira parcela por transferência ou depósito bancário.\n\n   *Dados bancários para o pagamento*:\n   - *Titular*: BUKA PREST SERVIÇOS, Lda.\n   - *Conta BAI*: 188803004 10 001\n   - *IBAN*: AO06 0040 0000 8880 3004 1014 1\n   - *Valor*: 60.000 Kz (total) ou 30.000 Kz (1ª parcela)\n\n2. *Envio do comprovativo*: Após realizar o pagamento, envie o comprovativo diretamente aqui pelo WhatsApp. Isso nos ajuda a processar sua inscrição de forma mais rápida e segura.\n\n3. *Inscrição online*: Acesse nosso site *www.BukaApp.net* para completar sua inscrição. O processo é simples e leva apenas alguns minutos."
             },
             {
                 "type": "text",
@@ -716,7 +723,7 @@ response_examples_botconversa = [
             },
             {
                 "type": "text",
-                "value": "Caso tenha qualquer dúvida ou precise de mais informações, estamos à disposição para ajudar aqui pelo WhatsApp.\n\n*_Garanta sua vaga e comece a transformação com o PowerBI!_* "
+                "value": "Caso tenha qualquer dúvida ou precise de mais informações, estamos à disposição para ajudar aqui pelo WhatsApp.\n\n*Garanta sua vaga e comece a transformação com o PowerBI!* "
             }   
             ]
         }
@@ -741,7 +748,7 @@ response_examples_botconversa = [
         },
         "output": {
             "channel": "whatsapp",
-            "messages": [{"type": "text", "value": "Gostatia de saber mais sobre um curso espcífico ou podemos enviar todos os cursos disponíveis?"}]
+            "messages": [{"type": "text", "value": "Gostaria de saber mais sobre um curso espcífico ou podemos enviar todos os cursos disponíveis?"}]
         }
     }
 ]
