@@ -23,7 +23,9 @@ import io
 from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 from typing import Optional
 import sys
+import uuid
 import mimetypes
+from urllib.parse import urlparse
 
 # Adicionar mapeamentos personalizados, se necessário
 mimetypes.init()
@@ -983,14 +985,23 @@ async def handle_query(user_query: UserQuery):
         stop=stop_after_attempt(3),
         retry=retry_if_exception_type(httpx.RequestError)
     )
-    async def validate_media_url(url: str) -> bool:
+    async def validate_media_url(url: str) -> Optional[str]:
+        """
+        Validate the media URL and return its MIME type if valid.
+        Returns None if the URL is invalid or the MIME type cannot be determined.
+        """
         try:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(follow_redirects=True) as client:
                 response = await client.head(url, timeout=10)
-                return response.status_code == 200
+                if response.status_code == 200:
+                    content_type = response.headers.get('Content-Type')
+                    if content_type:
+                        return content_type.split(';')[0]  # Remove any charset info
+                logging.warning(f"Invalid media URL or missing Content-Type: {url}")
+                return None
         except Exception as e:
             logging.error(f"Error validating media URL {url}: {str(e)}")
-            return False
+            return None
 
     # Function to send a single message with validation
     @retry(
@@ -1036,8 +1047,8 @@ async def handle_query(user_query: UserQuery):
             if message.get("type") in ["image", "video", "audio", "file"]:
                 url = message.get("url") or message.get("media") or message.get("value")
                 if url:
-                    is_valid = await validate_media_url(url)
-                    if not is_valid:
+                    mime_type = await validate_media_url(url)
+                    if not mime_type:
                         logging.warning(f"Invalid media URL detected and skipped: {url}")
                         continue  # Skip invalid media URLs
 
@@ -1116,24 +1127,41 @@ def split_long_message(message, max_length=1000):
 
     return chunks
 
-# Retry configuration using Tenacity
+
 @retry(
     wait=wait_exponential(multiplier=1, min=4, max=10),
     stop=stop_after_attempt(3),
-    retry=retry_if_exception_type(HTTPException)
+    retry=retry_if_exception_type(httpx.RequestError)
 )
-async def validate_media_url(url: str) -> bool:
+async def validate_media_url(url: str) -> Optional[str]:
+    """
+    Validate the media URL and return its MIME type if valid.
+    Returns None if the URL is invalid or the MIME type cannot be determined.
+    """
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.head(url)
-            return response.status_code == 200
+        async with httpx.AsyncClient(follow_redirects=True) as client:
+            response = await client.head(url, timeout=10)
+            if response.status_code == 200:
+                content_type = response.headers.get('Content-Type')
+                if content_type:
+                    # Remove any charset info and return only the MIME type
+                    return content_type.split(';')[0].strip()
+                
+                # If Content-Type is not in headers, try to guess from the URL
+                parsed_url = urlparse(url)
+                guessed_type, _ = mimetypes.guess_type(parsed_url.path)
+                if guessed_type:
+                    return guessed_type
+                
+            logging.warning(f"Invalid media URL or missing Content-Type: {url}")
+            return None
     except Exception as e:
         logging.error(f"Error validating media URL {url}: {str(e)}")
-        return False
+        return None
 
-async def send_single_message(client, url, headers, payload, message_type, index):
+# Renomeada de send_single_message para send_single_evolution_message
+async def send_single_evolution_message(client, url, headers, payload, message_type, index):
     try:
-        # Log detalhado para depuração
         logging.debug(f"Sending {message_type} message {index} to {url} with payload: {payload}")
 
         response = await client.post(url, headers=headers, json=payload)
@@ -1151,7 +1179,6 @@ async def send_single_message(client, url, headers, payload, message_type, index
     except Exception as e:
         logging.error(f"Unexpected error sending {message_type} message {index}: {str(e)}")
         raise
-
 @app.post("/chat/bot-chatwoot")
 async def send_chatwoot_message(user_query: RequestBodyChatwoot):
     # Preparar contexto
@@ -1228,27 +1255,29 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                             }
                             endpoint = f"{urlEvolutionAPI.rstrip('/')}/message/sendText/{nameInstanceEvolutionAPI}"
                             logging.info(f"Sending payload to {endpoint}: {payload}")
-                            await send_single_message(client, endpoint, headersEvolutionAPI, payload, "text", index)
+                            await send_single_evolution_message(client, endpoint, headersEvolutionAPI, payload, "text", index)
 
-                        elif message_type in ["image", "video"]:
-                            # Validar a URL da mídia
-                            is_valid = await validate_media_url(message_value)
-                            if not is_valid:
-                                logging.warning(f"Invalid media URL: {message_value}")
+                        elif message_type in ["image", "video", "audio", "file"]:
+                            # Validar a URL da mídia e obter o MIME type
+                            mime_type = await validate_media_url(message_value)
+                            if not mime_type:
+                                logging.warning(f"Invalid or unsupported media URL: {message_value}")
                                 continue  # Pular o envio dessa mídia
 
-                            # Determinar o MIME type dinamicamente
-                            mimetype, _ = mimetypes.guess_type(message_value)
-                            if mimetype is None:
-                                logging.warning(f"Could not determine MIME type for URL: {message_value}")
-                                mimetype = "application/octet-stream"  # Tipo padrão
+                            # Determinar a extensão do arquivo
+                            extension = mimetypes.guess_extension(mime_type)
+                            if not extension:
+                                logging.warning(f"Could not determine file extension for MIME type: {mime_type}. Using '.bin' as default.")
+                                extension = ".bin"
+
+                            file_name = f"{message_type}_{uuid.uuid4()}{extension}"
 
                             payload = {
                                 "number": user_query.phone,
                                 "mediatype": message_type,
-                                "mimetype": mimetype,
+                                "mimetype": mime_type,
                                 "media": message_value,
-                                "fileName": f"{message_type}_{index}.{mimetype.split('/')[-1]}",
+                                "fileName": file_name,
                                 "options": {
                                     "delay": 500,
                                     "presence": "composing",
@@ -1256,21 +1285,16 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                             }
                             endpoint = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
                             logging.info(f"Sending payload to {endpoint}: {payload}")
-                            await send_single_message(client, endpoint, headersEvolutionAPI, payload, message_type, index)
+                            await send_single_evolution_message(client, endpoint, headersEvolutionAPI, payload, message_type, index)
 
                         elif message_type == "location":
-                            location_data = message.get("value", {})
-                            latitude = float(location_data.get("latitude", 0))
-                            longitude = float(location_data.get("longitude", 0))
-                            name = location_data.get("name", "")
-                            address = location_data.get("address", "")
-
+                            location_data = message_value
                             payload = {
                                 "number": user_query.phone,
-                                "latitude": latitude,
-                                "longitude": longitude,
-                                "name": name,
-                                "address": address,
+                                "latitude": float(location_data.get("latitude", 0)),
+                                "longitude": float(location_data.get("longitude", 0)),
+                                "name": location_data.get("name", ""),
+                                "address": location_data.get("address", ""),
                                 "options": {
                                     "delay": 500,
                                     "presence": "composing",
@@ -1278,7 +1302,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                             }
                             endpoint = f"{urlEvolutionAPI.rstrip('/')}/message/sendLocation/{nameInstanceEvolutionAPI}"
                             logging.info(f"Sending payload to {endpoint}: {payload}")
-                            await send_single_message(client, endpoint, headersEvolutionAPI, payload, "location", index)
+                            await send_single_evolution_message(client, endpoint, headersEvolutionAPI, payload, "location", index)
 
                         else:
                             logging.warning(f"Unsupported message type: {message_type} in message {index}")
@@ -1300,3 +1324,4 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
     except Exception as e:
         logging.error(f"Error in /chat/bot-chatwoot endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
+
