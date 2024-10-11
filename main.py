@@ -231,7 +231,7 @@ response_examples = [
                 "type":
                 "text",
                 "text":
-                "Curso de Power BI (Business Intelligence)\n\n- DESCRIÇÃO: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n- FORMATO/LOCALIZAÇÃO: Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n- PREÇO: 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n- DURAÇÃO: 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n- HORÁRIO: Sábados, das 09:00 às 13:00"
+                "Curso de Power BI (Business Intelligence)\n\n- DESCRIÇÃO: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n- FORMATO/LOCALIZAÇÃO: Presencial, na DigitalAO, Bairro CTT, Rangel, Luanda, Angola\n\n- PREÇO: 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n- DURAÇÃO: 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n- HORÁRIO: Sábados, das 09:00 às 13:00"
             }, {
                 "type":
                 "text",
@@ -419,16 +419,16 @@ response_examples_botconversa = [
                     "type":
                     "text",
                     "value":
-                    "📊 *Curso de Power BI (Business Intelligence)*\n\n*Descrição:* Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n*Formato:* Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n*Preço:* 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n*Duração:* 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n*Horário:* Sábados, das 09:00 às 13:00"
+                    "📊 *Curso de Power BI (Business Intelligence)*\n\n*Descrição:* Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n*Formato:* Presencial, na DigitalAO, Bairro CTT, Rangel, Luanda, Angola\n\n*Preço:* 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n*Duração:* 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n*Horário:* Sábados, das 09:00 às 13:00"
                 },
                 {
                     "type": "text",
-                    "value": "📍 O curso de *Power BI* será realizado na Digital.AO, localizada no Bairro CTT, Rangel, Luanda, Angola."
+                    "value": "📍 O curso de *Power BI* será realizado na DigitalAO, localizada no Bairro CTT, Rangel, Luanda, Angola."
                 },
                 {
                     "type": "location",
                     "value": {
-                        "name": "Digital.AO",
+                        "name": "DigitalAO",
                         "address": "Bairro CTT, Rangel, Luanda, Angola",
                         "latitude": "-8.838333",
                         "longitude": "13.234444"
@@ -436,7 +436,7 @@ response_examples_botconversa = [
                 },
                 {
                     "type": "text",
-                    "value": "A Digital.ao é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS)."
+                    "value": "A Digitalao é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS)."
                 },
                 {
                     "type": "image",
@@ -573,20 +573,16 @@ response_examples_botconversa = [
             "channel": "whatsapp",
             "messages": [{
                 "type": "text",
-                "value": "📍 O curso de *Power BI* será realizado na Digital.AO, localizada no Bairro CTT, Rangel, Luanda, Angola."
+                "value": "📍 O curso de *Power BI* será realizado na DigitalAO, localizada no Bairro CTT, Rangel, Luanda, Angola."
             },
             {
                 "type": "location",
                 "value": {
-                    "name": "Digital.AO",
+                    "name": "DigitalAO",
                     "address": "Bairro CTT, Rangel, Luanda, Angola",
                     "latitude": "-8.838333",
                     "longitude": "13.234444"
                 }
-            },
-            {
-                "type": "text",
-                "value": "A Digital.ao é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS). A Digital.ao atua como um hub de inovação, apoiando o desenvolvimento de startups e projetos tecnológicos, promovendo a transformação digital e impulsionando o empreendedorismo tecnológico em Angola."
             },
             {
                 "type": "image",
@@ -598,7 +594,7 @@ response_examples_botconversa = [
             },
             {
                 "type": "text",
-                "value": "📍 Caso precise de saber como chegar ao Digital.AO, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
+                "value": "📍 Caso precise de saber como chegar ao DigitalAO, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
             }
             ]
         }
@@ -606,13 +602,13 @@ response_examples_botconversa = [
     {
         "input": {
             "channel": "whatsapp",
-            "prompt": "Como chegar ao Digital.AO?"
+            "prompt": "Como chegar ao DigitalAO?"
         },
         "output": {
             "channel": "whatsapp",
             "messages": [{
                 "type": "text",
-                "value": "📍 Para chegar ao Digital.AO, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
+                "value": "📍 Para chegar ao DigitalAO, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
             }]
         }
     },
@@ -690,7 +686,7 @@ when asked about available courses always give all available courses.
 
             ### Course Mapping
 
-            - *"Sublimação e Design de Produção"*:
+            - *"Sublimação e Design de Produção"* será lecionado no BusCenter do Empreendedor (Galeria dos Desportos, Cidadela):
             
             - *Institution*: BusCenter do Empreendedor (Galeria dos Desportos, Cidadela)
 
@@ -707,7 +703,7 @@ when asked about available courses always give all available courses.
             - *Images*:
                 - *Image 1*: https://drive.google.com/uc?export=view&id=1A6nAnu8HNN_pYhhUydYrRm3qd4uGzT5k
             
-            - *"VideoPro: Desperto o Empreendedor"*:
+            - *"VideoPro: Desperto o Empreendedor"* será lecionado no Buscenter Arte e Tecnologia (Xyami Nova Vida):
             
             - *Institution*: BusCenter Arte e Tecnologia (Xyami Nova Vida)
 
@@ -726,13 +722,13 @@ when asked about available courses always give all available courses.
                 - *Image 2*: https://drive.google.com/uc?export=view&id=1nRGyeanaq_77KaW7lvQQkN3hhitB19r6
                 - *Image 3*: https://drive.google.com/uc?export=view&id=1Y812SwNg68snwb1LFI28Gi1YtyER3O3M
 
-            - *All Other Courses*:
+            - *All Other Courses* serão lecionados na DigitalAO:
             
-            - *Institution*: Digital.AO
+            - *Institution*: DigitalAO
 
-            - *Description*: A *Digital.AO* é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS). A Digital.ao atua como um hub de inovação, apoiando o desenvolvimento de startups e projetos tecnológicos, promovendo a transformação digital e impulsionando o empreendedorismo tecnológico em Angola.
+            - *Description*: A *DigitalAO* é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS). A Digitalao atua como um hub de inovação, apoiando o desenvolvimento de startups e projetos tecnológicos, promovendo a transformação digital e impulsionando o empreendedorismo tecnológico em Angola.
             
-            - *Address*: DIGITAL.ao, Bairro CTT, Rangel, Luanda, Angola
+            - *Address*: DIGITALao, Bairro CTT, Rangel, Luanda, Angola
 
             - *Google Maps Link*: https://goo.gl/maps/sMBXu4tv5AhQNGsLA
             
@@ -756,7 +752,7 @@ when asked about available courses always give all available courses.
             - *Exact Match*:
                 - If the course name exactly matches one of the predefined courses ("Sublimação e Design de Produção" or "VideoPro: Desperto o Empreendedor"), assign the corresponding institution and location.
             - *Default Assignment*:
-                - For any other course name not explicitly listed, assign it to *Digital.AO* with the default address and coordinates.
+                - For any other course name not explicitly listed, assign it to *DigitalAO* with the default address and coordinates.
 
 
 
