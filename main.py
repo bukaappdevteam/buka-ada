@@ -81,8 +81,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize FastAPI
-
 # Initialize the language model
 llm = ChatOpenAI(
     model="gpt-4o-mini-2024-07-18",
@@ -92,7 +90,6 @@ llm = ChatOpenAI(
         'response_format': {"type": "json_object"}
     }
 )
-
 
 # Define the request model
 class UserQuery(BaseModel):
@@ -120,21 +117,17 @@ headersBotConversa = {
     os.getenv('BOTCONVERSA_KEY') if os.getenv('BOTCONVERSA_KEY') else "",
 }
 
-
 class RequestBodyBotConversa(BaseModel):
     phone: str
     subscriber_id: str = Field(default=None,
                                description="Optional Subscriber ID")
     prompt: str
 
-
 def get_phone_url(phone: str) -> str:
     return f"{os.getenv('BOTCONVERSA_URL')}/subscriber/get_by_phone/{phone}/"
 
-
 def send_message_url(subscriber_id: str) -> str:
     return f"{os.getenv('BOTCONVERSA_URL')}/subscriber/{subscriber_id}/send_message/"
-
 
 # Initialize global context and chat history
 global_context = ""
@@ -152,7 +145,6 @@ vectorstore = FAISS.from_documents(documents=all_splits, embedding=embeddings)
 retriever = vectorstore.as_retriever(search_type="similarity",
                                      search_kwargs={"k": 3})
 
-
 # Define the function to get courses
 def get_courses(tool_input: str = None) -> list:
     """Get available courses from the API."""
@@ -162,7 +154,6 @@ def get_courses(tool_input: str = None) -> list:
         return json.dumps(response.json(), ensure_ascii=False, indent=4)
     else:
         return []
-
 
 @lru_cache(maxsize=100)
 def cached_get_courses():
@@ -250,14 +241,9 @@ response_examples = [
             }, {
                 "type": "text",
                 "text": "📊 *Curso de Power BI (Business Intelligence)*\n\n*Descrição:* Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n*Formato:* Presencial, na DigitalAO, Bairro CTT, Rangel, Luanda, Angola\n\n*Preço:* 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n*Duração:* 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n*Horário:* Sábados, das 09:00 às 13:00"
-            }, {
-                "type": "location",
-                "value": {
-                    "name": "DigitalAO",
-                    "address": "Bairro CTT, Rangel, Luanda, Angola",
-                    "latitude": "-8.838333",
-                    "longitude": "13.234444"
-                }
+            },  {
+                "type": "text",
+                "text": "📍 Aqui tem as coordenadas do *DigitalAO* no *_Google Maps_*: https://maps.app.goo.gl/1234567890"
             }, {
                 "type": "text",
                 "text": "A DigitalAO é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS)."
@@ -364,16 +350,8 @@ response_examples = [
                 "type": "text",
                 "text": "📍 O curso de *Power BI* será realizado na DigitalAO, localizada no Bairro CTT, Rangel, Luanda, Angola."
             }, {
-                "type": "location",
-                "value": {
-                    "name": "DigitalAO",
-                    "address": "Bairro CTT, Rangel, Luanda, Angola",
-                    "latitude": "-8.838333",
-                    "longitude": "13.234444"
-                }
-            }, {
                 "type": "text",
-                "text": "📍 O curso de *Power BI* será realizado na DigitalAO, localizada no Bairro CTT, Rangel, Luanda, Angola."
+                "text": "A Digitalao é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS)."
             }, {
                 "type": "image",
                 "url": "https://drive.google.com/uc?export=view&id=1FM7fQSNz5Qe8ItwYIwwJHIO5Exdp-qx-"
@@ -382,7 +360,10 @@ response_examples = [
                 "url": "https://drive.google.com/uc?export=view&id=1StQXzt3MCca_s1g5b1NJlyOzNAT1xtq9"
             }, {
                 "type": "text",
-                "text": "📍 Caso precise de saber como chegar ao DigitalAO, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
+                "text": "📍 Aqui tem as coordenadas do *DigitalAO* no *_Google Maps_*: https://maps.app.goo.gl/1234567890"
+            }, {
+                "type": "text",
+                "text": "📍 Caso precise de saber como chegar ao DigitalAO, use o Google Maps para direções."
             }]
         }
     },
@@ -939,81 +920,134 @@ print(cached_get_courses())
 
 @app.post("/chat")
 async def handle_query(user_query: UserQuery):
-    # Prepare the input for the agent
-    context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
-    context = "\n".join([doc.page_content for doc in context_docs])
-
-    # Prepare the input for the agent
-    context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
-    context = "\n".join([doc.page_content for doc in context_docs])
-
-    chat_history_list = chat_history['user_id']  # Assegure-se de que isso seja específico para o usuário se necessário
+    """Handle incoming chat queries for Facebook and Instagram channels via ManyChat API."""
     try:
-        response = await asyncio.to_thread(
+        # Retrieve context documents asynchronously
+        context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
+        context = "\n".join([doc.page_content for doc in context_docs])
+    except Exception as e:
+        logging.error(f"Error retrieving documents: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving context documents.")
+
+    # Extract chat history for the user
+    user_key = str(user_query.subscriber_id)
+    if user_key not in chat_history:
+        chat_history[user_key] = []
+    chat_history_list = chat_history[user_key]
+
+    try:
+        # Invoke the language model chain with a timeout
+        response = await asyncio.wait_for(asyncio.to_thread(
             chain.invoke, {
                 "input": user_query.prompt,
                 "chat_history": chat_history_list,
                 "CONTEXT": context,
-                "RESPONSE_EXAMPLES_JSON": response_examples_json,  # Uso correto da variável
+                "RESPONSE_EXAMPLES_JSON": response_examples_json,
                 "CHANNEL": user_query.channel,
                 "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
-            }
-        )
+            }), timeout=15)
+    except asyncio.TimeoutError:
+        logging.error("Language model response timed out.")
+        raise HTTPException(status_code=408, detail="Language model response timed out.")
+    except Exception as e:
+        logging.error(f"Error invoking language model chain: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error processing your request.")
 
-        # Acessar o conteúdo da resposta corretamente
+    try:
+        # Parse the response content
         response_content = response.content if isinstance(response, AIMessage) else response["output"]
         response_json = json.loads(response_content)
+    except json.JSONDecodeError:
+        logging.error("Failed to parse the language model response as JSON.")
+        raise HTTPException(status_code=500, detail="Failed to parse response.")
 
-        # Adicionar a consulta do usuário e a resposta da IA ao histórico de chat
-        chat_history["user_id"].append(HumanMessage(content=user_query.prompt))
-        chat_history["user_id"].append(AIMessage(content=response_content))
-        messages = response_json.get("messages", [])
+    # Update chat history
+    chat_history[user_key].append(HumanMessage(content=user_query.prompt))
+    chat_history[user_key].append(AIMessage(content=response_content))
+    messages = response_json.get("messages", [])
 
-        print("messages: ", messages)
+    logging.info("Messages to send: %s", messages)
 
-        # Construir o endpoint da API ManyChat
-        manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
+    # Define the ManyChat API URL
+    manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
 
-        # Preparar o payload para ManyChat
+    headers = {
+        "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
+        "Content-Type": "application/json"
+    }
+
+    # Function to validate media URLs with retry logic
+    @retry(
+        wait=wait_exponential(multiplier=1, min=4, max=10),
+        stop=stop_after_attempt(3),
+        retry=retry_if_exception_type(httpx.RequestError)
+    )
+    async def validate_media_url(url: str) -> bool:
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.head(url, timeout=10)
+                return response.status_code == 200
+        except Exception as e:
+            logging.error(f"Error validating media URL {url}: {str(e)}")
+            return False
+
+    # Function to send a single message with validation
+    @retry(
+        wait=wait_exponential(multiplier=1, min=4, max=10),
+        stop=stop_after_attempt(3),
+        retry=retry_if_exception_type(httpx.RequestError)
+    )
+    async def send_single_message(client: httpx.AsyncClient, message: dict):
+        message_type = message.get("type")
         payload = {
             "subscriber_id": user_query.subscriber_id,
             "data": {
                 "version": "v2",
-                # Adicionar o campo "type" se o canal for "instagram"
                 "content": {
-                    **({"type": user_query.channel} if user_query.channel == "instagram" else {}),
-                    "messages": messages,
+                    "messages": [message],
                 }
             },
             "message_tag": "ACCOUNT_UPDATE",
         }
 
-        print("payload: ", payload)
+        # Add platform-specific fields
+        if user_query.channel.lower() == "instagram":
+            payload["data"]["content"]["type"] = "instagram"
 
-        # Enviar as mensagens para a API ManyChat
-        headers = {
-            "Authorization": f"Bearer {os.getenv('MANYCHAT_API_KEY')}",
-            "Content-Type": "application/json"
-        }
+        try:
+            response = await client.post(manychat_api_url, headers=headers, json=payload)
+            response.raise_for_status()
+            logging.info(f"Message sent successfully: {message}")
+            return True
+        except httpx.HTTPStatusError as e:
+            logging.error(f"ManyChat API error for message {message}: {e.response.status_code} - {e.response.text}")
+            return False
+        except httpx.RequestError as e:
+            logging.error(f"ManyChat API request error for message {message}: {str(e)}")
+            return False
+        except Exception as e:
+            logging.error(f"Unexpected error for message {message}: {str(e)}")
+            return False
 
-        manychat_response = requests.post(manychat_api_url, headers=headers, json=payload)
+    async with httpx.AsyncClient() as client:
+        for index, message in enumerate(messages, start=1):
+            # Validate media URLs if present
+            if message.get("type") in ["image", "video", "audio", "file"]:
+                url = message.get("url") or message.get("media") or message.get("value")
+                if url:
+                    is_valid = await validate_media_url(url)
+                    if not is_valid:
+                        logging.warning(f"Invalid media URL detected and skipped: {url}")
+                        continue  # Skip invalid media URLs
 
-        # Registrar a resposta para depuração
-        logging.info(f"ManyChat API response: {manychat_response.status_code} - {manychat_response.text}")
+            # Send the message
+            success = await send_single_message(client, message)
 
-        # Verificar se a requisição foi bem-sucedida
-        if manychat_response.status_code != 200:
-            logging.error(f"Failed to send messages via ManyChat API: {manychat_response.text}")
-            raise HTTPException(status_code=500, detail=f"Failed to send messages via ManyChat API: {manychat_response.text}")
+            # Introduce a delay between messages to comply with rate limits
+            await asyncio.sleep(1)  # 1-second delay; adjust as needed
 
-        return {"response": manychat_response.json()}
-
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
-    except Exception as e:
-        logging.error(f"Error in /chat endpoint: {str(e)}")
-        raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
+    return {"success": True, "detail": "Messages processed successfully."}
 
 @app.post("/chat-bot-whatsapp")
 async def send_bot_message(user_query: RequestBodyBotConversa):
