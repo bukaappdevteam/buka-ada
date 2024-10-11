@@ -419,13 +419,38 @@ response_examples_botconversa = [
                     "type":
                     "text",
                     "value":
-                    "📊 *Curso de Power BI (Business Intelligence)*\n\n*Descrição:* Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n*Formato/Localização:* Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n*Preço:* 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n*Duração:* 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n*Horário:* Sábados, das 09:00 às 13:00"
+                    "📊 *Curso de Power BI (Business Intelligence)*\n\n*Descrição:* Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n*Formato:* Presencial, na Digital.AO, Bairro CTT, Rangel, Luanda, Angola\n\n*Preço:* 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n*Duração:* 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n*Horário:* Sábados, das 09:00 às 13:00"
+                },
+                {
+                    "type": "text",
+                    "value": "📍 O curso de *Power BI* será realizado na Digital.AO, localizada no Bairro CTT, Rangel, Luanda, Angola."
+                },
+                {
+                    "type": "location",
+                    "value": {
+                        "name": "Digital.AO",
+                        "address": "Bairro CTT, Rangel, Luanda, Angola",
+                        "latitude": "-8.838333",
+                        "longitude": "13.234444"
+                    }
+                },
+                {
+                    "type": "text",
+                    "value": "A Digital.ao é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS)."
+                },
+                {
+                    "type": "image",
+                    "value": "https://drive.google.com/uc?export=view&id=1FM7fQSNz5Qe8ItwYIwwJHIO5Exdp-qx-"
+                },
+                {
+                    "type": "video",
+                    "value": "https://drive.google.com/uc?export=view&id=1StQXzt3MCca_s1g5b1NJlyOzNAT1xtq9"
                 },
                 {
                     "type":
                     "text",
                     "value":
-                    "🚀 Estamos falando de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?"
+                    "🚀 Com este curso estamos a falar de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?"
                 },
                 {
                     "type":
@@ -660,7 +685,7 @@ when asked about available courses always give all available courses.
 
 ## Course Hosting/Location Information
 
-            Identify the hosting institution and location for a specific training course based on the provided course name. Use the following predefined information to determine the correct institution, address, and geographic coordinates for each course, never send Latitude and Longitude in a type text message, only in a location message, also send images and videos when possible is important to give prospective costumers more reassurance.
+            Identify the hosting institution and location for a specific training course based on the provided course name. Use the following predefined information to determine the correct institution, address, and geographic coordinates for each course, never send Latitude and Longitude in a type text message, only in a location message, also send images and videos of the locations when possible is very important to give prospective costumers more reassurance by showing them the locations.
 
             ### Course Mapping
 
