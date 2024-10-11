@@ -928,24 +928,13 @@ print(cached_get_courses())
 
 
 @app.post("/chat")
-async def handle_query(user_query: UserQuery):
-    """Handle incoming chat queries for Facebook and Instagram channels via ManyChat API."""
+async def chat(user_query: UserQuery):
     try:
-        # Retrieve context documents asynchronously
         context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
         context = "\n".join([doc.page_content for doc in context_docs])
-    except Exception as e:
-        logging.error(f"Error retrieving documents: {str(e)}")
-        raise HTTPException(status_code=500, detail="Error retrieving context documents.")
 
-    # Extract chat history for the user
-    user_key = str(user_query.subscriber_id)
-    if user_key not in chat_history:
-        chat_history[user_key] = []
-    chat_history_list = chat_history[user_key]
+        chat_history_list = chat_history.get(str(user_query.subscriber_id), [])
 
-    try:
-        # Invoke the language model chain with a timeout
         response = await asyncio.wait_for(asyncio.to_thread(
             chain.invoke, {
                 "input": user_query.prompt,
@@ -956,28 +945,133 @@ async def handle_query(user_query: UserQuery):
                 "COURSES": cached_get_courses(),
                 "agent_scratchpad": []
             }), timeout=15)
-    except asyncio.TimeoutError:
-        logging.error("Language model response timed out.")
-        raise HTTPException(status_code=408, detail="Language model response timed out.")
-    except Exception as e:
-        logging.error(f"Error invoking language model chain: {str(e)}")
-        raise HTTPException(status_code=500, detail="Error processing your request.")
 
-    try:
-        # Parse the response content
         response_content = response.content if isinstance(response, AIMessage) else response["output"]
         response_json = json.loads(response_content)
+
+        chat_history[str(user_query.subscriber_id)] = chat_history_list + [
+            HumanMessage(content=user_query.prompt),
+            AIMessage(content=response_content)
+        ]
+
+        messages = response_json.get("messages", [])
+
+        async with httpx.AsyncClient() as client:
+            for index, message in enumerate(messages, start=1):
+                if isinstance(message, dict) and "value" in message:
+                    message_type = message.get("type")
+                    message_value = message.get("value")
+
+                    if message_type == "text":
+                        text_chunks = split_long_message({"type": "text", "text": message_value})
+                        for chunk in text_chunks:
+                            payload = {
+                                "subscriber_id": user_query.subscriber_id,
+                                "data": {
+                                    "version": "v2",
+                                    "content": {
+                                        "type": "text",
+                                        "text": chunk["text"]
+                                    }
+                                }
+                            }
+                            success = await send_single_manychat_message(client, payload, "text", index)
+                            if not success:
+                                logging.error(f"Failed to send text message {index}")
+                            await asyncio.sleep(1)
+
+                    elif message_type in ["image", "video", "audio", "file"]:
+                        mime_type = await validate_media_url(message_value)
+                        if not mime_type:
+                            logging.warning(f"Invalid or unsupported media URL: {message_value}")
+                            continue
+
+                        extension = mimetypes.guess_extension(mime_type) or '.bin'
+                        file_name = f"{message_type}_{uuid.uuid4()}{extension}"
+
+                        payload = {
+                            "subscriber_id": user_query.subscriber_id,
+                            "data": {
+                                "version": "v2",
+                                "content": {
+                                    "type": message_type,
+                                    "url": message_value,
+                                    "filename": file_name
+                                }
+                            }
+                        }
+                        success = await send_single_manychat_message(client, payload, message_type, index)
+                        if not success:
+                            logging.error(f"Failed to send {message_type} message {index}")
+                        await asyncio.sleep(1)
+
+                    elif message_type == "location":
+                        location_data = message_value
+                        payload = {
+                            "subscriber_id": user_query.subscriber_id,
+                            "data": {
+                                "version": "v2",
+                                "content": {
+                                    "type": "location",
+                                    "lat": float(location_data.get("latitude", 0)),
+                                    "long": float(location_data.get("longitude", 0)),
+                                    "name": location_data.get("name", ""),
+                                    "address": location_data.get("address", "")
+                                }
+                            }
+                        }
+                        success = await send_single_manychat_message(client, payload, "location", index)
+                        if not success:
+                            logging.error(f"Failed to send location message {index}")
+                        await asyncio.sleep(1)
+
+                    else:
+                        logging.warning(f"Unsupported message type: {message_type} in message {index}")
+
+                else:
+                    logging.warning(f"Unexpected message format in message {index}: {message}")
+
+        return {"success": True}
+
+    except asyncio.TimeoutError:
+        logging.error("Request timed out.")
+        raise HTTPException(status_code=408, detail="Response timed out.")
     except json.JSONDecodeError:
-        logging.error("Failed to parse the language model response as JSON.")
-        raise HTTPException(status_code=500, detail="Failed to parse response.")
+        logging.error("Failed to parse the response as JSON.")
+        raise HTTPException(status_code=500, detail="Failed to parse the response as JSON.")
+    except Exception as e:
+        logging.error(f"Error in /chat endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
 
-    # Update chat history
-    chat_history[user_key].append(HumanMessage(content=user_query.prompt))
-    chat_history[user_key].append(AIMessage(content=response_content))
-    messages = response_json.get("messages", [])
+@retry(
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type(httpx.RequestError)
+)
+async def validate_media_url(url: str) -> Optional[str]:
+    """
+    Validate the media URL and return its MIME type if valid.
+    Returns None if the URL is invalid or the MIME type cannot be determined.
+    """
+    try:
+        async with httpx.AsyncClient(follow_redirects=True) as client:
+            response = await client.head(url, timeout=10)
+            if response.status_code == 200:
+                content_type = response.headers.get('Content-Type')
+                if content_type:
+                    return content_type.split(';')[0]  # Remove any charset info
+                logging.warning(f"Invalid media URL or missing Content-Type: {url}")
+                return None
+    except Exception as e:
+        logging.error(f"Error validating media URL {url}: {str(e)}")
+        return None
 
-    logging.info("Messages to send: %s", messages)
-
+@retry(
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type(httpx.RequestError)
+)
+async def send_single_manychat_message(client: httpx.AsyncClient, payload: dict, message_type: str, index: int):
     # Define the ManyChat API URL
     manychat_api_url = "https://api.manychat.com/fb/sending/sendContent"
 
@@ -986,86 +1080,21 @@ async def handle_query(user_query: UserQuery):
         "Content-Type": "application/json"
     }
 
-    # Function to validate media URLs with retry logic
-    @retry(
-        wait=wait_exponential(multiplier=1, min=4, max=10),
-        stop=stop_after_attempt(3),
-        retry=retry_if_exception_type(httpx.RequestError)
-    )
-    async def validate_media_url(url: str) -> Optional[str]:
-        """
-        Validate the media URL and return its MIME type if valid.
-        Returns None if the URL is invalid or the MIME type cannot be determined.
-        """
-        try:
-            async with httpx.AsyncClient(follow_redirects=True) as client:
-                response = await client.head(url, timeout=10)
-                if response.status_code == 200:
-                    content_type = response.headers.get('Content-Type')
-                    if content_type:
-                        return content_type.split(';')[0]  # Remove any charset info
-                logging.warning(f"Invalid media URL or missing Content-Type: {url}")
-                return None
-        except Exception as e:
-            logging.error(f"Error validating media URL {url}: {str(e)}")
-            return None
+    try:
+        response = await client.post(manychat_api_url, headers=headers, json=payload)
+        response.raise_for_status()
+        logging.info(f"{message_type.capitalize()} message {index} sent successfully.")
+        return True
+    except httpx.HTTPStatusError as e:
+        logging.error(f"ManyChat API error for {message_type} message {index}: {e.response.status_code} - {e.response.text}")
+        return False
+    except httpx.RequestError as e:
+        logging.error(f"ManyChat API request error for {message_type} message {index}: {str(e)}")
+        return False
+    except Exception as e:
+        logging.error(f"Unexpected error for {message_type} message {index}: {str(e)}")
+        return False
 
-    # Function to send a single message with validation
-    @retry(
-        wait=wait_exponential(multiplier=1, min=4, max=10),
-        stop=stop_after_attempt(3),
-        retry=retry_if_exception_type(httpx.RequestError)
-    )
-    async def send_single_message(client: httpx.AsyncClient, message: dict):
-        message_type = message.get("type")
-        payload = {
-            "subscriber_id": user_query.subscriber_id,
-            "data": {
-                "version": "v2",
-                "content": {
-                    "messages": [message],
-                }
-            },
-            "message_tag": "ACCOUNT_UPDATE",
-        }
-
-        # Add platform-specific fields
-        if user_query.channel.lower() == "instagram":
-            payload["data"]["content"]["type"] = "instagram"
-
-        try:
-            response = await client.post(manychat_api_url, headers=headers, json=payload)
-            response.raise_for_status()
-            logging.info(f"Message sent successfully: {message}")
-            return True
-        except httpx.HTTPStatusError as e:
-            logging.error(f"ManyChat API error for message {message}: {e.response.status_code} - {e.response.text}")
-            return False
-        except httpx.RequestError as e:
-            logging.error(f"ManyChat API request error for message {message}: {str(e)}")
-            return False
-        except Exception as e:
-            logging.error(f"Unexpected error for message {message}: {str(e)}")
-            return False
-
-    async with httpx.AsyncClient() as client:
-        for index, message in enumerate(messages, start=1):
-            # Validate media URLs if present
-            if message.get("type") in ["image", "video", "audio", "file"]:
-                url = message.get("url") or message.get("media") or message.get("value")
-                if url:
-                    mime_type = await validate_media_url(url)
-                    if not mime_type:
-                        logging.warning(f"Invalid media URL detected and skipped: {url}")
-                        continue  # Skip invalid media URLs
-
-            # Send the message
-            success = await send_single_message(client, message)
-
-            # Introduce a delay between messages to comply with rate limits
-            await asyncio.sleep(1)  # 1-second delay; adjust as needed
-
-    return {"success": True, "detail": "Messages processed successfully."}
 
 @app.post("/chat-bot-whatsapp")
 async def send_bot_message(user_query: RequestBodyBotConversa):
@@ -1262,7 +1291,12 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                             }
                             endpoint = f"{urlEvolutionAPI.rstrip('/')}/message/sendText/{nameInstanceEvolutionAPI}"
                             logging.info(f"Sending payload to {endpoint}: {payload}")
-                            await send_single_evolution_message(client, endpoint, headersEvolutionAPI, payload, "text", index)
+                            success = await send_single_evolution_message(client, endpoint, headersEvolutionAPI, payload, "text", index)
+                            if not success:
+                                logging.error(f"Failed to send text message {index}")
+                            
+                            # Adiciona um atraso de 1 segundo entre as mensagens
+                            await asyncio.sleep(1)
 
                         elif message_type in ["image", "video", "audio", "file"]:
                             # Validar a URL da mídia e obter o MIME type
@@ -1292,7 +1326,12 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                             }
                             endpoint = f"{urlEvolutionAPI.rstrip('/')}/message/sendMedia/{nameInstanceEvolutionAPI}"
                             logging.info(f"Sending payload to {endpoint}: {payload}")
-                            await send_single_evolution_message(client, endpoint, headersEvolutionAPI, payload, message_type, index)
+                            success = await send_single_evolution_message(client, endpoint, headersEvolutionAPI, payload, message_type, index)
+                            if not success:
+                                logging.error(f"Failed to send {message_type} message {index}")
+                            
+                            # Adiciona um atraso de 1 segundo entre as mensagens
+                            await asyncio.sleep(1)
 
                         elif message_type == "location":
                             location_data = message_value
@@ -1309,7 +1348,12 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                             }
                             endpoint = f"{urlEvolutionAPI.rstrip('/')}/message/sendLocation/{nameInstanceEvolutionAPI}"
                             logging.info(f"Sending payload to {endpoint}: {payload}")
-                            await send_single_evolution_message(client, endpoint, headersEvolutionAPI, payload, "location", index)
+                            success = await send_single_evolution_message(client, endpoint, headersEvolutionAPI, payload, "location", index)
+                            if not success:
+                                logging.error(f"Failed to send location message {index}")
+                            
+                            # Adiciona um atraso de 1 segundo entre as mensagens
+                            await asyncio.sleep(1)
 
                         else:
                             logging.warning(f"Unsupported message type: {message_type} in message {index}")
