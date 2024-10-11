@@ -23,6 +23,43 @@ import io
 from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 from typing import Optional
 import sys
+import mimetypes
+
+# Adicionar mapeamentos personalizados, se necessário
+mimetypes.init()
+
+# Imagens adicionais
+mimetypes.add_type('image/svg+xml', '.svg')
+mimetypes.add_type('image/webp', '.webp')
+mimetypes.add_type('image/x-icon', '.ico')     # Suggested additions
+mimetypes.add_type('image/heic', '.heic')
+
+# Vídeos adicionais
+mimetypes.add_type('video/avi', '.avi')
+mimetypes.add_type('video/mpeg', '.mpeg')
+mimetypes.add_type('video/mp4', '.mp4')        # Suggested additions
+mimetypes.add_type('video/quicktime', '.mov')  # Suggested additions
+mimetypes.add_type('video/x-ms-wmv', '.wmv')   # Suggested additions
+
+# Áudio adicionais
+mimetypes.add_type('audio/mpeg', '.mp3')
+mimetypes.add_type('audio/wav', '.wav')
+mimetypes.add_type('audio/ogg', '.ogg')
+mimetypes.add_type('audio/mp4', '.m4a')
+
+# Documentos (from previous suggestions)
+mimetypes.add_type('application/pdf', '.pdf')
+mimetypes.add_type('application/msword', '.doc')
+mimetypes.add_type('application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.docx')
+mimetypes.add_type('application/vnd.ms-excel', '.xls')
+mimetypes.add_type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', '.xlsx')
+mimetypes.add_type('application/vnd.ms-powerpoint', '.ppt')
+mimetypes.add_type('application/vnd.openxmlformats-officedocument.presentationml.presentation', '.pptx')
+
+# Compressed Files (from previous suggestions)
+mimetypes.add_type('application/zip', '.zip')
+mimetypes.add_type('application/x-rar-compressed', '.rar')
+mimetypes.add_type('application/gzip', '.gz')
 
 # Configure logging
 logging.basicConfig(
@@ -988,13 +1025,22 @@ def split_long_message(message, max_length=1000):
     stop=stop_after_attempt(3),
     retry=retry_if_exception_type(HTTPException)
 )
+async def validate_media_url(url: str) -> bool:
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.head(url)
+            return response.status_code == 200
+    except Exception as e:
+        logging.error(f"Error validating media URL {url}: {str(e)}")
+        return False
+
 async def send_single_message(client, url, headers, payload, message_type, index):
     try:
-        # Log the outgoing request for debugging
+        # Log detalhado para depuração
         logging.debug(f"Sending {message_type} message {index} to {url} with payload: {payload}")
-        
+
         response = await client.post(url, headers=headers, json=payload)
-        
+
         if 200 <= response.status_code < 300:
             logging.info(f"{message_type.capitalize()} message {index} sent successfully with status {response.status_code}.")
             return True
@@ -1011,7 +1057,7 @@ async def send_single_message(client, url, headers, payload, message_type, index
 
 @app.post("/chat/bot-chatwoot")
 async def send_chatwoot_message(user_query: RequestBodyChatwoot):
-    # Prepare context
+    # Preparar contexto
     context_docs = await asyncio.to_thread(retriever.get_relevant_documents, user_query.prompt)
     context = "\n".join([doc.page_content for doc in context_docs])
 
@@ -1029,13 +1075,7 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
             "agent_scratchpad": []
         }
 
-        # Invoke the language model chain with a timeout
-        response = await asyncio.wait_for(
-            asyncio.to_thread(chain.invoke, input_data),
-            timeout=15
-        )
-
-         # Preparar a mensagem do usuário para o histórico de chat e entrada do modelo
+        # Preparar a mensagem do usuário para o histórico de chat e entrada do modelo
         user_message_content = []
         # Se uma URL de imagem for fornecida, incluir primeiro na entrada e no histórico de chat
         if user_query.image_url:
@@ -1094,7 +1134,17 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
                             await send_single_message(client, endpoint, headersEvolutionAPI, payload, "text", index)
 
                         elif message_type in ["image", "video"]:
-                            mimetype = "image/png" if message_type == "image" else "video/mp4"
+                            # Validar a URL da mídia
+                            is_valid = await validate_media_url(message_value)
+                            if not is_valid:
+                                logging.warning(f"Invalid media URL: {message_value}")
+                                continue  # Pular o envio dessa mídia
+
+                            # Determinar o MIME type dinamicamente
+                            mimetype, _ = mimetypes.guess_type(message_value)
+                            if mimetype is None:
+                                logging.warning(f"Could not determine MIME type for URL: {message_value}")
+                                mimetype = "application/octet-stream"  # Tipo padrão
 
                             payload = {
                                 "number": user_query.phone,
@@ -1153,4 +1203,3 @@ async def send_chatwoot_message(user_query: RequestBodyChatwoot):
     except Exception as e:
         logging.error(f"Error in /chat/bot-chatwoot endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
- 
