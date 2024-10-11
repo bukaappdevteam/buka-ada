@@ -655,6 +655,16 @@ response_examples_botconversa = [
             }]
         }
     },
+    {
+        "input": {
+            "channel": "whatsapp",
+            "prompt": "cursos"
+        },
+        "output": {
+            "channel": "whatsapp",
+            "messages": [{"type": "text", "value": "Gostatia de saber mais sobre um curso espcífico ou podemos enviar todos os cursos disponíveis?"}]
+        }
+    }
 ]
 
 response_examples_botconversa_json = json.dumps(response_examples_botconversa,
