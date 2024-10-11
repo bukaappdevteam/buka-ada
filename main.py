@@ -205,23 +205,16 @@ response_examples = [
             "prompt": "Olá"
         },
         "output": {
-            "channel":
-            "facebook",
+            "channel": "facebook",
             "messages": [{
-                "type":
-                "text",
-                "text":
-                "Olá! Bem-vindo à Buka, onde não apenas ensinamos, mas mudamos vidas por meio da educação. Sou a Ada, assistente IA virtual da Buka, e sua guia pessoal nesta jornada emocionante de descoberta e crescimento. Estou aqui para ajudá-lo(a) a encontrar o curso perfeito que não só impulsionará sua carreira e/ou futuro, mas também realizará seus objetivos mais profundos."
+                "type": "text",
+                "text": "👋 Olá! Bem-vindo à Buka, onde não apenas ensinamos, mas mudamos vidas por meio da educação. Sou a Ada, assistente IA virtual da Buka, e sua guia pessoal nesta jornada emocionante de descoberta e crescimento. Estou aqui para ajudá-lo(a) a encontrar o curso perfeito que não só impulsionará sua carreira e/ou futuro, mas também realizará seus objetivos mais profundos."
             }, {
-                "type":
-                "text",
-                "text":
-                "Temos uma variedade incrível de cursos disponíveis. E cada curso foi cuidadosamente projetado para oferecer não apenas conhecimentos, mas verdadeiras ferramentas de mudança de vida."
+                "type": "text",
+                "text": "✨ Temos uma variedade incrível de cursos disponíveis. E cada curso foi cuidadosamente projetado para oferecer não apenas conhecimentos, mas verdadeiras ferramentas de mudança de vida."
             }, {
-                "type":
-                "text",
-                "text":
-                "Estou curiosa: o que o(a) traz à Buka hoje? Está em busca de uma transformação profissional específica ou está aberto a explorar novas possibilidades?"
+                "type": "text",
+                "text": "🤔 Estou curiosa: o que o(a) traz à Buka hoje? Está em busca de uma transformação profissional específica ou está aberto a explorar novas possibilidades?"
             }]
         }
     },
@@ -231,23 +224,16 @@ response_examples = [
             "prompt": "Quais são todos os cursos disponíveis?"
         },
         "output": {
-            "channel":
-            "facebook",
+            "channel": "facebook",
             "messages": [{
-                "type":
-                "text",
-                "text":
-                "Excelente pergunta! Estou entusiasmada em apresentar-lhe nossa gama diversificada de cursos transformadores. Cada um deles foi criado não apenas para ensinar, mas para inspirar e capacitar. Aqui está uma visão geral dos nossos cursos:"
+                "type": "text",
+                "text": "🌟 Excelente pergunta! Estou entusiasmada em apresentar-lhe nossa gama diversificada de cursos transformadores. Cada um deles foi criado não apenas para ensinar, mas para inspirar e capacitar. Aqui está uma visão geral dos nossos cursos:"
             }, {
-                "type":
-                "text",
-                "text":
-                "*1. Curso de Recursos Humanos com Aplicação às Novas Tecnologias*\n📌 Lidere a revolução no RH, moldando o futuro da gestão de pessoas.\n\n*2. Administração Windows Server 2022*\n📌 Domine a arte de gerenciar servidores e torne-se indispensável no mundo da TI.\n\n*3. Higiene e Segurança no Trabalho*\n📌 Torne-se um guardião da segurança, protegendo vidas e transformando ambientes de trabalho.\n\n*4. Curso de Power BI (Business Intelligence)*\n📌 Desbloqueie o poder dos dados e torne-se um visionário nos negócios.\n\n*5. Curso Base de Dados Relacional com MySQL*\n📌 Torne-se um mestre em dados, construindo a espinha dorsal da era digital."
+                "type": "text",
+                "text": "*1. Curso de Recursos Humanos com Aplicação às Novas Tecnologias*\n📌 Lidere a revolução no RH, moldando o futuro da gestão de pessoas.\n\n*2. Administração Windows Server 2022*\n📌 Domine a arte de gerenciar servidores e torne-se indispensável no mundo da TI.\n\n*3. Higiene e Segurança no Trabalho*\n📌 Torne-se um guardião da segurança, protegendo vidas e transformando ambientes de trabalho.\n\n*4. Curso de Power BI (Business Intelligence)*\n📌 Desbloqueie o poder dos dados e torne-se um visionário nos negócios.\n\n*5. Curso Base de Dados Relacional com MySQL*\n📌 Torne-se um mestre em dados, construindo a espinha dorsal da era digital."
             }, {
-                "type":
-                "text",
-                "text":
-                "Cada um destes cursos é uma porta para um futuro brilhante. Qual deles faz seu coração bater mais forte? Algum chamou-lhe a atenção? Ou há alguma área específica da sua vida ou carreira que você sonha em transformar? Escreva aqui em baixo"
+                "type": "text",
+                "text": "🚀 Cada um destes cursos é uma porta para um futuro brilhante. Qual deles faz seu coração bater mais forte? Algum chamou-lhe a atenção? Ou há alguma área específica da sua vida ou carreira que você sonha em transformar? Escreva aqui em baixo!"
             }]
         }
     },
@@ -257,28 +243,36 @@ response_examples = [
             "prompt": "Fale-me mais sobre o curso de Power BI"
         },
         "output": {
-            "channel":
-            "facebook",
+            "channel": "facebook",
             "messages": [{
-                "type":
-                "image",
-                "url":
-                "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8",
+                "type": "image",
+                "url": "https://firebasestorage.googleapis.com/v0/b/file-up-load.appspot.com/o/course-files%2FBase%20de%20dados.png?alt=media&token=dcc628c2-66d9-4b6d-a398-b21a77ba99b8"
             }, {
-                "type":
-                "text",
-                "text":
-                "Curso de Power BI (Business Intelligence)\n\n- DESCRIÇÃO: Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n- FORMATO/LOCALIZAÇÃO: Presencial, na DigitalAO, Bairro CTT, Rangel, Luanda, Angola\n\n- PREÇO: 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n- DURAÇÃO: 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n- HORÁRIO: Sábados, das 09:00 às 13:00"
+                "type": "text",
+                "text": "📊 *Curso de Power BI (Business Intelligence)*\n\n*Descrição:* Explore o universo dos dados com o Power BI. Transforme informações em estratégias inteligentes e leve sua carreira ou empresa ao sucesso.\n\n*Formato:* Presencial, na DigitalAO, Bairro CTT, Rangel, Luanda, Angola\n\n*Preço:* 60.000 Kz - um investimento que pode multiplicar seu valor profissional exponencialmente\n\n*Duração:* 2 Semanas intensivas (03 a 10 de Agosto 2024)\n\n*Horário:* Sábados, das 09:00 às 13:00"
             }, {
-                "type":
-                "text",
-                "text":
-                "Estamos falando de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?",
+                "type": "location",
+                "value": {
+                    "name": "DigitalAO",
+                    "address": "Bairro CTT, Rangel, Luanda, Angola",
+                    "latitude": "-8.838333",
+                    "longitude": "13.234444"
+                }
             }, {
-                "type":
-                "text",
-                "text":
-                "Este curso é a chave para desbloquear um novo nível na sua carreira ou negócio. É ideal para visionários como você, que entendem o poder dos dados na era digital.\nEstou curiosa: o que exatamente despertou seu interesse no Power BI? Está buscando uma vantagem competitiva no seu trabalho atual, ou talvez sonhando em revolucionar um negócio próprio?"
+                "type": "text",
+                "text": "A DigitalAO é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS)."
+            }, {
+                "type": "image",
+                "url": "https://drive.google.com/uc?export=view&id=1FM7fQSNz5Qe8ItwYIwwJHIO5Exdp-qx-"
+            }, {
+                "type": "video",
+                "url": "https://drive.google.com/uc?export=view&id=1StQXzt3MCca_s1g5b1NJlyOzNAT1xtq9"
+            }, {
+                "type": "text",
+                "text": "🚀 Com este curso estamos a falar de mais do que apenas números e gráficos. O Power BI é uma ferramenta de transformação que pode reconfigurar o futuro de um negócio ou carreira. Pronto para dominar a arte dos dados?"
+            }, {
+                "type": "text",
+                "text": "🔑 Este curso é a chave para desbloquear um novo nível na sua carreira ou negócio. É ideal para visionários como você, que entendem o poder dos dados na era digital.\n\n🤔 Estou curiosa: o que exatamente despertou seu interesse no Power BI? Está buscando uma vantagem competitiva no seu trabalho atual, ou talvez sonhando em revolucionar um negócio próprio?"
             }]
         }
     },
@@ -288,28 +282,19 @@ response_examples = [
             "prompt": "Estou a pensar em usar para o meu negócio."
         },
         "output": {
-            "channel":
-            "facebook",
+            "channel": "facebook",
             "messages": [{
-                "type":
-                "text",
-                "text":
-                "Fantástico! Você está prestes a dar um passo transformador para o seu negócio. O Power BI não é apenas uma ferramenta; é como ter um consultor de negócios genial trabalhando para você 24/7. Veja como este curso pode ser o catalisador para uma revolução no seu empreendimento:"
+                "type": "text",
+                "text": "🌟 Fantástico! Você está prestes a dar um passo transformador para o seu negócio. O Power BI não é apenas uma ferramenta; é como ter um consultor de negócios genial trabalhando para você 24/7. Veja como este curso pode ser o catalisador para uma revolução no seu empreendimento:"
             }, {
-                "type":
-                "text",
-                "text":
-                "Imagine ter o poder de:\n\n1. Tomar decisões com precisão e visão estratégica\n2. Identificar oportunidades de ouro antes dos concorrentes\n3. Criar apresentações impressionantes para investidores e clientes\n4. Otimizar cada aspecto do seu negócio como um maestro afinando uma orquestra"
+                "type": "text",
+                "text": "💡 Imagine ter o poder de:\n\n1. Tomar decisões com precisão e visão estratégica\n2. Identificar oportunidades de ouro antes dos concorrentes\n3. Criar apresentações impressionantes para investidores e clientes\n4. Otimizar cada aspecto do seu negócio como um maestro afinando uma orquestra"
             }, {
-                "type":
-                "text",
-                "text":
-                "Este curso foi projetado para empreendedores visionários como você. Em apenas dois sábados intensivos, você não apenas aprenderá a usar o Power BI; você se tornará um mestre em transformar dados em ouro. Por 60.000 Kz, você está investindo em uma vantagem competitiva real para o seu negócio."
+                "type": "text",
+                "text": "🚀 Este curso foi projetado para empreendedores visionários como você. Em apenas dois sábados intensivos, você não apenas aprenderá a usar o Power BI; você se tornará um mestre em transformar dados em ouro. Por 60.000 Kz, você está investindo em uma vantagem competitiva real para o seu negócio."
             }, {
-                "type":
-                "text",
-                "text":
-                "Estou fascinada pelo potencial do seu empreendimento. Que aspectos do seu negócio você mais anseia por transformar? Vendas, satisfação do cliente ou eficiência operacional?"
+                "type": "text",
+                "text": "🤩 Estou fascinada pelo potencial do seu empreendimento. Que aspectos do seu negócio você mais anseia por transformar? Vendas, satisfação do cliente ou eficiência operacional?"
             }]
         }
     },
@@ -319,38 +304,25 @@ response_examples = [
             "prompt": "As 3 que mencionaste são importantes."
         },
         "output": {
-            "channel":
-            "facebook",
+            "channel": "facebook",
             "messages": [{
-                "type":
-                "text",
-                "text":
-                "Impressionante! Vendas, satisfação do cliente e eficiência operacional são pilares fundamentais para um império empresarial. E o Power BI pode atuar como um super-herói para cada um desses pilares. Veja como:"
+                "type": "text",
+                "text": "🎯 Impressionante! Vendas, satisfação do cliente e eficiência operacional são pilares fundamentais para um império empresarial. E o Power BI pode atuar como um super-herói para cada um desses pilares. Veja como:"
             }, {
-                "type":
-                "text",
-                "text":
-                "1. *Vendas Estratosféricas:*\n   Imagine um painel que prevê suas vendas, identifica produtos estrelas e mostra onde investir. É como ter um sexto sentido para oportunidades de vendas.\n\n2. *Clientes Apaixonados:*\n   Visualize um mapa interativo de satisfação que revela o que seus clientes pensam e sentem. Antecipe necessidades antes mesmo de serem expressas.\n\n3. *Eficiência Operacional de Outro Mundo:*\n   Tenha um raio-X do seu negócio, mostrando onde cada recurso está sendo usado. Otimize processos como um maestro conduzindo uma orquestra perfeita."
+                "type": "text",
+                "text": "1. *Vendas Estratosféricas:*\n   💼 Imagine um painel que prevê suas vendas, identifica produtos estrelas e mostra onde investir. É como ter um sexto sentido para oportunidades de vendas.\n\n2. *Clientes Apaixonados:*\n   💖 Visualize um mapa interativo de satisfação que revela o que seus clientes pensam e sentem. Antecipe necessidades antes mesmo de serem expressas.\n\n3. *Eficiência Operacional de Outro Mundo:*\n   🔍 Tenha um raio-X do seu negócio, mostrando onde cada recurso está sendo usado. Otimize processos como um maestro conduzindo uma orquestra perfeita."
             }, {
-                "type":
-                "text",
-                "text":
-                "Você dominará tudo isso em apenas dois sábados! Imagine ver instantaneamente quais produtos são mais lucrativos, quais clientes são mais fiéis e onde estão os gargalos operacionais, tudo em um único dashboard. É exatamente isso que você aprenderá a criar."
+                "type": "text",
+                "text": "🚀 Você dominará tudo isso em apenas dois sábados! Imagine ver instantaneamente quais produtos são mais lucrativos, quais clientes são mais fiéis e onde estão os gargalos operacionais, tudo em um único dashboard. É exatamente isso que você aprenderá a criar."
             }, {
-                "type":
-                "text",
-                "text":
-                "O impacto? Vendas que crescem exponencialmente, clientes que se tornam embaixadores da sua marca e uma operação tão eficiente que parece magia. É alcançável com as habilidades que você adquirirá."
+                "type": "text",
+                "text": "🎯 O impacto? Vendas que crescem exponencialmente, clientes que se tornam embaixadores da sua marca e uma operação tão eficiente que parece mágica. É alcançável com as habilidades que você adquirirá."
             }, {
-                "type":
-                "text",
-                "text":
-                "Estou empolgada com as possibilidades para o seu negócio. Nossas turmas são intencionalmente pequenas para garantir uma experiência personalizada e de alta qualidade, por isso, as vagas são limitadas e costumam preencher rapidamente."
+                "type": "text",
+                "text": "😃 Estou empolgada com as possibilidades para o seu negócio. Nossas turmas são intencionalmente pequenas para garantir uma experiência personalizada e de alta qualidade, por isso, as vagas são limitadas e costumam preencher rapidamente."
             }, {
-                "type":
-                "text",
-                "text":
-                "Se estiver pronto para começar essa jornada transformadora, posso guiá-lo pelos próximos passos agora mesmo. O processo de inscrição é simples e rápido. Pense nisso como um investimento no futuro do seu negócio!"
+                "type": "text",
+                "text": "🚀 Se estiver pronto para começar essa jornada transformadora, posso guiá-lo pelos próximos passos agora mesmo. O processo de inscrição é simples e rápido. Pense nisso como um investimento no futuro do seu negócio!"
             }]
         }
     },
@@ -360,19 +332,110 @@ response_examples = [
             "prompt": "Quais são os tópicos/temas/programa deste curso?"
         },
         "output": {
-            "channel":
-            "facebook",
+            "channel": "facebook",
             "messages": [
                 {
-                    "type":
-                    "text",
-                    "text":
-                    "Temas abordados:\n• Fundamentos de Power BI e Configuração Inicial - Construindo sua base de poder\n• Visualizações e Publicação - Transformando números em narrativas visuais impactantes\n• Aprofundamento na Modelagem de Dados - Dominando a arte de estruturar informações\n• Design Avançado de Relatórios e Dashboards - Criando insights que impactam"
+                    "type": "text",
+                    "text": "*📚 Temas abordados:*\n\n• *Introdução ao Power BI:*\n   📈 O que é o Power BI?\n   🖥 Navegando pela interface\n   🔗 Conectando-se a fontes de dados\n\n• *Modelagem de Dados:*\n   🗂 Transformando dados crus em insights poderosos\n   🔄 Criação de relações e hierarquias\n\n• *Visualização de Dados:*\n   📊 Criando dashboards interativos e envolventes\n   🎨 Customização e design eficaz\n\n• *Análise Avançada:*\n   🧠 Técnicas avançadas de análise\n   📊 Previsões e tendências\n\n• *Integração e Compartilhamento:*\n   📤 Publicando e compartilhando relatórios\n   📱 Acessando seus dashboards em qualquer lugar"
                 },
+                {
+                    "type": "text",
+                    "text": "✨ Cada um desses tópicos foi cuidadosamente selecionado para garantir que você não apenas aprenda a usar o Power BI, mas também se torne capaz de transformá-lo em uma ferramenta estratégica dentro do seu negócio ou carreira."
+                },
+                {
+                    "type": "text",
+                    "text": "💼 Ao final do curso, você não apenas dominará as funcionalidades do Power BI, mas também estará equipado para aplicar esses conhecimentos em situações reais, criando um impacto imediato."
+                },
+                {
+                    "type": "text",
+                    "text": "🚀 Estou confiante de que este curso pode ser o próximo passo essencial na sua jornada profissional."
+                }
             ]
         }
     },
+    {
+        "input": {
+            "channel": "facebook",
+            "prompt": "Localização do curso?"
+        },
+        "output": {
+            "channel": "facebook",
+            "messages": [{
+                "type": "text",
+                "text": "📍 O curso de *Power BI* será realizado na DigitalAO, localizada no Bairro CTT, Rangel, Luanda, Angola."
+            }, {
+                "type": "location",
+                "value": {
+                    "name": "DigitalAO",
+                    "address": "Bairro CTT, Rangel, Luanda, Angola",
+                    "latitude": "-8.838333",
+                    "longitude": "13.234444"
+                }
+            }, {
+                "type": "text",
+                "text": "📍 O curso de *Power BI* será realizado na DigitalAO, localizada no Bairro CTT, Rangel, Luanda, Angola."
+            }, {
+                "type": "image",
+                "url": "https://drive.google.com/uc?export=view&id=1FM7fQSNz5Qe8ItwYIwwJHIO5Exdp-qx-"
+            }, {
+                "type": "video",
+                "url": "https://drive.google.com/uc?export=view&id=1StQXzt3MCca_s1g5b1NJlyOzNAT1xtq9"
+            }, {
+                "type": "text",
+                "text": "📍 Caso precise de saber como chegar ao DigitalAO, use o Google Maps para direções. Aqui tem o link: https://maps.app.goo.gl/1234567890"
+            }]
+        }
+    },
+    {
+        "input": {
+            "channel": "facebook",
+            "prompt": "Quero me inscrever no curso de Power BI."
+        },
+        "output": {
+            "channel": "facebook",
+            "messages": [{
+                "type": "text",
+                "text": "*Que bom saber que você está interessado em garantir sua vaga no curso de PowerBI!_* Na Buka, nossa missão é mudar vidas por meio da educação, e isso inclui a sua. Dominar essa ferramenta poderosa poderá abrir portas para muitas novas oportunidades."
+            }, {
+                "type": "text",
+                "text": "O investimento para o curso é de *_60.000 Kz_*, e você pode optar por dividir em *_2 prestações de 30.000 Kz_*. Para garantir sua vaga, siga os próximos passos:\n\n1. *Pagamento*: Você pode pagar o valor total ou a primeira parcela por transferência ou depósito bancário.\n\n   *Dados bancários para o pagamento*:\n   - *Titular*: BUKA PREST SERVIÇOS, Lda.\n   - *Conta BAI*: 188803004 10 001\n   - *IBAN*: AO06 0040 0000 8880 3004 1014 1\n   - *Valor*: 60.000 Kz (total) ou 30.000 Kz (1ª parcela)\n\n2. *Envio do comprovativo*: Após realizar o pagamento, envie o comprovativo diretamente aqui pelo WhatsApp. Isso nos ajuda a processar sua inscrição de forma mais rápida e segura.\n\n3. *Inscrição online*: Acesse nosso site *www.BukaApp.net* para completar sua inscrição. O processo é simples e leva apenas alguns minutos."
+            }, {
+                "type": "text",
+                "text": "> *_Importante_*: A sua vaga só estará garantida após a confirmação do pagamento, seja do valor total ou da primeira parcela. As vagas são limitadas, então não perca tempo!"
+            }, {
+                "type": "text",
+                "text": "Caso tenha qualquer dúvida ou precise de mais informações, estamos à disposição para ajudar aqui pelo WhatsApp.\n\n*_Garanta sua vaga e comece a transformação com o PowerBI!_* "
+            }]
+        }
+    },
+    {
+        "input": {
+            "channel": "facebook",
+            "prompt": "Como chegar ao BusCenter?"
+        },
+        "output": {
+            "channel": "facebook",
+            "messages": [{
+                "type": "text",
+                "text": "Se refere ao BusCenter do Empreendedor ou BusCenter Arte e Tecnologia (Xyami Nova Vida)?"
+            }]
+        }
+    },
+    {
+        "input": {
+            "channel": "facebook",
+            "prompt": "cursos"
+        },
+        "output": {
+            "channel": "facebook",
+            "messages": [{
+                "type": "text",
+                "text": "Gostaria de saber mais sobre um curso específico ou podemos enviar todos os cursos disponíveis?"
+            }]
+        }
+    }
 ]
+
 
 response_examples_json = json.dumps(response_examples,
                                     ensure_ascii=False,
@@ -470,10 +533,6 @@ response_examples_botconversa = [
                         "latitude": "-8.838333",
                         "longitude": "13.234444"
                     }
-                },
-                {
-                    "type": "text",
-                    "value": "A Digitalao é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS)."
                 },
                 {
                     "type": "image",
@@ -620,6 +679,10 @@ response_examples_botconversa = [
                     "latitude": "-8.838333",
                     "longitude": "13.234444"
                 }
+            },
+            {
+                "type": "text",
+                "value": "A Digitalao é uma incubadora tecnológica localizada na zona dos CTT's, no distrito do Rangel, município de Luanda, ao lado de instituições de ensino renomadas como o ITEL e o INSTIC (antigo ISUTIC). Como uma iniciativa estatal, está sob a supervisão do Instituto Nacional de Fomento da Sociedade da Informação (INFOSI), órgão vinculado ao Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social (MINTTICS)."
             },
             {
                 "type": "image",
