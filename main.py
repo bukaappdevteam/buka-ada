@@ -768,51 +768,14 @@ Here is the JSON containing the current list of courses:
 {{COURSES}}
 </courses>
 
-when asked about available courses always give all available courses.
+when asked about available courses always give all available courses. for courses that have multiple class present all alternatives based on their differences when asked
 
 ## Course Hosting/Location Information
 
             Identify the hosting institution and location for a specific training course based on the provided course name. Use the following predefined information to determine the correct institution, address, and geographic coordinates for each course, never send Latitude and Longitude in a type text message, only in a location message, also send images and videos of the locations when possible is very important to give prospective costumers more reassurance by showing them the locations.
 
-            ### Course Mapping
-
-            - *"Sublimação e Design de Produção"* será lecionado no BusCenter do Empreendedor (Galeria dos Desportos, Cidadela):
             
-            - *Institution*: BusCenter do Empreendedor (Galeria dos Desportos, Cidadela)
-
-            - *Description*: O BusCenter do Empreendedor, localizado na Galeria dos Desportos, Cidadela, é um autocarro sala de aulas dedicado a formar jovens empreendedores. Equipado com recursos para capacitação e desenvolvimento de negócios, o espaço ajuda futuros líderes a transformar ideias inovadoras em soluções sustentáveis, incentivando o crescimento econômico e social.
-            
-            - *Address*: Galeria dos Desportos, Cidadela, Luanda, Angola
-
-            - *Google Maps Link*: https://maps.app.goo.gl/rrHxhDJ5pk4rbzHS9
-            
-            - *Coordinates*:
-                - *Latitude*: -8.8260395
-                - *Longitude*: 13.2517865
-
-            - *Images*:
-                - *Image 1*: https://drive.google.com/uc?export=view&id=1A6nAnu8HNN_pYhhUydYrRm3qd4uGzT5k
-            
-            - *"VideoPro: Desperto o Empreendedor"* será lecionado no Buscenter Arte e Tecnologia (Xyami Nova Vida):
-            
-            - *Institution*: BusCenter Arte e Tecnologia (Xyami Nova Vida)
-
-            - *Google Maps Link*: https://maps.app.goo.gl/QSXScVvnDRCjasft9
-
-            - *Description*: O BusCenter Arte e Tecnologia é um machimbombo/autocarro transformado em sala de aulas, estacionado no Shopping Xyami Nova Vida. Focado na conexão entre arte e inovação digital, este espaço oferece oportunidades práticas de aprendizagem para jovens, promovendo a criatividade e o uso da tecnologia como ferramentas de expressão e desenvolvimento.
-
-            - *Address*: Xyami Shopping, Av. Pedro de Castro Van-Dúnem Loy, Luanda, Angola
-            
-            - *Coordinates*:
-                - *Latitude*: -8.896883
-                - *Longitude*: 13.226758
-
-            - *Images*:
-                - *Image 1*: https://drive.google.com/uc?export=view&id=1A6nAnu8HNN_pYhhUydYrRm3qd4uGzT5k
-                - *Image 2*: https://drive.google.com/uc?export=view&id=1nRGyeanaq_77KaW7lvQQkN3hhitB19r6
-                - *Image 3*: https://drive.google.com/uc?export=view&id=1Y812SwNg68snwb1LFI28Gi1YtyER3O3M
-
-            - *All Other Courses* serão lecionados na DigitalAO:
+            - *All Courses* serão lecionados na DigitalAO:
             
             - *Institution*: DigitalAO
 
